@@ -1,6 +1,7 @@
 package com.clementscode.mmi.swing;
 
 import java.awt.BorderLayout;
+import java.awt.GraphicsConfiguration;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -49,6 +50,8 @@ public class Gui {
 	private Timer timer;
 	protected Log log = LogFactory.getLog(this.getClass());
 	private JCheckBox attending;
+	private JFrame frame;
+	private String frameTitle="Andrea's MMI: ";
 	
 	public void run(Session session) {
 
@@ -137,9 +140,9 @@ public class Gui {
 		centerButton = new JButton(imgIconCenter);
 		panel.add(centerButton, BorderLayout.CENTER);
 
-		JFrame f = new JFrame("demo");
-		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.getContentPane().add(panel);
+		frame = new JFrame(frameTitle+String.format("%d of %d", session.getItems().length, session.getItems().length));
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().add(panel);
 
 		// http://download.oracle.com/javase/tutorial/uiswing/components/menu.html
 		// http://download.oracle.com/javase/tutorial/uiswing/misc/action.html
@@ -177,10 +180,10 @@ public class Gui {
 		buttonMenu.add(menuItem);
 
 		menuBar.add(buttonMenu);
-		f.setJMenuBar(menuBar);
+		frame.setJMenuBar(menuBar);
 
-		f.pack();
-		f.setVisible(true);
+		frame.pack();
+		frame.setVisible(true);
 		
 	timer = new Timer(session.getTimeDelayAnswer(), timerAction);
 		timer.setInitialDelay(session.getTimeDelayPrompt());
@@ -206,6 +209,7 @@ public class Gui {
 	public void switchImage(File file) {
 		
 		try {
+			frame.setTitle(frameTitle+String.format("%d of %d",itemQueue.size()+1, session.getItems().length));
 			centerButton.setIcon(new ImageIcon(file.getCanonicalPath()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
