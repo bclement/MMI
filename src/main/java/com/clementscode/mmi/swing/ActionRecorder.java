@@ -5,6 +5,9 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.clementscode.mmi.res.CategoryItem;
 
 public class ActionRecorder extends AbstractAction {
@@ -15,6 +18,7 @@ public class ActionRecorder extends AbstractAction {
 	private String text;
 	private Mediator mediator;
 	private int action;
+	protected Log log = LogFactory.getLog(this.getClass());
 	
 	public ActionRecorder(String text, ImageIcon icon,
                         String desc, Integer mnemonic, int action,Mediator mediator) {

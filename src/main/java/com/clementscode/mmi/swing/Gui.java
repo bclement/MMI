@@ -22,6 +22,9 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.clementscode.mmi.res.CategoryItem;
 import com.clementscode.mmi.res.Session;
 import com.clementscode.mmi.sound.SoundUtility;
@@ -44,7 +47,9 @@ public class Gui {
 	private Queue<CategoryItem> itemQueue = null;
 	private Session session = null;
 	private Timer timer;
-
+	protected Log log = LogFactory.getLog(this.getClass());
+	private JCheckBox attending;
+	
 	public void run(Session session) {
 
 		if (null != session) {
@@ -104,7 +109,7 @@ public class Gui {
 		// panel.add(b, BorderLayout.NORTH);
 		b = new JButton("South");
 		JPanel southPanel = new JPanel();
-		JCheckBox attending = new JCheckBox(attendingAction);// ""
+		 attending = new JCheckBox(attendingAction);// ""
 		southPanel.add(attending);
 		JButton responseButton = new JButton(independentAction);
 		southPanel.add(responseButton);
@@ -198,12 +203,14 @@ public class Gui {
 	
 	public Queue<CategoryItem> getItemQueue() { return itemQueue; }
 
-	public void switchImage() {
-		if (path.equals(pathA))
-			path = pathB;
-		else
-			path = pathA;
-		centerButton.setIcon(new ImageIcon(path));
+	public void switchImage(File file) {
+		
+		try {
+			centerButton.setIcon(new ImageIcon(file.getCanonicalPath()));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public Session getSession() {
@@ -220,5 +227,13 @@ public class Gui {
 
 	public void setTimer(Timer timer) {
 		this.timer = timer;
+	}
+
+	public JCheckBox getAttending() {
+		return attending;
+	}
+
+	public void setAttending(JCheckBox attending) {
+		this.attending = attending;
 	}
 }
