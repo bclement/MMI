@@ -1,0 +1,36 @@
+
+7:51 PM on 5/1/11:
+
+Here is the github for the code. Sorry I didn't get it checked in
+earlier today.
+
+https://github.com/bclement/MMI
+
+The basic flow of the program is that a session file is read in (example
+in src/test/resources) and those images are displayed with sounds in
+intervals.
+
+Basic needs: a GUI to wrap the displayed images and provide buttons that
+will score the response. There is a boolean value for 'attending' that
+just notes if the child was looking at the prompter. The real meat is
+the response value. This can be 1 of 4 things: independent (child
+answered before the prompt audio), verbal (child answered after the
+prompt but before the answer), modeling (child answered anytime after
+the answer audio) or the child did not answer.
+
+I have a basic stats input and processing class. I was planning on doing
+the output in CSV so they can slurp it into excel. BTW I need to add an
+output location to the session config.
+
+Right now it just blasts through the item list from the config using the
+second time delay again. This needs to stay on the image until the user
+scores the item. Once all the items from the session config are done,
+then we can display/save(csv) the results.
+
+Bonus: the GUI could do the job of CRUDing the session configs.
+
+We can chat about it throughout the week. The deadline is soft and
+created by myself. I don't know if there is a hard deadline, but the
+sooner we get it wrapped up the better.
+
+-Brian

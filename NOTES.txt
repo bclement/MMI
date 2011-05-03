@@ -1,0 +1,3 @@
+Use mediator pattern.   
+
+Future expansion allowed by mediator pattern will be remote scoring on another computer via the network.
