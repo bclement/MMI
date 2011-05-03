@@ -5,6 +5,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Action;
@@ -19,12 +22,15 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
+import com.clementscode.mmi.res.CategoryItem;
+import com.clementscode.mmi.res.Session;
 import com.clementscode.mmi.sound.SoundUtility;
+import com.clementscode.mmi.util.Shuffler;
 
 public class Gui {
 	public static void main(String[] arg) {
 		try {
-			new Gui().run();
+			new Gui().run(null);
 		} catch (Exception bland) {
 			bland.printStackTrace();
 		}
@@ -35,8 +41,28 @@ public class Gui {
 	private String pathB;
 	private String path;
 	private JButton centerButton;
+	private Queue<CategoryItem> itemQueue = null;
+	private Session session = null;
+	private Timer timer;
 
-	private void run() {
+	public void run(Session session) {
+
+		if (null != session) {
+			this.session = session;
+			CategoryItem[] copy = Arrays.copyOf(session.getItems(),
+					session.getItems().length);
+			for (int i = 0; i < session.getShuffleCount(); ++i) {
+				Shuffler.shuffle(copy);
+			}
+			itemQueue = new ConcurrentLinkedQueue<CategoryItem>();
+			for (CategoryItem item : copy) {
+				System.out.println(String.format(
+						"item=%s, t1=%d, t2=%d, prompt=%s", item,
+						session.getTimeDelayPrompt(),
+						session.getTimeDelayAnswer(), session.getPrompt()));
+				itemQueue.add(item);
+			}
+		}
 
 		Mediator mediator = new Mediator(this);
 		pathA = "src/test/resources/bc/animals/fooduck/fooduck.gif";
@@ -46,31 +72,31 @@ public class Gui {
 		// TODO: Internationalize the strings....
 		Action attendingAction = new ActionRecorder("Attending", null,
 				"Was the child looking at the prompter?", new Integer(
-						KeyEvent.VK_L), 1, mediator);
+						KeyEvent.VK_L), Mediator.ATTENDING, mediator);
 		Action independentAction = new ActionRecorder("Independent", null,
 				"Child answered before the prompt audio?", new Integer(
-						KeyEvent.VK_L), 2, mediator);
+						KeyEvent.VK_L), Mediator.INDEPENDENT, mediator);
 		Action verbalAction = new ActionRecorder("Verbal", null,
 				"Child answered after the prompt but before the answer?",
-				new Integer(KeyEvent.VK_L), 4, mediator);
+				new Integer(KeyEvent.VK_L), Mediator.VERBAL, mediator);
 		Action modelingAction = new ActionRecorder("Modeling", null,
 				"Child answered anytime after the answer audio?", new Integer(
-						KeyEvent.VK_L), 8, mediator);
+						KeyEvent.VK_L), Mediator.MODELING, mediator);
 		Action noAnswerAction = new ActionRecorder("No Answer", null,
-				"The child did not answer?", new Integer(KeyEvent.VK_L), 16,
+				"The child did not answer?", new Integer(KeyEvent.VK_L), Mediator.NO_ANSWER,
 				mediator);
-		
+
 		Action quitAction = new ActionRecorder("Quit", null,
-				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), 32,
+				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), Mediator.QUIT,
 				mediator);
-		
+
 		Action timerAction = new ActionRecorder("Timer (Swing)", null,
-				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), 64,
+				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), Mediator.TIMER,
 				mediator);
-		
+
 		Action openAction = new ActionRecorder("Open...", null,
-				"Open directory tree or ZIP file for training session", new Integer(KeyEvent.VK_L), 128,
-				mediator);
+				"Open directory tree or ZIP file for training session",
+				new Integer(KeyEvent.VK_L), Mediator.OPEN, mediator);
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
@@ -101,7 +127,7 @@ public class Gui {
 		b = new JButton("West");
 		// panel.add(b,BorderLayout.WEST);
 
-		path=pathA;
+		path = pathA;
 		imgIconCenter = new ImageIcon(path);
 		centerButton = new JButton(imgIconCenter);
 		panel.add(centerButton, BorderLayout.CENTER);
@@ -124,7 +150,7 @@ public class Gui {
 
 		// a group of JMenuItems
 		JMenuItem menuItem = new JMenuItem(openAction);
-		
+
 		menu.add(menuItem);
 
 		menuItem = new JMenuItem(quitAction);
@@ -150,15 +176,17 @@ public class Gui {
 
 		f.pack();
 		f.setVisible(true);
-	Timer timer = new Timer(3000, timerAction);
-	timer.start();
+		
+	timer = new Timer(session.getTimeDelayAnswer(), timerAction);
+		timer.setInitialDelay(session.getTimeDelayPrompt());
+		timer.setRepeats(true);
+		timer.start();
 	}
-	
-	
-	public void playSound() {
+
+	public void playSound(File file) {
 		try {
-			SoundUtility.playSound(new File(
-					"src/test/resources/bc/animals/fooduck/answer.wav"));
+			SoundUtility.playSound(file);
+					//"src/test/resources/bc/animals/fooduck/answer.wav"));
 		} catch (UnsupportedAudioFileException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -168,11 +196,29 @@ public class Gui {
 		}
 	}
 	
+	public Queue<CategoryItem> getItemQueue() { return itemQueue; }
+
 	public void switchImage() {
-		if (path.equals(pathA)) 
+		if (path.equals(pathA))
 			path = pathB;
-		else 
+		else
 			path = pathA;
 		centerButton.setIcon(new ImageIcon(path));
+	}
+
+	public Session getSession() {
+		return session;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
+	}
+
+	public Timer getTimer() {
+		return timer;
+	}
+
+	public void setTimer(Timer timer) {
+		this.timer = timer;
 	}
 }
