@@ -1,4 +1,4 @@
-package com.clementscode.swing;
+package com.clementscode.mmi.swing;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -17,6 +17,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.Timer;
 
 import com.clementscode.mmi.sound.SoundUtility;
 
@@ -57,6 +58,18 @@ public class Gui {
 						KeyEvent.VK_L), 8, mediator);
 		Action noAnswerAction = new ActionRecorder("No Answer", null,
 				"The child did not answer?", new Integer(KeyEvent.VK_L), 16,
+				mediator);
+		
+		Action quitAction = new ActionRecorder("Quit", null,
+				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), 32,
+				mediator);
+		
+		Action timerAction = new ActionRecorder("Timer (Swing)", null,
+				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), 64,
+				mediator);
+		
+		Action openAction = new ActionRecorder("Open...", null,
+				"Open directory tree or ZIP file for training session", new Integer(KeyEvent.VK_L), 128,
 				mediator);
 
 		JPanel panel = new JPanel();
@@ -110,12 +123,11 @@ public class Gui {
 		menuBar.add(menu);
 
 		// a group of JMenuItems
-		JMenuItem menuItem = new JMenuItem("Open..");
-		menuItem.getAccessibleContext().setAccessibleDescription(
-				"Open directory tree or ZIP file for training session");
+		JMenuItem menuItem = new JMenuItem(openAction);
+		
 		menu.add(menuItem);
 
-		menuItem = new JMenuItem("Quit");
+		menuItem = new JMenuItem(quitAction);
 		menuItem.setMnemonic(KeyEvent.VK_B);
 		menu.add(menuItem);
 
@@ -138,6 +150,12 @@ public class Gui {
 
 		f.pack();
 		f.setVisible(true);
+	Timer timer = new Timer(3000, timerAction);
+	timer.start();
+	}
+	
+	
+	public void playSound() {
 		try {
 			SoundUtility.playSound(new File(
 					"src/test/resources/bc/animals/fooduck/answer.wav"));

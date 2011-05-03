@@ -1,4 +1,4 @@
-package com.clementscode.swing;
+package com.clementscode.mmi.swing;
 
 import java.awt.event.ActionEvent;
 

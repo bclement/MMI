@@ -1,4 +1,4 @@
-package com.clementscode.swing;
+package com.clementscode.mmi.swing;
 
 public class Mediator {
 	private Gui gui;
