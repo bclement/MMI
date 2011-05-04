@@ -1,8 +1,6 @@
 package com.clementscode.mmi.swing;
 
 import java.awt.BorderLayout;
-import java.awt.GraphicsConfiguration;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +18,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
 import org.apache.commons.logging.Log;
@@ -32,18 +29,8 @@ import com.clementscode.mmi.sound.SoundUtility;
 import com.clementscode.mmi.util.Shuffler;
 
 public class Gui {
-	public static void main(String[] arg) {
-		try {
-			new Gui().run(null);
-		} catch (Exception bland) {
-			bland.printStackTrace();
-		}
-	}
 
 	private ImageIcon imgIconCenter;
-	private String pathA;
-	private String pathB;
-	private String path;
 	private JButton centerButton;
 	private Queue<CategoryItem> itemQueue = null;
 	private Session session = null;
@@ -51,8 +38,8 @@ public class Gui {
 	protected Log log = LogFactory.getLog(this.getClass());
 	private JCheckBox attending;
 	private JFrame frame;
-	private String frameTitle="Andrea's MMI: ";
-	
+	private String frameTitle = "Andrea's MMI: ";
+
 	public void run(Session session) {
 
 		if (null != session) {
@@ -64,20 +51,17 @@ public class Gui {
 			}
 			itemQueue = new ConcurrentLinkedQueue<CategoryItem>();
 			for (CategoryItem item : copy) {
-				System.out.println(String.format(
-						"item=%s, t1=%d, t2=%d, prompt=%s", item,
-						session.getTimeDelayPrompt(),
-						session.getTimeDelayAnswer(), session.getPrompt()));
+				// System.out.println(String.format(
+				// "item=%s, t1=%d, t2=%d, prompt=%s", item,
+				// session.getTimeDelayPrompt(),
+				// session.getTimeDelayAnswer(), session.getPrompt()));
 				itemQueue.add(item);
 			}
 		}
 
 		Mediator mediator = new Mediator(this);
-		pathA = "src/test/resources/bc/animals/fooduck/fooduck.gif";
-		pathB = "src/test/resources/bc/food/foobar/redbar.jpg";
-		path = pathA;
 
-		// TODO: Internationalize the strings....
+		// TODO: Externalize the strings....
 		Action attendingAction = new ActionRecorder("Attending", null,
 				"Was the child looking at the prompter?", new Integer(
 						KeyEvent.VK_L), Mediator.ATTENDING, mediator);
@@ -91,16 +75,16 @@ public class Gui {
 				"Child answered anytime after the answer audio?", new Integer(
 						KeyEvent.VK_L), Mediator.MODELING, mediator);
 		Action noAnswerAction = new ActionRecorder("No Answer", null,
-				"The child did not answer?", new Integer(KeyEvent.VK_L), Mediator.NO_ANSWER,
-				mediator);
+				"The child did not answer?", new Integer(KeyEvent.VK_L),
+				Mediator.NO_ANSWER, mediator);
 
 		Action quitAction = new ActionRecorder("Quit", null,
-				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), Mediator.QUIT,
-				mediator);
+				"Quit (Exit) the program", new Integer(KeyEvent.VK_L),
+				Mediator.QUIT, mediator);
 
 		Action timerAction = new ActionRecorder("Timer (Swing)", null,
-				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), Mediator.TIMER,
-				mediator);
+				"Quit (Exit) the program", new Integer(KeyEvent.VK_L),
+				Mediator.TIMER, mediator);
 
 		Action openAction = new ActionRecorder("Open...", null,
 				"Open directory tree or ZIP file for training session",
@@ -108,11 +92,9 @@ public class Gui {
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
-		JButton b = new JButton("North");
-		// panel.add(b, BorderLayout.NORTH);
-		b = new JButton("South");
+
 		JPanel southPanel = new JPanel();
-		 attending = new JCheckBox(attendingAction);// ""
+		attending = new JCheckBox(attendingAction);
 		southPanel.add(attending);
 		JButton responseButton = new JButton(independentAction);
 		southPanel.add(responseButton);
@@ -130,17 +112,22 @@ public class Gui {
 		// prompt but before the answer), modeling (child answered anytime after
 		// the answer audio) or the child did not answer.
 		panel.add(southPanel, BorderLayout.SOUTH);
-		b = new JButton("EAST");
-		// panel.add(b,BorderLayout.EAST);
-		b = new JButton("West");
-		// panel.add(b,BorderLayout.WEST);
+	
 
-		path = pathA;
-		imgIconCenter = new ImageIcon(path);
+		CategoryItem first = itemQueue.remove();
+		try {
+			imgIconCenter = new ImageIcon(first.getImgFile().getCanonicalPath());
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
 		centerButton = new JButton(imgIconCenter);
 		panel.add(centerButton, BorderLayout.CENTER);
 
-		frame = new JFrame(frameTitle+String.format("%d of %d", session.getItems().length, session.getItems().length));
+		// TODO: Check to see if there's a logic bug here....
+		frame = new JFrame(frameTitle
+				+ String.format("%d of %d", session.getItems().length - 1,
+						session.getItems().length));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(panel);
 
@@ -152,8 +139,6 @@ public class Gui {
 		// Build the first menu.
 		JMenu menu = new JMenu("File");
 		menu.setMnemonic(KeyEvent.VK_A);
-		menu.getAccessibleContext().setAccessibleDescription(
-				"The only menu in this program that has menu items");
 		menuBar.add(menu);
 
 		// a group of JMenuItems
@@ -184,8 +169,8 @@ public class Gui {
 
 		frame.pack();
 		frame.setVisible(true);
-		
-	timer = new Timer(session.getTimeDelayAnswer(), timerAction);
+
+		timer = new Timer(session.getTimeDelayAnswer(), timerAction);
 		timer.setInitialDelay(session.getTimeDelayPrompt());
 		timer.setRepeats(true);
 		timer.start();
@@ -194,7 +179,7 @@ public class Gui {
 	public void playSound(File file) {
 		try {
 			SoundUtility.playSound(file);
-					//"src/test/resources/bc/animals/fooduck/answer.wav"));
+			// "src/test/resources/bc/animals/fooduck/answer.wav"));
 		} catch (UnsupportedAudioFileException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -203,13 +188,17 @@ public class Gui {
 			e.printStackTrace();
 		}
 	}
-	
-	public Queue<CategoryItem> getItemQueue() { return itemQueue; }
+
+	public Queue<CategoryItem> getItemQueue() {
+		return itemQueue;
+	}
 
 	public void switchImage(File file) {
-		
+
 		try {
-			frame.setTitle(frameTitle+String.format("%d of %d",itemQueue.size()+1, session.getItems().length));
+			frame.setTitle(frameTitle
+					+ String.format("%d of %d", itemQueue.size() + 1,
+							session.getItems().length));
 			centerButton.setIcon(new ImageIcon(file.getCanonicalPath()));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
