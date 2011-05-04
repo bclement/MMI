@@ -29,7 +29,6 @@ import com.clementscode.mmi.sound.SoundUtility;
 import com.clementscode.mmi.util.Shuffler;
 
 public class Gui {
-
 	private ImageIcon imgIconCenter;
 	private JButton centerButton;
 	private Queue<CategoryItem> itemQueue = null;
@@ -38,7 +37,7 @@ public class Gui {
 	protected Log log = LogFactory.getLog(this.getClass());
 	private JCheckBox attending;
 	private JFrame frame;
-	private String frameTitle = "Andrea's MMI: ";
+	private String frameTitle = Messages.getString("Gui.FrameTitle"); //$NON-NLS-1$
 
 	public void run(Session session) {
 
@@ -51,43 +50,49 @@ public class Gui {
 			}
 			itemQueue = new ConcurrentLinkedQueue<CategoryItem>();
 			for (CategoryItem item : copy) {
-				// System.out.println(String.format(
-				// "item=%s, t1=%d, t2=%d, prompt=%s", item,
-				// session.getTimeDelayPrompt(),
-				// session.getTimeDelayAnswer(), session.getPrompt()));
+				// TODO: Is there a collections add all I could use here?
 				itemQueue.add(item);
 			}
 		}
 
 		Mediator mediator = new Mediator(this);
+		JFrame progressBarFrame=new ProgressBarFrame(mediator);
+		mediator.setProgressBarFrame(progressBarFrame);
 
-		// TODO: Externalize the strings....
-		Action attendingAction = new ActionRecorder("Attending", null,
-				"Was the child looking at the prompter?", new Integer(
+		Action attendingAction = new ActionRecorder(
+				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
+				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_L), Mediator.ATTENDING, mediator);
-		Action independentAction = new ActionRecorder("Independent", null,
-				"Child answered before the prompt audio?", new Integer(
+		Action independentAction = new ActionRecorder(
+				Messages.getString("Gui.Independent"), null, //$NON-NLS-1$
+				Messages.getString("Gui.IndependentDescription"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_L), Mediator.INDEPENDENT, mediator);
-		Action verbalAction = new ActionRecorder("Verbal", null,
-				"Child answered after the prompt but before the answer?",
+		Action verbalAction = new ActionRecorder(
+				Messages.getString("Gui.Verbal"), null, //$NON-NLS-1$
+				Messages.getString("Gui.VerbalDescription"), //$NON-NLS-1$
 				new Integer(KeyEvent.VK_L), Mediator.VERBAL, mediator);
-		Action modelingAction = new ActionRecorder("Modeling", null,
-				"Child answered anytime after the answer audio?", new Integer(
+		Action modelingAction = new ActionRecorder(
+				Messages.getString("Gui.Modeling"), null, //$NON-NLS-1$
+				Messages.getString("Gui.ModelingDescriptin"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_L), Mediator.MODELING, mediator);
-		Action noAnswerAction = new ActionRecorder("No Answer", null,
-				"The child did not answer?", new Integer(KeyEvent.VK_L),
+		Action noAnswerAction = new ActionRecorder(
+				Messages.getString("Gui.NoAnswer"), null, //$NON-NLS-1$
+				Messages.getString("Gui.NoAnswerDescription"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
 				Mediator.NO_ANSWER, mediator);
 
-		Action quitAction = new ActionRecorder("Quit", null,
-				"Quit (Exit) the program", new Integer(KeyEvent.VK_L),
+		Action quitAction = new ActionRecorder(
+				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
+				Messages.getString("Gui.QuitDescriptino"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
 				Mediator.QUIT, mediator);
 
-		Action timerAction = new ActionRecorder("Timer (Swing)", null,
-				"Quit (Exit) the program", new Integer(KeyEvent.VK_L),
+		Action timerAction = new ActionRecorder(
+				Messages.getString("Gui.TimerSwing"), null, //$NON-NLS-1$
+				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
 				Mediator.TIMER, mediator);
 
-		Action openAction = new ActionRecorder("Open...", null,
-				"Open directory tree or ZIP file for training session",
+		Action openAction = new ActionRecorder(
+				Messages.getString("Gui.Open"), null, //$NON-NLS-1$
+				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
 				new Integer(KeyEvent.VK_L), Mediator.OPEN, mediator);
 
 		JPanel panel = new JPanel();
@@ -112,13 +117,14 @@ public class Gui {
 		// prompt but before the answer), modeling (child answered anytime after
 		// the answer audio) or the child did not answer.
 		panel.add(southPanel, BorderLayout.SOUTH);
-	
 
 		CategoryItem first = itemQueue.remove();
 		try {
 			imgIconCenter = new ImageIcon(first.getImgFile().getCanonicalPath());
 		} catch (IOException e) {
-
+			log.error(
+					"Odd, this error should not happen.  Can't find the first image",
+					e);
 			e.printStackTrace();
 		}
 		centerButton = new JButton(imgIconCenter);
@@ -126,7 +132,7 @@ public class Gui {
 
 		// TODO: Check to see if there's a logic bug here....
 		frame = new JFrame(frameTitle
-				+ String.format("%d of %d", session.getItems().length - 1,
+				+ String.format("%d of %d", session.getItems().length - 1, //$NON-NLS-1$
 						session.getItems().length));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(panel);
@@ -137,7 +143,7 @@ public class Gui {
 		JMenuBar menuBar = new JMenuBar();
 
 		// Build the first menu.
-		JMenu menu = new JMenu("File");
+		JMenu menu = new JMenu(Messages.getString("Gui.File")); //$NON-NLS-1$
 		menu.setMnemonic(KeyEvent.VK_A);
 		menuBar.add(menu);
 
@@ -152,7 +158,7 @@ public class Gui {
 
 		menuBar.add(menu);
 
-		JMenu buttonMenu = new JMenu("Buttons");
+		JMenu buttonMenu = new JMenu(Messages.getString("Gui.Buttons")); //$NON-NLS-1$
 		menuItem = new JMenuItem(attendingAction);
 		buttonMenu.add(menuItem);
 		menuItem = new JMenuItem(independentAction);
@@ -197,7 +203,7 @@ public class Gui {
 
 		try {
 			frame.setTitle(frameTitle
-					+ String.format("%d of %d", itemQueue.size() + 1,
+					+ String.format("%d of %d", itemQueue.size() + 1, //$NON-NLS-1$
 							session.getItems().length));
 			centerButton.setIcon(new ImageIcon(file.getCanonicalPath()));
 		} catch (IOException e) {

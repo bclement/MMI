@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import javax.swing.JFrame;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -119,6 +121,11 @@ public class Mediator {
 			gui.playSound(item.getAudio());
 			gui.getTimer().stop();
 		}
+	}
+
+	public void setProgressBarFrame(JFrame progressBarFrame) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
