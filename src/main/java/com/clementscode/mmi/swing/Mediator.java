@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.swing.JFrame;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,6 +37,7 @@ public class Mediator {
 	public static final int QUIT = 5;
 	public static final int TIMER = 6;
 	public static final int OPEN = 7;
+	public static final int CRUD = 8;
 	protected Log log = LogFactory.getLog(this.getClass());
 	private Gui gui;
 	private boolean playPrompt = true;
@@ -80,6 +79,10 @@ public class Mediator {
 		case QUIT:
 			System.exit(0);
 			break;
+		case CRUD:
+			new CrudFrame(this);
+			gui.setVisble(false);
+			break;
 		case TIMER:
 			timer();
 			break;
@@ -88,23 +91,26 @@ public class Mediator {
 		}
 		if (hit) {
 			if (gui.getItemQueue().size() == 0) {
-				
+				// TODO: Have filename come from session
+				String fileName = "/tmp/brian.csv";
 				try {
-					File csvFile = new File("/tmp/brian.csv");
+					File csvFile = new File(fileName);
 					CSVWriter csvWriter = new CSVWriter(new FileWriter(csvFile));
 					SessionData data = collector.getData();
 					data.write(csvWriter);
 					csvWriter.close();
 					System.out.println("Wrote to " + csvFile);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
+					log.error(String.format(
+							"Probme writting stats to file='%s'", fileName), e);
 					e.printStackTrace();
 				}
-				
+
 				System.exit(0);
 			} else {
 				item = gui.getItemQueue().remove();
 				gui.switchImage(item.getImgFile());
+				// TODO: There may be different times between sessions....
 				gui.getTimer().start();
 			}
 		}
@@ -121,11 +127,6 @@ public class Mediator {
 			gui.playSound(item.getAudio());
 			gui.getTimer().stop();
 		}
-	}
-
-	public void setProgressBarFrame(JFrame progressBarFrame) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

@@ -56,28 +56,27 @@ public class Gui {
 		}
 
 		Mediator mediator = new Mediator(this);
-		JFrame progressBarFrame=new ProgressBarFrame(mediator);
-		mediator.setProgressBarFrame(progressBarFrame);
 
+		// TODO: Fix the hot keys!
 		Action attendingAction = new ActionRecorder(
 				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
 				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_L), Mediator.ATTENDING, mediator);
+						KeyEvent.VK_F1), Mediator.ATTENDING, mediator);
 		Action independentAction = new ActionRecorder(
 				Messages.getString("Gui.Independent"), null, //$NON-NLS-1$
 				Messages.getString("Gui.IndependentDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_L), Mediator.INDEPENDENT, mediator);
+						KeyEvent.VK_F2), Mediator.INDEPENDENT, mediator);
 		Action verbalAction = new ActionRecorder(
 				Messages.getString("Gui.Verbal"), null, //$NON-NLS-1$
 				Messages.getString("Gui.VerbalDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_L), Mediator.VERBAL, mediator);
+				new Integer(KeyEvent.VK_F3), Mediator.VERBAL, mediator);
 		Action modelingAction = new ActionRecorder(
 				Messages.getString("Gui.Modeling"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ModelingDescriptin"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_L), Mediator.MODELING, mediator);
+						KeyEvent.VK_F4), Mediator.MODELING, mediator);
 		Action noAnswerAction = new ActionRecorder(
 				Messages.getString("Gui.NoAnswer"), null, //$NON-NLS-1$
-				Messages.getString("Gui.NoAnswerDescription"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
+				Messages.getString("Gui.NoAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
 				Mediator.NO_ANSWER, mediator);
 
 		Action quitAction = new ActionRecorder(
@@ -94,6 +93,11 @@ public class Gui {
 				Messages.getString("Gui.Open"), null, //$NON-NLS-1$
 				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
 				new Integer(KeyEvent.VK_L), Mediator.OPEN, mediator);
+
+		Action crudAction = new ActionRecorder(
+				Messages.getString("Gui.Crud"), null, //$NON-NLS-1$
+				Messages.getString("Gui.CrudDescription"), //$NON-NLS-1$
+				new Integer(KeyEvent.VK_L), Mediator.CRUD, mediator);
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
@@ -152,6 +156,9 @@ public class Gui {
 
 		menu.add(menuItem);
 
+		menuItem = new JMenuItem(crudAction);
+		menu.add(menuItem);
+
 		menuItem = new JMenuItem(quitAction);
 		menuItem.setMnemonic(KeyEvent.VK_B);
 		menu.add(menuItem);
@@ -173,6 +180,8 @@ public class Gui {
 		menuBar.add(buttonMenu);
 		frame.setJMenuBar(menuBar);
 
+		// TODO: Size the frame to the whole screen or the size needed for the
+		// biggest picture...
 		frame.pack();
 		frame.setVisible(true);
 
@@ -187,10 +196,10 @@ public class Gui {
 			SoundUtility.playSound(file);
 			// "src/test/resources/bc/animals/fooduck/answer.wav"));
 		} catch (UnsupportedAudioFileException e) {
-			// TODO Auto-generated catch block
+			log.error("Problem with playSound: " + file, e);
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			log.error("Problem with playSound: " + file, e);
 			e.printStackTrace();
 		}
 	}
@@ -207,7 +216,9 @@ public class Gui {
 							session.getItems().length));
 			centerButton.setIcon(new ImageIcon(file.getCanonicalPath()));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			log.error(
+					String.format("Problem switching image to file='%s'", file),
+					e);
 			e.printStackTrace();
 		}
 	}
@@ -234,5 +245,10 @@ public class Gui {
 
 	public void setAttending(JCheckBox attending) {
 		this.attending = attending;
+	}
+
+	public void setVisble(boolean b) {
+		frame.setVisible(b);
+
 	}
 }
