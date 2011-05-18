@@ -2,7 +2,10 @@ package com.clementscode.mmi.swing;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -10,7 +13,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-public class CrudFrame extends JFrame {
+public class CrudFrame extends JFrame implements ActionListener {
 
 	/**
 	 * Too lazy to learn Matisse http://netbeans.org/features/java/swing.html
@@ -23,8 +26,18 @@ public class CrudFrame extends JFrame {
 	private JTextField tfDelayForPrompt;
 	private JTextField tfDelayForAnswer;
 	private JPanel mainPanel;
+	private JPanel diyTable;
+	private JScrollPane scrollPane;
 
-	public CrudFrame(Mediator mediator) {
+	public static void main(String[] args) {
+		try {
+			CrudFrame crudFrame = new CrudFrame();
+		} catch (Exception bland) {
+			bland.printStackTrace();
+		}
+	}
+
+	public CrudFrame() {
 		super("Cread Read Update Delete utility....");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainPanel = new JPanel();
@@ -59,8 +72,18 @@ public class CrudFrame extends JFrame {
 	}
 
 	private JScrollPane createDiyTableScrollPane() {
-		// TODO Auto-generated method stub
-		return null;
+		diyTable = new JPanel();
+		diyTable.setLayout(new GridLayout(0, 1)); // one column
+		for (int i = 0; i < 5; i++) {
+			JButton b = new JButton("Test " + i);
+			b.addActionListener(this);
+			diyTable.add(b);
+		}
+		scrollPane = new JScrollPane(diyTable,
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
+		return scrollPane;
 	}
 
 	private JScrollPane createTableScrollPane() {
@@ -81,6 +104,17 @@ public class CrudFrame extends JFrame {
 		JScrollPane scrollPane = new JScrollPane(table);
 		table.setFillsViewportHeight(true);
 		return scrollPane;
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		JButton b = new JButton("Test " + new java.util.Date());
+		b.addActionListener(this);
+		diyTable.add(b);
+		// diyTable.invalidate();
+		// scrollPane.invalidate();
+		// scrollPane.repaint();
+		scrollPane.revalidate();
+		// this.pack();
 	}
 
 }

@@ -6,6 +6,11 @@
 	"items":
 		[
 			"animals/fooduck/fooduck.gif",
+			"animals/fooduck/fooduck.gif",
+			"animals/fooduck/fooduck.gif",
+			"animals/fooduck/fooduck.gif",
+			"animals/fooduck/fooduck.gif",
+			"animals/fooduck/fooduck.gif",
 			"animals/fooduck/fooduck.jpg",
 			"animals/fooduck/fooduck.png",
 			"food/foobar/bluebar.jpg",

@@ -155,10 +155,9 @@ public class Gui {
 		JMenuItem menuItem = new JMenuItem(openAction);
 
 		menu.add(menuItem);
-
-		menuItem = new JMenuItem(crudAction);
-		menu.add(menuItem);
-
+		/*
+		 * menuItem = new JMenuItem(crudAction); menu.add(menuItem);
+		 */
 		menuItem = new JMenuItem(quitAction);
 		menuItem.setMnemonic(KeyEvent.VK_B);
 		menu.add(menuItem);

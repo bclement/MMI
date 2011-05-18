@@ -79,10 +79,10 @@ public class Mediator {
 		case QUIT:
 			System.exit(0);
 			break;
-		case CRUD:
-			new CrudFrame(this);
-			gui.setVisble(false);
-			break;
+		// case CRUD:
+		// new CrudFrame(this);
+		// gui.setVisble(false);
+		// break;
 		case TIMER:
 			timer();
 			break;
