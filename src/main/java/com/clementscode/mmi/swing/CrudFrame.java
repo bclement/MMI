@@ -75,9 +75,10 @@ public class CrudFrame extends JFrame implements ActionListener {
 		diyTable = new JPanel();
 		diyTable.setLayout(new GridLayout(0, 1)); // one column
 		for (int i = 0; i < 5; i++) {
-			JButton b = new JButton("Test " + i);
-			b.addActionListener(this);
-			diyTable.add(b);
+			// JButton b = new JButton("Test " + i);
+			// b.addActionListener(this);
+			// diyTable.add(b);
+			diyTable.add(new GuiForCategoryItem(this));
 		}
 		scrollPane = new JScrollPane(diyTable,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
