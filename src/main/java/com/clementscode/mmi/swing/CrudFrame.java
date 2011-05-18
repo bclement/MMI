@@ -52,6 +52,18 @@ public class CrudFrame extends JFrame {
 		gridPanel.add(new LabelAndField("Delay for Answer:", tfDelayForAnswer));
 		topPanel.add(gridPanel, BorderLayout.SOUTH);
 
+		JScrollPane scrollPane = createDiyTableScrollPane();
+		mainPanel.add(scrollPane, BorderLayout.SOUTH);
+		pack();
+		setVisible(true);
+	}
+
+	private JScrollPane createDiyTableScrollPane() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private JScrollPane createTableScrollPane() {
 		String[] columnNames = { "First Name", "Last Name", "Sport",
 				"# of Years", "Vegetarian" };
 
@@ -68,9 +80,7 @@ public class CrudFrame extends JFrame {
 		final JTable table = new JTable(data, columnNames);
 		JScrollPane scrollPane = new JScrollPane(table);
 		table.setFillsViewportHeight(true);
-		mainPanel.add(scrollPane, BorderLayout.SOUTH);
-		pack();
-		setVisible(true);
+		return scrollPane;
 	}
 
 }
