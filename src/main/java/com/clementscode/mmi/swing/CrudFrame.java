@@ -49,17 +49,17 @@ public class CrudFrame extends JFrame implements ActionListener {
 		mainPanel.add(topPanel, BorderLayout.NORTH);
 
 		topPanel.setLayout(new BorderLayout());
-		tfName = new JTextField();
+		tfName = new JTextField(60);
 		topPanel.add(new LabelAndField("Name: ", tfName), BorderLayout.NORTH);
 		tfDescription = new JTextArea(5, 60);
 		topPanel.add(new LabelAndField("Description:", tfDescription),
 				BorderLayout.CENTER);
-		tfShuffleCount = new JTextField();
+		tfShuffleCount = new JTextField("1");
 		JPanel gridPanel = new JPanel();
 		gridPanel.setLayout(new GridLayout(0, 1));
 		gridPanel.add(new LabelAndField("Shuffle Count: ", tfShuffleCount));
-		tfDelayForPrompt = new JTextField();
-		tfDelayForAnswer = new JTextField();
+		tfDelayForPrompt = new JTextField(5);
+		tfDelayForAnswer = new JTextField(5);
 		gridPanel
 				.add(new LabelAndField("Delay for prompt: ", tfDelayForPrompt));
 		gridPanel.add(new LabelAndField("Delay for Answer:", tfDelayForAnswer));

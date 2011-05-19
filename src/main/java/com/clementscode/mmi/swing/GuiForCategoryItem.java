@@ -3,11 +3,13 @@ package com.clementscode.mmi.swing;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class GuiForCategoryItem extends JPanel implements ActionListener {
@@ -21,22 +23,26 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 	public GuiForCategoryItem(ActionListener al) {
 		super();
 		this.actionListender = al;
-		tfRepeatCount = new JTextField();
+		tfRepeatCount = new JTextField("1");
 		add(new LabelAndField("Repeats: ", tfRepeatCount));
-		tfImageFileName = new JTextField();
+		tfImageFileName = new JTextField(12);
 		add(new LabelAndField("Image:", tfImageFileName));
 		imageIcon = new ImageIcon();
 		add(new JButton(imageIcon));
 		JButton browse = new JButton("Browse...");
 		browse.addActionListener(this);
 		add(browse);
-		JTextField tfAudioFileName = new JTextField();
+		JTextField tfAudioFileName = new JTextField(12);
 		add(new LabelAndField("Audio:", tfAudioFileName));
 		browse = new JButton("Browse...");
 		browse.addActionListener(this);
 		add(browse);
 		addButton("Add Another");
 		addButton("Delete");
+
+		TitledBorder title;
+		title = BorderFactory.createTitledBorder("title");
+		setBorder(title);
 	}
 
 	private void addButton(String string) {
