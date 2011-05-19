@@ -55,7 +55,7 @@ public class Gui {
 			}
 		}
 
-		Mediator mediator = new Mediator(this);
+		MediatorListener mediator = new Mediator(this);
 
 		// TODO: Fix the hot keys!
 		Action attendingAction = new ActionRecorder(

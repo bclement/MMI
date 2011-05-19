@@ -14,12 +14,12 @@ public class ActionRecorder extends AbstractAction {
 	 */
 	private static final long serialVersionUID = 8924752985309017175L;
 	private String text;
-	private Mediator mediator;
+	private MediatorListener mediator;
 	private int action;
 	protected Log log = LogFactory.getLog(this.getClass());
 
 	public ActionRecorder(String text, ImageIcon icon, String desc,
-			Integer mnemonic, int action, Mediator mediator) {
+			Integer mnemonic, int action, MediatorListener mediator) {
 		super(text, icon);
 		putValue(SHORT_DESCRIPTION, desc);
 		putValue(MNEMONIC_KEY, mnemonic);
@@ -36,11 +36,11 @@ public class ActionRecorder extends AbstractAction {
 
 	}
 
-	public void setMediator(Mediator mediator) {
+	public void setMediator(MediatorListener mediator) {
 		this.mediator = mediator;
 	}
 
-	public Mediator getMediator() {
+	public MediatorListener getMediator() {
 		return mediator;
 	}
 }

@@ -28,7 +28,7 @@ import com.clementscode.mmi.res.CategoryItem;
  </pre>
 
  */
-public class Mediator {
+public class Mediator implements MediatorListener {
 	public static final int ATTENDING = 0;
 	public static final int INDEPENDENT = 1;
 	public static final int VERBAL = 2;
@@ -51,6 +51,9 @@ public class Mediator {
 		item = gui.getItemQueue().remove();
 	}
 
+	/* (non-Javadoc)
+	 * @see com.clementscode.mmi.swing.MediatorListener#execute(int)
+	 */
 	public void execute(int action) {
 		boolean hit = false;
 		switch (action) {

@@ -41,7 +41,7 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 		addButton("Delete");
 
 		TitledBorder title;
-		title = BorderFactory.createTitledBorder("title");
+		title = BorderFactory.createTitledBorder("Category Item");
 		setBorder(title);
 	}
 

@@ -4,12 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
-import javax.swing.JButton;
+import javax.swing.Action;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -67,14 +70,54 @@ public class CrudFrame extends JFrame implements ActionListener {
 
 		JScrollPane scrollPane = createDiyTableScrollPane();
 		mainPanel.add(scrollPane, BorderLayout.SOUTH);
+		setupMenus();
 		pack();
 		setVisible(true);
+	}
+
+	private void setupMenus() {
+
+		// TODO: Different portable strings
+		// TODO: fill in the mediator stuff!
+
+		MediatorListener mediator = new MediatorForCrud(this);
+
+		Action openAction = new ActionRecorder(
+				Messages.getString("Gui.Open"), null, //$NON-NLS-1$
+				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
+				new Integer(KeyEvent.VK_L), Mediator.OPEN, mediator);
+
+		Action quitAction = new ActionRecorder(
+				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
+				Messages.getString("Gui.QuitDescriptino"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
+				Mediator.QUIT, mediator);
+
+		// http://download.oracle.com/javase/tutorial/uiswing/components/menu.html
+		// http://download.oracle.com/javase/tutorial/uiswing/misc/action.html
+		// Create the menu bar.
+		JMenuBar menuBar = new JMenuBar();
+
+		// Build the first menu.
+		JMenu menu = new JMenu(Messages.getString("Gui.File")); //$NON-NLS-1$
+		menu.setMnemonic(KeyEvent.VK_A);
+		menuBar.add(menu);
+		// a group of JMenuItems
+		JMenuItem menuItem = new JMenuItem(openAction);
+
+		menu.add(menuItem);
+		menuItem = new JMenuItem(quitAction);
+		menuItem.setMnemonic(KeyEvent.VK_B);
+		menu.add(menuItem);
+
+		menuBar.add(menu);
+		this.setJMenuBar(menuBar);
+
 	}
 
 	private JScrollPane createDiyTableScrollPane() {
 		diyTable = new JPanel();
 		diyTable.setLayout(new GridLayout(0, 1)); // one column
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 1; ++i) {
 			// JButton b = new JButton("Test " + i);
 			// b.addActionListener(this);
 			// diyTable.add(b);
@@ -87,30 +130,10 @@ public class CrudFrame extends JFrame implements ActionListener {
 		return scrollPane;
 	}
 
-	private JScrollPane createTableScrollPane() {
-		String[] columnNames = { "First Name", "Last Name", "Sport",
-				"# of Years", "Vegetarian" };
-
-		Object[][] data = {
-				{ "Kathy", "Smith", "Snowboarding", new Integer(5),
-						new Boolean(false) },
-				{ "John", "Doe", "Rowing", new Integer(3), new Boolean(true) },
-				{ "Sue", "Black", "Knitting", new Integer(2),
-						new Boolean(false) },
-				{ "Jane", "White", "Speed reading", new Integer(20),
-						new Boolean(true) },
-				{ "Joe", "Brown", "Pool", new Integer(10), new Boolean(false) } };
-
-		final JTable table = new JTable(data, columnNames);
-		JScrollPane scrollPane = new JScrollPane(table);
-		table.setFillsViewportHeight(true);
-		return scrollPane;
-	}
-
 	public void actionPerformed(ActionEvent e) {
-		JButton b = new JButton("Test " + new java.util.Date());
-		b.addActionListener(this);
-		diyTable.add(b);
+
+		diyTable.add(new GuiForCategoryItem(this));
+
 		// diyTable.invalidate();
 		// scrollPane.invalidate();
 		// scrollPane.repaint();
