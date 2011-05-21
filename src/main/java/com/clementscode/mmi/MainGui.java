@@ -25,15 +25,15 @@ import com.clementscode.mmi.swing.Gui;
 public class MainGui {
 
 	// TODO: Get this out of the JAR file...
-	static String propFile = "config.properties";
+	public static String propFile = "config.properties";
 
 	// TODO: Get this from the file open menu!
 	// TODO: Change this to come from the current directory
 	static String confFile = "src/test/resources/session.txt";
 
-	static String sndKey = "snd.exts";
+	public static String sndKey = "snd.exts";
 
-	static String imgKey = "img.exts";
+	public static String imgKey = "img.exts";
 
 	public static void main(String[] args) throws Exception {
 		try {
@@ -46,8 +46,10 @@ public class MainGui {
 
 	public void run() throws Exception {
 		Properties props = new Properties();
-		InputStream in = getClass().getResourceAsStream(propFile);
-
+		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
+		// Do it this way and no relative path huha is needed.
+		InputStream in = this.getClass().getClassLoader()
+				.getResourceAsStream(MainGui.propFile);
 		props.load(new InputStreamReader(in));
 		String[] sndExts = props.getProperty(sndKey).split(",");
 

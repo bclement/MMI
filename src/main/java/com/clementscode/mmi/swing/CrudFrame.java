@@ -5,16 +5,31 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Properties;
 
 import javax.swing.Action;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+import org.codehaus.jackson.map.AnnotationIntrospector;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
+
+import com.clementscode.mmi.MainGui;
+import com.clementscode.mmi.res.Session;
+import com.clementscode.mmi.res.SessionConfig;
 
 public class CrudFrame extends JFrame implements ActionListener {
 
@@ -139,6 +154,49 @@ public class CrudFrame extends JFrame implements ActionListener {
 		// scrollPane.repaint();
 		scrollPane.revalidate();
 		// this.pack();
+	}
+
+	public void openSessionFile() {
+		File file;
+		JFileChooser chooser = new JFileChooser();
+		int returnVal = chooser.showOpenDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			file = chooser.getSelectedFile();
+			try {
+				readSessionFile(file);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this, String.format(
+						"Problem reading %s exception was %s", file, e));
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void readSessionFile(File file) throws Exception {
+		Properties props = new Properties();
+		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
+		// Do it this way and no relative path huha is needed.
+		InputStream in = this.getClass().getClassLoader()
+				.getResourceAsStream(MainGui.propFile);
+
+		props.load(new InputStreamReader(in));
+		String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
+
+		ObjectMapper mapper = new ObjectMapper();
+		AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+		mapper.getDeserializationConfig().withAnnotationIntrospector(
+				introspector);
+		mapper.getSerializationConfig()
+				.withAnnotationIntrospector(introspector);
+		SessionConfig config = mapper.readValue(new FileInputStream(file),
+				SessionConfig.class);
+		Session session = new Session(config, sndExts);
+		populateGui(session);
+	}
+
+	private void populateGui(Session session) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
