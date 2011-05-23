@@ -49,7 +49,7 @@ public class CrudFrame extends JFrame implements ActionListener {
 
 	public static void main(String[] args) {
 		try {
-			CrudFrame crudFrame = new CrudFrame();
+			new CrudFrame();
 		} catch (Exception bland) {
 			bland.printStackTrace();
 		}
@@ -102,6 +102,14 @@ public class CrudFrame extends JFrame implements ActionListener {
 				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
 				new Integer(KeyEvent.VK_L), Mediator.OPEN, mediator);
 
+		Action saveAction = new ActionRecorder("Save", null,
+				"Save the session.", new Integer(KeyEvent.VK_L), Mediator.SAVE,
+				mediator);
+
+		Action saveAsAction = new ActionRecorder("Save As...", null,
+				"Choose the file to Save the session.", new Integer(
+						KeyEvent.VK_L), Mediator.SAVE_AS, mediator);
+
 		Action quitAction = new ActionRecorder(
 				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
 				Messages.getString("Gui.QuitDescriptino"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
@@ -118,8 +126,14 @@ public class CrudFrame extends JFrame implements ActionListener {
 		menuBar.add(menu);
 		// a group of JMenuItems
 		JMenuItem menuItem = new JMenuItem(openAction);
-
 		menu.add(menuItem);
+
+		menuItem = new JMenuItem(saveAction);
+		menu.add(menuItem);
+
+		menuItem = new JMenuItem(saveAsAction);
+		menu.add(menuItem);
+
 		menuItem = new JMenuItem(quitAction);
 		menuItem.setMnemonic(KeyEvent.VK_B);
 		menu.add(menuItem);
@@ -195,8 +209,10 @@ public class CrudFrame extends JFrame implements ActionListener {
 	}
 
 	private void populateGui(Session session) {
-		// TODO Auto-generated method stub
-
+		tfName.setText(session.getName());
+		tfDescription.setText(session.getDescription());
+		tfDelayForAnswer.setText("" + session.getTimeDelayAnswer());
+		tfDelayForPrompt.setText("" + session.getTimeDelayPrompt());
 	}
 
 }

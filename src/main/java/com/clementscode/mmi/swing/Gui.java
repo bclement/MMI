@@ -94,10 +94,10 @@ public class Gui {
 				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
 				new Integer(KeyEvent.VK_L), Mediator.OPEN, mediator);
 
-		Action crudAction = new ActionRecorder(
-				Messages.getString("Gui.Crud"), null, //$NON-NLS-1$
-				Messages.getString("Gui.CrudDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_L), Mediator.CRUD, mediator);
+		// Action crudAction = new ActionRecorder(
+		//				Messages.getString("Gui.Crud"), null, //$NON-NLS-1$
+		//				Messages.getString("Gui.CrudDescription"), //$NON-NLS-1$
+		// new Integer(KeyEvent.VK_L), Mediator.CRUD, mediator);
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());

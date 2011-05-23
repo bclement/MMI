@@ -38,6 +38,8 @@ public class Mediator implements MediatorListener {
 	public static final int TIMER = 6;
 	public static final int OPEN = 7;
 	public static final int CRUD = 8;
+	public static final int SAVE_AS = 9;
+	public static final int SAVE = 10;
 	protected Log log = LogFactory.getLog(this.getClass());
 	private Gui gui;
 	private boolean playPrompt = true;
@@ -51,7 +53,9 @@ public class Mediator implements MediatorListener {
 		item = gui.getItemQueue().remove();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.clementscode.mmi.swing.MediatorListener#execute(int)
 	 */
 	public void execute(int action) {
