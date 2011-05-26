@@ -28,6 +28,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 
 import com.clementscode.mmi.MainGui;
+import com.clementscode.mmi.res.CategoryItem;
 import com.clementscode.mmi.res.Session;
 import com.clementscode.mmi.res.SessionConfig;
 
@@ -205,14 +206,20 @@ public class CrudFrame extends JFrame implements ActionListener {
 		SessionConfig config = mapper.readValue(new FileInputStream(file),
 				SessionConfig.class);
 		Session session = new Session(config, sndExts);
-		populateGui(session);
+		String sessionPath = file.getParent();
+		populateGui(session, sessionPath);
 	}
 
-	private void populateGui(Session session) {
+	private void populateGui(Session session, String sessionPath) {
 		tfName.setText(session.getName());
 		tfDescription.setText(session.getDescription());
 		tfDelayForAnswer.setText("" + session.getTimeDelayAnswer());
 		tfDelayForPrompt.setText("" + session.getTimeDelayPrompt());
+		CategoryItem[] items = session.getItems();
+		for (CategoryItem categoryItem : items) {
+			System.out.println("sessionPath=" + sessionPath);
+			System.out.println("categoryItem=" + categoryItem);
+		}
 	}
 
 }
