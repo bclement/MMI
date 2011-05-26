@@ -47,6 +47,7 @@ public class CrudFrame extends JFrame implements ActionListener {
 	private JPanel mainPanel;
 	private JPanel diyTable;
 	private JScrollPane scrollPane;
+	private GuiForCategoryItem firstCategoryItem;
 
 	public static void main(String[] args) {
 		try {
@@ -151,7 +152,8 @@ public class CrudFrame extends JFrame implements ActionListener {
 			// JButton b = new JButton("Test " + i);
 			// b.addActionListener(this);
 			// diyTable.add(b);
-			diyTable.add(new GuiForCategoryItem(this));
+			firstCategoryItem = new GuiForCategoryItem(this);
+			diyTable.add(firstCategoryItem);
 		}
 		scrollPane = new JScrollPane(diyTable,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
@@ -217,8 +219,15 @@ public class CrudFrame extends JFrame implements ActionListener {
 		tfDelayForPrompt.setText("" + session.getTimeDelayPrompt());
 		CategoryItem[] items = session.getItems();
 		for (CategoryItem categoryItem : items) {
-			System.out.println("sessionPath=" + sessionPath);
-			System.out.println("categoryItem=" + categoryItem);
+			// System.out.println("sessionPath=" + sessionPath);
+			// System.out.println("categoryItem=" + categoryItem);
+			if (!firstCategoryItem.isSet()) {
+				firstCategoryItem.setSet(true);
+				// TODO: Fill in....
+			} else {
+				// TODO: Create new one and add to GUI.
+			}
+
 		}
 	}
 

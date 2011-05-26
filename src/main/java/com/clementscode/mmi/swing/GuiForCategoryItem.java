@@ -117,4 +117,14 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 		return resizedImg;
 	}
 
+	private boolean set;
+
+	public boolean isSet() {
+		return set;
+	}
+
+	public void setSet(boolean set) {
+		this.set = set;
+	}
+
 }
