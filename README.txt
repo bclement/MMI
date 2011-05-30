@@ -9,8 +9,9 @@ with paths that were relative to the base directory of the maven project.
 
 
 TODO: 
-1) MainGui should size to the biggest image
+1) DONE: MainGui should size to the biggest image
 2) CrudFrame should populate the images and audio files in a session
 3) The menus should have shortcuts where needed
-4) JNLP the whole thing and make it so we can load session.zip files from HTTP
+4) Clean all TODOs from code
+5) JNLP the whole thing and make it so we can load session.zip files from HTTP
 

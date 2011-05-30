@@ -5,7 +5,6 @@ package com.clementscode.mmi;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
@@ -51,27 +50,6 @@ public class MainGui {
 		InputStream in = this.getClass().getClassLoader()
 				.getResourceAsStream(MainGui.propFile);
 		props.load(new InputStreamReader(in));
-		String[] sndExts = props.getProperty(sndKey).split(",");
-
-		ObjectMapper mapper = new ObjectMapper();
-		AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
-		mapper.getDeserializationConfig().withAnnotationIntrospector(
-				introspector);
-		mapper.getSerializationConfig()
-				.withAnnotationIntrospector(introspector);
-		SessionConfig config = mapper.readValue(new FileInputStream(new File(
-				confFile)), SessionConfig.class);
-		Session session = new Session(config, sndExts);
-		new Gui().run(session);
-	}
-
-	/**
-	 * @param args
-	 * @throws Exception
-	 */
-	public static void mainold(String[] args) throws Exception {
-		Properties props = new Properties();
-		props.load(new FileReader(new File(propFile)));
 		String[] sndExts = props.getProperty(sndKey).split(",");
 
 		ObjectMapper mapper = new ObjectMapper();

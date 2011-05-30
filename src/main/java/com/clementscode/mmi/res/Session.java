@@ -3,6 +3,7 @@
  */
 package com.clementscode.mmi.res;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 
@@ -88,6 +89,23 @@ public class Session {
 			rval[i] = new CategoryItem(img, getAudio(img));
 		}
 		return rval;
+	}
+
+	public Dimension getMaxDimensions() {
+		Dimension dim = null;
+		int mh = 0, mw = 0;
+		for (CategoryItem item : items) {
+			int h = item.getImg().getHeight();
+			int w = item.getImg().getWidth();
+			mh = mh < h ? h : mh;
+			mw = mw < w ? w : mw;
+		}
+		int tp = (int) (mh * 0.10);
+		mh += tp;
+		tp = (int) (mw * 0.10);
+		mw += tp;
+		dim = new Dimension(mw, mh);
+		return dim;
 	}
 
 	protected File getAudio(File img) {

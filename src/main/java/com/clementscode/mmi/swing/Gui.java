@@ -132,6 +132,7 @@ public class Gui {
 			e.printStackTrace();
 		}
 		centerButton = new JButton(imgIconCenter);
+		centerButton.setPreferredSize(session.getMaxDimensions());
 		panel.add(centerButton, BorderLayout.CENTER);
 
 		// TODO: Check to see if there's a logic bug here....
@@ -182,6 +183,7 @@ public class Gui {
 		// TODO: Size the frame to the whole screen or the size needed for the
 		// biggest picture...
 		frame.pack();
+
 		frame.setVisible(true);
 
 		timer = new Timer(session.getTimeDelayAnswer(), timerAction);
