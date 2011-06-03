@@ -14,4 +14,4 @@ TODO:
 3) The menus should have shortcuts where needed
 4) Clean all TODOs from code
 5) JNLP the whole thing and make it so we can load session.zip files from HTTP
-
+6) Build some sample datasets while testing on Windows boxes in the UNOmaha.edu user room
