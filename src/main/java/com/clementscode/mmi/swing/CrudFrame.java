@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.swing.Action;
@@ -34,9 +36,6 @@ import com.clementscode.mmi.res.SessionConfig;
 
 public class CrudFrame extends JFrame implements ActionListener {
 
-	/**
-	 * Too lazy to learn Matisse http://netbeans.org/features/java/swing.html
-	 */
 	private static final long serialVersionUID = -5629208181141679241L;
 	private JPanel topPanel;
 	private JTextField tfName;
@@ -48,6 +47,7 @@ public class CrudFrame extends JFrame implements ActionListener {
 	private JPanel diyTable;
 	private JScrollPane scrollPane;
 	private GuiForCategoryItem firstCategoryItem;
+	private List<GuiForCategoryItem> lstGuiForCategoryItems;
 
 	public static void main(String[] args) {
 		try {
@@ -59,6 +59,7 @@ public class CrudFrame extends JFrame implements ActionListener {
 
 	public CrudFrame() {
 		super("Cread Read Update Delete utility....");
+		lstGuiForCategoryItems = new ArrayList<GuiForCategoryItem>();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
@@ -154,17 +155,24 @@ public class CrudFrame extends JFrame implements ActionListener {
 			// diyTable.add(b);
 			firstCategoryItem = new GuiForCategoryItem(this);
 			diyTable.add(firstCategoryItem);
+			lstGuiForCategoryItems.add(firstCategoryItem);
 		}
+		// scrollPane = new JScrollPane(diyTable,
+		// JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+		// JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
 		scrollPane = new JScrollPane(diyTable,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
 		return scrollPane;
 	}
 
 	public void actionPerformed(ActionEvent e) {
 
-		diyTable.add(new GuiForCategoryItem(this));
+		GuiForCategoryItem g4ci = new GuiForCategoryItem(this);
+		lstGuiForCategoryItems.add(g4ci);
+		diyTable.add(g4ci);
 
 		// diyTable.invalidate();
 		// scrollPane.invalidate();
@@ -175,7 +183,10 @@ public class CrudFrame extends JFrame implements ActionListener {
 
 	public void openSessionFile() {
 		File file;
-		JFileChooser chooser = new JFileChooser();
+		// TODO: Remove hard coded directory.
+		// TODO: Get application to remember the last place we opened this...
+		JFileChooser chooser = new JFileChooser(new File(
+				"/Users/mgpayne/MMI/src/test/resources"));
 		int returnVal = chooser.showOpenDialog(this);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			file = chooser.getSelectedFile();
@@ -223,9 +234,13 @@ public class CrudFrame extends JFrame implements ActionListener {
 			// System.out.println("categoryItem=" + categoryItem);
 			if (!firstCategoryItem.isSet()) {
 				firstCategoryItem.setSet(true);
-				// TODO: Fill in....
+				firstCategoryItem.populate(categoryItem);
 			} else {
-				// TODO: Create new one and add to GUI.
+				GuiForCategoryItem g4ci = new GuiForCategoryItem(this);
+				g4ci.populate(categoryItem);
+				lstGuiForCategoryItems.add(g4ci);
+				diyTable.add(g4ci);
+				scrollPane.revalidate();
 			}
 
 		}

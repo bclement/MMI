@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -16,6 +17,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import com.clementscode.mmi.res.CategoryItem;
 
 public class GuiForCategoryItem extends JPanel implements ActionListener {
 
@@ -125,6 +128,19 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 
 	public void setSet(boolean set) {
 		this.set = set;
+	}
+
+	public void populate(CategoryItem categoryItem) {
+		try {
+			tfAudioFileName.setText(categoryItem.getAudio().getCanonicalPath());
+			tfImageFileName.setText(categoryItem.getImgFile()
+					.getCanonicalPath());
+			imageIcon.setImage(getScaledImage(categoryItem.getImg(), 32, 32));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 }
