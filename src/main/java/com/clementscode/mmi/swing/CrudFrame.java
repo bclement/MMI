@@ -6,8 +6,11 @@ import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -26,7 +29,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.AnnotationIntrospector;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 
@@ -52,6 +57,8 @@ public class CrudFrame extends JFrame {
 	private GuiForCategoryItem firstCategoryItem;
 	private List<GuiForCategoryItem> lstGuiForCategoryItems;
 
+	protected ObjectMapper mapper;
+
 	public static void main(String[] args) {
 		try {
 			new CrudFrame();
@@ -62,6 +69,14 @@ public class CrudFrame extends JFrame {
 
 	public CrudFrame() {
 		super("Cread Read Update Delete utility....");
+
+		mapper = new ObjectMapper();
+		AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+		mapper.getDeserializationConfig().withAnnotationIntrospector(
+				introspector);
+		mapper.getSerializationConfig()
+				.withAnnotationIntrospector(introspector);
+
 		lstGuiForCategoryItems = new ArrayList<GuiForCategoryItem>();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainPanel = new JPanel();
@@ -109,14 +124,14 @@ public class CrudFrame extends JFrame {
 		Action openAction = new ActionRecorder(
 				Messages.getString("Gui.Open"), null, //$NON-NLS-1$
 				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control F2"),
+				new Integer(KeyEvent.VK_L), KeyStroke
+						.getKeyStroke("control F2"),
 
 				Mediator.OPEN, mediator);
 
 		Action saveAction = new ActionRecorder("Save", null,
-				"Save the session.", new Integer(KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control F2"), Mediator.SAVE, mediator);
+				"Save the session.", new Integer(KeyEvent.VK_L), KeyStroke
+						.getKeyStroke("control F2"), Mediator.SAVE, mediator);
 
 		Action saveAsAction = new ActionRecorder("Save As...", null,
 				"Choose the file to Save the session.", new Integer(
@@ -205,23 +220,27 @@ public class CrudFrame extends JFrame {
 		Properties props = new Properties();
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader()
-				.getResourceAsStream(MainGui.propFile);
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream(
+				MainGui.propFile);
 
 		props.load(new InputStreamReader(in));
 		String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
 
-		ObjectMapper mapper = new ObjectMapper();
-		AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
-		mapper.getDeserializationConfig().withAnnotationIntrospector(
-				introspector);
-		mapper.getSerializationConfig()
-				.withAnnotationIntrospector(introspector);
 		SessionConfig config = mapper.readValue(new FileInputStream(file),
 				SessionConfig.class);
 		Session session = new Session(config, sndExts);
 		String sessionPath = file.getParent();
 		populateGui(session, sessionPath);
+	}
+
+	protected void writeSessionConfig(SessionConfig config, File file)
+			throws JsonGenerationException, JsonMappingException, IOException {
+		writeSessionConfig(config, new FileOutputStream(file));
+	}
+
+	protected void writeSessionConfig(SessionConfig config, OutputStream out)
+			throws JsonGenerationException, JsonMappingException, IOException {
+		mapper.writeValue(out, config);
 	}
 
 	private void populateGui(Session session, String sessionPath) {
