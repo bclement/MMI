@@ -236,12 +236,19 @@ public class CrudFrame extends JFrame implements ActionListener {
 				firstCategoryItem.setSet(true);
 				firstCategoryItem.populate(categoryItem);
 			} else {
-				GuiForCategoryItem g4ci = new GuiForCategoryItem(this);
-				lstGuiForCategoryItems.add(g4ci);
-				diyTable.add(g4ci);
+				final GuiForCategoryItem g4ci = new GuiForCategoryItem(this);
 				g4ci.populate(categoryItem);
-				diyTable.revalidate();
-				scrollPane.revalidate();
+				javax.swing.SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+
+						lstGuiForCategoryItems.add(g4ci);
+						diyTable.add(g4ci);
+
+						diyTable.revalidate();
+						scrollPane.revalidate();
+					}
+				});
+
 			}
 
 		}
