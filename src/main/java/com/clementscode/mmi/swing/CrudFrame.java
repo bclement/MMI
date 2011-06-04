@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -108,19 +109,27 @@ public class CrudFrame extends JFrame {
 		Action openAction = new ActionRecorder(
 				Messages.getString("Gui.Open"), null, //$NON-NLS-1$
 				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_L), Mediator.OPEN, mediator);
+				new Integer(KeyEvent.VK_L),
+				KeyStroke.getKeyStroke("control F2"),
+
+				Mediator.OPEN, mediator);
 
 		Action saveAction = new ActionRecorder("Save", null,
-				"Save the session.", new Integer(KeyEvent.VK_L), Mediator.SAVE,
-				mediator);
+				"Save the session.", new Integer(KeyEvent.VK_L),
+				KeyStroke.getKeyStroke("control F2"), Mediator.SAVE, mediator);
 
 		Action saveAsAction = new ActionRecorder("Save As...", null,
 				"Choose the file to Save the session.", new Integer(
-						KeyEvent.VK_L), Mediator.SAVE_AS, mediator);
+						KeyEvent.VK_L), KeyStroke.getKeyStroke("control F2"),
+				Mediator.SAVE_AS, mediator);
 
 		Action quitAction = new ActionRecorder(
 				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
-				Messages.getString("Gui.QuitDescriptino"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
+				Messages.getString("Gui.QuitDescriptino"), new Integer(
+						KeyEvent.VK_L),
+
+				KeyStroke.getKeyStroke("control F2"),
+				//$NON-NLS-1$
 				Mediator.QUIT, mediator);
 
 		// http://download.oracle.com/javase/tutorial/uiswing/components/menu.html

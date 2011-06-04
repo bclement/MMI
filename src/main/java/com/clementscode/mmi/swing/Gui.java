@@ -18,6 +18,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
 import org.apache.commons.logging.Log;
@@ -61,38 +62,44 @@ public class Gui {
 		Action attendingAction = new ActionRecorder(
 				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
 				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F1), Mediator.ATTENDING, mediator);
+						KeyEvent.VK_F1), KeyStroke.getKeyStroke("control F2"),
+				Mediator.ATTENDING, mediator);
 		Action independentAction = new ActionRecorder(
 				Messages.getString("Gui.Independent"), null, //$NON-NLS-1$
 				Messages.getString("Gui.IndependentDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F2), Mediator.INDEPENDENT, mediator);
+						KeyEvent.VK_F2), KeyStroke.getKeyStroke("control F2"),
+				Mediator.INDEPENDENT, mediator);
 		Action verbalAction = new ActionRecorder(
 				Messages.getString("Gui.Verbal"), null, //$NON-NLS-1$
 				Messages.getString("Gui.VerbalDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_F3), Mediator.VERBAL, mediator);
+				new Integer(KeyEvent.VK_F3),
+				KeyStroke.getKeyStroke("control F2"), Mediator.VERBAL, mediator);
 		Action modelingAction = new ActionRecorder(
 				Messages.getString("Gui.Modeling"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ModelingDescriptin"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F4), Mediator.MODELING, mediator);
+						KeyEvent.VK_F4), KeyStroke.getKeyStroke("control F2"),
+				Mediator.MODELING, mediator);
 		Action noAnswerAction = new ActionRecorder(
 				Messages.getString("Gui.NoAnswer"), null, //$NON-NLS-1$
 				Messages.getString("Gui.NoAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
-				Mediator.NO_ANSWER, mediator);
+				KeyStroke.getKeyStroke("control F2"), Mediator.NO_ANSWER,
+				mediator);
 
 		Action quitAction = new ActionRecorder(
 				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
 				Messages.getString("Gui.QuitDescriptino"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
-				Mediator.QUIT, mediator);
+				KeyStroke.getKeyStroke("control F2"), Mediator.QUIT, mediator);
 
 		Action timerAction = new ActionRecorder(
 				Messages.getString("Gui.TimerSwing"), null, //$NON-NLS-1$
 				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
-				Mediator.TIMER, mediator);
+				KeyStroke.getKeyStroke("control F2"), Mediator.TIMER, mediator);
 
 		Action openAction = new ActionRecorder(
 				Messages.getString("Gui.Open"), null, //$NON-NLS-1$
 				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_L), Mediator.OPEN, mediator);
+				new Integer(KeyEvent.VK_L),
+				KeyStroke.getKeyStroke("control F2"), Mediator.OPEN, mediator);
 
 		// Action crudAction = new ActionRecorder(
 		//				Messages.getString("Gui.Crud"), null, //$NON-NLS-1$
