@@ -232,7 +232,15 @@ public class CrudFrame extends JFrame {
 					.getText()));
 			config.setTimeDelayPrompt(Integer.parseInt(tfDelayForPrompt
 					.getText()));
+			int numComponents = diyTable.getComponentCount();
+			String[] items = new String[numComponents];
+			for (int n = 0; n < numComponents; ++n) {
+				GuiForCategoryItem comp = (GuiForCategoryItem) diyTable
+						.getComponent(n);
+				items[n] = comp.getImageFileName();
+			}
 
+			config.setItems(items);
 			try {
 				writeSessionConfig(config, file);
 			} catch (JsonGenerationException e) {

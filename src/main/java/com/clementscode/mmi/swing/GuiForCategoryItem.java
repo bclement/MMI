@@ -67,6 +67,10 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 		setBorder(title);
 	}
 
+	public String getImageFileName() {
+		return tfImageFileName.getText();
+	}
+
 	private void addButton(String text, String cmd) {
 		JButton b = new JButton(text);
 		Action actionForCategoryItemGui = new ActionForCategoryItemGui(cmd,
@@ -93,14 +97,16 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 			}
 		} else {
 
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = null;
 			FileNameExtensionFilter filter = null;
 			if (BROWSE_AUDIO_FILE.equals(e.getActionCommand())) {
 				filter = new FileNameExtensionFilter("WAV Sound clips only...",
 						"wav");
+				chooser = new JFileChooser(new File(tfAudioFileName.getText()));
 			} else if (BROWSE_IMAGE_FILE.equals(e.getActionCommand())) {
 				filter = new FileNameExtensionFilter("JPG & GIF Images", "jpg",
 						"gif");
+				chooser = new JFileChooser(new File(tfImageFileName.getText()));
 			}
 
 			chooser.setFileFilter(filter);

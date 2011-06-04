@@ -84,6 +84,7 @@ public class Mediator implements MediatorListener {
 			hit = true;
 			break;
 		case QUIT:
+			// TODO: Ask them if they want to save the file anyway....
 			System.exit(0);
 			break;
 		// case CRUD:
@@ -109,7 +110,7 @@ public class Mediator implements MediatorListener {
 					System.out.println("Wrote to " + csvFile);
 				} catch (IOException e) {
 					log.error(String.format(
-							"Probme writting stats to file='%s'", fileName), e);
+							"Problem writting stats to file='%s'", fileName), e);
 					e.printStackTrace();
 				}
 
