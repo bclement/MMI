@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -230,6 +231,11 @@ public class CrudFrame extends JFrame {
 		Session session = new Session(config, sndExts);
 		String sessionPath = file.getParent();
 		populateGui(session, sessionPath);
+	}
+
+	protected void writeSessionConfig(SessionConfig config, File file)
+			throws JsonGenerationException, JsonMappingException, IOException {
+		writeSessionConfig(config, new FileOutputStream(file));
 	}
 
 	protected void writeSessionConfig(SessionConfig config, OutputStream out)
