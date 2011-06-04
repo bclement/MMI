@@ -3,8 +3,6 @@ package com.clementscode.mmi.swing;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,9 +34,11 @@ import com.clementscode.mmi.res.CategoryItem;
 import com.clementscode.mmi.res.Session;
 import com.clementscode.mmi.res.SessionConfig;
 
-public class CrudFrame extends JFrame implements ActionListener {
+public class CrudFrame extends JFrame {
 
 	private static final long serialVersionUID = -5629208181141679241L;
+	public static final String DELETE_CATEGORY_ITEM = "DELETE_CATEGORY_ITEM";
+	public static final String ADD_CATEGORY_ITEM = "ADD_CATEGORY_ITEM";
 	private JPanel topPanel;
 	private JTextField tfName;
 	private JTextArea tfDescription;
@@ -173,15 +173,6 @@ public class CrudFrame extends JFrame implements ActionListener {
 		return sp;
 	}
 
-	public void actionPerformed(ActionEvent e) {
-
-		GuiForCategoryItem g4ci = new GuiForCategoryItem(this);
-		lstGuiForCategoryItems.add(g4ci);
-		diyTable.add(g4ci);
-
-		refreshGui();
-	}
-
 	public void openSessionFile() {
 		File file;
 		// TODO: Remove hard coded directory.
@@ -254,10 +245,27 @@ public class CrudFrame extends JFrame implements ActionListener {
 		refreshGui();
 	}
 
-	private void refreshGui() {
+	void refreshGui() {
 		// diyTable.revalidate();
 		// scrollPane.revalidate();
 		((JComponent) scrollPane.getParent()).revalidate();
 		pack();
+	}
+
+	public JPanel getDiyTable() {
+		return diyTable;
+	}
+
+	public void setDiyTable(JPanel diyTable) {
+		this.diyTable = diyTable;
+	}
+
+	public List<GuiForCategoryItem> getLstGuiForCategoryItems() {
+		return lstGuiForCategoryItems;
+	}
+
+	public void setLstGuiForCategoryItems(
+			List<GuiForCategoryItem> lstGuiForCategoryItems) {
+		this.lstGuiForCategoryItems = lstGuiForCategoryItems;
 	}
 }

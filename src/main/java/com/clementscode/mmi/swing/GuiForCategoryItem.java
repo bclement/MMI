@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -25,15 +26,15 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private static final String BROWSE_AUDIO_FILE = "BROWSE_AUDIO_FILE";
 	private static final String BROWSE_IMAGE_FILE = "BROWSE_IMAGE_FILE";
-	private ActionListener actionListender;
+	private CrudFrame crudFrame;
 	private JTextField tfRepeatCount;
 	private JTextField tfImageFileName;
 	private ImageIcon imageIcon;
 	private JTextField tfAudioFileName;
 
-	public GuiForCategoryItem(ActionListener al) {
+	public GuiForCategoryItem(CrudFrame al) {
 		super();
-		this.actionListender = al;
+		this.crudFrame = al;
 		tfRepeatCount = new JTextField("1");
 		add(new LabelAndField("Repeats: ", tfRepeatCount));
 		tfImageFileName = new JTextField(12);
@@ -50,17 +51,21 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 		browse.setActionCommand(BROWSE_AUDIO_FILE);
 		browse.addActionListener(this);
 		add(browse);
-		addButton("Add Another");
-		addButton("Delete");
+		addButton("Add Another", CrudFrame.ADD_CATEGORY_ITEM);
+		addButton("Delete", CrudFrame.DELETE_CATEGORY_ITEM);
 
 		TitledBorder title;
 		title = BorderFactory.createTitledBorder("Category Item");
 		setBorder(title);
 	}
 
-	private void addButton(String string) {
-		JButton b = new JButton(string);
-		b.addActionListener(actionListender);
+	private void addButton(String text, String cmd) {
+		JButton b = new JButton(text);
+		Action actionForCategoryItemGui = new ActionForCategoryItemGui(cmd,
+				this, text);
+		b.setAction(actionForCategoryItemGui);
+		// b.setAc
+		// b.addActionListener(actionListener);
 		add(b);
 	}
 
@@ -141,6 +146,14 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 			e.printStackTrace();
 		}
 
+	}
+
+	public CrudFrame getCrudFrame() {
+		return crudFrame;
+	}
+
+	public void setCrudFrame(CrudFrame crudFrame) {
+		this.crudFrame = crudFrame;
 	}
 
 }
