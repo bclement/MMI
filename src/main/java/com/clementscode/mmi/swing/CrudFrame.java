@@ -1,6 +1,7 @@
 package com.clementscode.mmi.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.swing.Action;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -86,7 +88,10 @@ public class CrudFrame extends JFrame implements ActionListener {
 		gridPanel.add(new LabelAndField("Delay for Answer:", tfDelayForAnswer));
 		topPanel.add(gridPanel, BorderLayout.SOUTH);
 
-		JScrollPane scrollPane = createDiyTableScrollPane();
+		scrollPane = createDiyTableScrollPane();
+		Dimension ps = scrollPane.getPreferredSize();
+		ps.setSize(ps.getWidth(), ps.getHeight() * 2);
+		scrollPane.setPreferredSize(ps);
 		mainPanel.add(scrollPane, BorderLayout.SOUTH);
 		setupMenus();
 		pack();
@@ -161,11 +166,11 @@ public class CrudFrame extends JFrame implements ActionListener {
 		// JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 		// JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-		scrollPane = new JScrollPane(diyTable,
+		JScrollPane sp = new JScrollPane(diyTable,
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 				JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-		return scrollPane;
+		return sp;
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -174,11 +179,7 @@ public class CrudFrame extends JFrame implements ActionListener {
 		lstGuiForCategoryItems.add(g4ci);
 		diyTable.add(g4ci);
 
-		// diyTable.invalidate();
-		// scrollPane.invalidate();
-		// scrollPane.repaint();
-		scrollPane.revalidate();
-		// this.pack();
+		refreshGui();
 	}
 
 	public void openSessionFile() {
@@ -244,14 +245,19 @@ public class CrudFrame extends JFrame implements ActionListener {
 						lstGuiForCategoryItems.add(g4ci);
 						diyTable.add(g4ci);
 
-						diyTable.revalidate();
-						scrollPane.revalidate();
 					}
 				});
 
 			}
 
-		}
+		}// foreach categoryItem
+		refreshGui();
 	}
 
+	private void refreshGui() {
+		// diyTable.revalidate();
+		// scrollPane.revalidate();
+		((JComponent) scrollPane.getParent()).revalidate();
+		pack();
+	}
 }
