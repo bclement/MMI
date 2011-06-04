@@ -124,14 +124,14 @@ public class CrudFrame extends JFrame {
 		Action openAction = new ActionRecorder(
 				Messages.getString("Gui.Open"), null, //$NON-NLS-1$
 				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control F2"),
+				new Integer(KeyEvent.VK_L), KeyStroke
+						.getKeyStroke("control F2"),
 
 				Mediator.OPEN, mediator);
 
 		Action saveAction = new ActionRecorder("Save", null,
-				"Save the session.", new Integer(KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control F2"), Mediator.SAVE, mediator);
+				"Save the session.", new Integer(KeyEvent.VK_L), KeyStroke
+						.getKeyStroke("control F2"), Mediator.SAVE, mediator);
 
 		Action saveAsAction = new ActionRecorder("Save As...", null,
 				"Choose the file to Save the session.", new Integer(
@@ -260,8 +260,8 @@ public class CrudFrame extends JFrame {
 		Properties props = new Properties();
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader()
-				.getResourceAsStream(MainGui.propFile);
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream(
+				MainGui.propFile);
 
 		props.load(new InputStreamReader(in));
 		String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
