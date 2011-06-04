@@ -283,6 +283,16 @@ public class CrudFrame extends JFrame {
 		mapper.writeValue(out, config);
 	}
 
+	protected void writeSessionConfig(SessionConfig config, File file)
+			throws JsonGenerationException, JsonMappingException, IOException {
+		writeSessionConfig(config, new FileOutputStream(file));
+	}
+
+	protected void writeSessionConfig(SessionConfig config, OutputStream out)
+			throws JsonGenerationException, JsonMappingException, IOException {
+		mapper.writeValue(out, config);
+	}
+
 	private void populateGui(Session session, String sessionPath) {
 		tfName.setText(session.getName());
 		tfDescription.setText(session.getDescription());
