@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -20,17 +21,20 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.clementscode.mmi.res.CategoryItem;
+import com.clementscode.mmi.sound.SoundUtility;
 
 public class GuiForCategoryItem extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private static final String BROWSE_AUDIO_FILE = "BROWSE_AUDIO_FILE";
 	private static final String BROWSE_IMAGE_FILE = "BROWSE_IMAGE_FILE";
+	private static final String PLAY_SOUND = "PLAY_SOUND";
 	private CrudFrame crudFrame;
 	private JTextField tfRepeatCount;
 	private JTextField tfImageFileName;
 	private ImageIcon imageIcon;
 	private JTextField tfAudioFileName;
+	private JButton play;
 
 	public GuiForCategoryItem(CrudFrame al) {
 		super();
@@ -47,6 +51,10 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 		add(browse);
 		tfAudioFileName = new JTextField(12);
 		add(new LabelAndField("Audio:", tfAudioFileName));
+		play = new JButton("Play");
+		play.setActionCommand(PLAY_SOUND);
+		play.addActionListener(this);
+		add(play);
 		browse = new JButton("Browse...");
 		browse.setActionCommand(BROWSE_AUDIO_FILE);
 		browse.addActionListener(this);
@@ -71,30 +79,46 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 
 	public void actionPerformed(ActionEvent e) {
 		File file;
-		JFileChooser chooser = new JFileChooser();
-		FileNameExtensionFilter filter = null;
-		if (BROWSE_AUDIO_FILE.equals(e.getActionCommand())) {
-			filter = new FileNameExtensionFilter("WAV Sound clips only...",
-					"wav");
-		} else if (BROWSE_IMAGE_FILE.equals(e.getActionCommand())) {
-			filter = new FileNameExtensionFilter("JPG & GIF Images", "jpg",
-					"gif");
-		}
 
-		chooser.setFileFilter(filter);
-		int returnVal = chooser.showOpenDialog(this);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			file = chooser.getSelectedFile();
+		if (PLAY_SOUND.equals(e.getActionCommand())) {
+			File soundFile = new File(tfAudioFileName.getText());
 			try {
-				if (BROWSE_AUDIO_FILE.equals(e.getActionCommand())) {
-					tfAudioFileName.setText(file.getCanonicalPath());
-				} else if (BROWSE_IMAGE_FILE.equals(e.getActionCommand())) {
-					tfImageFileName.setText(file.getCanonicalPath());
-					ImageIcon ii = new ImageIcon(file.getCanonicalPath());
-					imageIcon.setImage(getScaledImage(ii.getImage(), 32, 32));
+				SoundUtility.playSound(soundFile);
+			} catch (UnsupportedAudioFileException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		} else {
+
+			JFileChooser chooser = new JFileChooser();
+			FileNameExtensionFilter filter = null;
+			if (BROWSE_AUDIO_FILE.equals(e.getActionCommand())) {
+				filter = new FileNameExtensionFilter("WAV Sound clips only...",
+						"wav");
+			} else if (BROWSE_IMAGE_FILE.equals(e.getActionCommand())) {
+				filter = new FileNameExtensionFilter("JPG & GIF Images", "jpg",
+						"gif");
+			}
+
+			chooser.setFileFilter(filter);
+			int returnVal = chooser.showOpenDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				file = chooser.getSelectedFile();
+				try {
+					if (BROWSE_AUDIO_FILE.equals(e.getActionCommand())) {
+						tfAudioFileName.setText(file.getCanonicalPath());
+					} else if (BROWSE_IMAGE_FILE.equals(e.getActionCommand())) {
+						tfImageFileName.setText(file.getCanonicalPath());
+						ImageIcon ii = new ImageIcon(file.getCanonicalPath());
+						imageIcon
+								.setImage(getScaledImage(ii.getImage(), 32, 32));
+					}
+				} catch (Exception bland) {
+					bland.printStackTrace();
 				}
-			} catch (Exception bland) {
-				bland.printStackTrace();
 			}
 		}
 

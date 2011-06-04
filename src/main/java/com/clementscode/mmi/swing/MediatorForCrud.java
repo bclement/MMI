@@ -17,6 +17,9 @@ public class MediatorForCrud implements MediatorListener {
 			System.out.println("Normal exit.");
 			System.exit(0);
 			break;
+		case Mediator.SAVE_AS:
+			crudFrame.saveSessionFileAs();
+			break;
 		}
 	}
 
