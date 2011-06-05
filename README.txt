@@ -14,6 +14,8 @@ TODO:
    a) save back to the session.txt and 
    b) create new session.txt and 
    c) create a new directory tree...
+   d) JSplitPane in CrudFrame
+   e) Examplar group and name inputs
 3) The menus should have shortcuts where needed
 4) Clean all TODOs from code
 5) JNLP the whole thing and make it so we can load session.zip files from HTTP

@@ -58,6 +58,7 @@ public class Gui {
 
 		MediatorListener mediator = new Mediator(this);
 
+		// TODO: Fix bug that control A does not toggle the checkbox
 		Action attendingAction = new ActionRecorder(
 				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
 				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
