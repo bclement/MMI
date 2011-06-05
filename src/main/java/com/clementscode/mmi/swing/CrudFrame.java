@@ -125,25 +125,24 @@ public class CrudFrame extends JFrame {
 				Messages.getString("Gui.Open"), null, //$NON-NLS-1$
 				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
 				new Integer(KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control F2"),
+				KeyStroke.getKeyStroke("control O"),
 
 				Mediator.OPEN, mediator);
 
 		Action saveAction = new ActionRecorder("Save", null,
 				"Save the session.", new Integer(KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control F2"), Mediator.SAVE, mediator);
+				KeyStroke.getKeyStroke("control S"), Mediator.SAVE, mediator);
 
 		Action saveAsAction = new ActionRecorder("Save As...", null,
 				"Choose the file to Save the session.", new Integer(
-						KeyEvent.VK_L), KeyStroke.getKeyStroke("control F2"),
-				Mediator.SAVE_AS, mediator);
+						KeyEvent.VK_L),
+				KeyStroke.getKeyStroke("control shift S"), Mediator.SAVE_AS,
+				mediator);
 
 		Action quitAction = new ActionRecorder(
 				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
 				Messages.getString("Gui.QuitDescriptino"), new Integer(
-						KeyEvent.VK_L),
-
-				KeyStroke.getKeyStroke("control F2"),
+						KeyEvent.VK_L), KeyStroke.getKeyStroke("control Q"),
 				//$NON-NLS-1$
 				Mediator.QUIT, mediator);
 

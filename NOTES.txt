@@ -1,3 +1,16 @@
 Use mediator pattern.   
 
 Future expansion allowed by mediator pattern will be remote scoring on another computer via the network.
+
+
+6/4/11
+
+Andrea wrote:
+Yes. The program is designed to teach stimulus classes, requiring multiple exemplars per target. 
+The each wav file will be used to label a variety of exemplars. Hope that helps :)
+	
+Matt Payne	12:42pm Jun 4
+Howdy! I have MMI questions if one of you has a minute please. 
+Specifically what's the deal with repeating all of the ducks? 
+One answer.wav with several images? Does that happen alot? --Matt Payne, (402) 208 8787
+
