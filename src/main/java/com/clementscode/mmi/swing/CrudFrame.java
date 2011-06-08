@@ -33,6 +33,8 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
+import org.codehaus.jackson.util.DefaultPrettyPrinter;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 
 import com.clementscode.mmi.MainGui;
@@ -130,13 +132,13 @@ public class CrudFrame extends JFrame {
 				Mediator.OPEN, mediator);
 
 		Action saveAction = new ActionRecorder("Save", null,
-				"Save the session.", new Integer(KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control S"), Mediator.SAVE, mediator);
+				"Save the session.", new Integer(KeyEvent.VK_L), KeyStroke
+						.getKeyStroke("control S"), Mediator.SAVE, mediator);
 
 		Action saveAsAction = new ActionRecorder("Save As...", null,
 				"Choose the file to Save the session.", new Integer(
-						KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control shift S"), Mediator.SAVE_AS,
+						KeyEvent.VK_L), KeyStroke
+						.getKeyStroke("control shift S"), Mediator.SAVE_AS,
 				mediator);
 
 		Action quitAction = new ActionRecorder(
@@ -259,8 +261,8 @@ public class CrudFrame extends JFrame {
 		Properties props = new Properties();
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader()
-				.getResourceAsStream(MainGui.propFile);
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream(
+				MainGui.propFile);
 
 		props.load(new InputStreamReader(in));
 		String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
@@ -279,7 +281,9 @@ public class CrudFrame extends JFrame {
 
 	protected void writeSessionConfig(SessionConfig config, OutputStream out)
 			throws JsonGenerationException, JsonMappingException, IOException {
-		mapper.writeValue(out, config);
+		ObjectWriter writer = mapper
+				.prettyPrintingWriter(new DefaultPrettyPrinter());
+		writer.writeValue(out, config);
 	}
 
 	private void populateGui(Session session, String sessionPath) {
