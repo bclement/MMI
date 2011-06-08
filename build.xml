@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<project default="signit" basedir=".">
+	<target name="createkey">
+	<genkey alias="autosigner" keystore="local.keystore" 
+		storepass="atLeastSixChars">
+		<dname>
+			<param name="CN" value="autosigner"/>
+			<param name="OU" value="Joe Blow"/>
+			<param name="O" value="Joe"/>
+			<param name="C" value="US"/>
+		</dname>
+	</genkey>
+</target>
+
+<target name="signit" depends="createkey">
+	<signjar jar="demo.jar"
+		alias="autosigner" keystore="local.keystore" storepass="atLeastSixChars"
+		verbose="true">
+    <!-- sign all jars in the current working directory. -->
+		<fileset dir="."><include name="*.jar"/></fileset>
+  </signjar>
+</target>
+
+</project>
+

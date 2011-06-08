@@ -27,6 +27,7 @@ public class MainGui {
 			confFile = args.length > 1 ? args[0] : confFile;
 			new MainGui().run();
 		} catch (Exception bland) {
+			System.out.println("bland=" + bland);
 			bland.printStackTrace();
 		}
 	}

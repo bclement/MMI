@@ -151,39 +151,69 @@ public class Gui {
 		// prompt but before the answer), modeling (child answered anytime after
 		// the answer audio) or the child did not answer.
 		panel.add(southPanel, BorderLayout.SOUTH);
-		byte[] imageData = readImageDataFromClasspath("images/happy-face.jpg",
-				17833);
-		ImageIcon ii = new ImageIcon(imageData);
+		byte[] imageData = null;
+		try {
+			imageData = readImageDataFromClasspath("images/a-happy-face.jpg",
+					17833);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Could not find image from classpath...");
+			e.printStackTrace();
+		}
+
+		ImageIcon ii = null;
+
+		if (null != imageData) {
+			ii = new ImageIcon(imageData);
+		}
+
+		if (null == imageData) {
+			try {
+
+				ii = new ImageIcon(new URL(
+						"http://MattPayne.org/mmi/happy-face.jpg"));
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 		centerButton = new JButton(ii);
 		panel.add(centerButton, BorderLayout.CENTER);
 
 		return panel;
 	}
 
-	private byte[] readImageDataFromClasspath(String fileName, int lazy) {
-		byte[] imageData = null;
-		try {
-			// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
-			// Do it this way and no relative path huha is needed.
-			InputStream in = this.getClass().getClassLoader()
-					.getResourceAsStream(fileName);
-			imageData = new byte[lazy];
+	private byte[] readImageDataFromClasspath(String fileName, int lazy)
+			throws IOException {
 
-			int numBytesRead = 0, totalBytesRead = 0;
-			// Yes, I feel dirty for not finding the size of the file by hand
-			// here.
-			// I'm in a hurry.
-			// Yes, I know I'll burn in hell. Unless Jesus saves me. Which he
-			// has. Thanks!
-			while (totalBytesRead < lazy) {
-				numBytesRead = in.read(imageData, totalBytesRead, lazy);
-				totalBytesRead += numBytesRead;
-			}
-			in.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
+		// Do it this way and no relative path huha is needed.
+		InputStream in = this.getClass().getClassLoader()
+				.getResourceAsStream(fileName);
+
+		return readImageDataFromInputStream(in, lazy);
+
+	}
+
+	private byte[] readImageDataFromInputStream(InputStream in, int lazy)
+			throws IOException {
+
+		byte[] imageData = new byte[lazy];
+
+		int numBytesRead = 0, totalBytesRead = 0;
+		// Yes, I feel dirty for not finding the size of the file by hand
+		// here.
+		// I'm in a hurry.
+		// Yes, I know I'll burn in hell. Unless Jesus saves me. Which he
+		// has. Thanks!
+		while (totalBytesRead < lazy) {
+			numBytesRead = in.read(imageData, totalBytesRead, lazy);
+			totalBytesRead += numBytesRead;
 		}
+		in.close();
+
 		return imageData;
 	}
 
@@ -395,6 +425,7 @@ public class Gui {
 				SessionConfig.class);
 		if (null != newItemBase) {
 			config.setItemBase(newItemBase);
+			config.setPrompt(newItemBase + "/prompt.wav");
 		}
 		session = new Session(config, sndExts);
 	}
