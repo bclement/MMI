@@ -110,10 +110,12 @@ public class Mediator implements MediatorListener {
 		if (hit) {
 			if (gui.getItemQueue().size() == 0) {
 				// TODO: Have filename come from session
-				String fileName = "/tmp/brian.csv";
+				String fileName = System.getProperty("user.home")
+						+ "/brian.csv";
 				try {
 					File csvFile = new File(fileName);
-					CSVWriter csvWriter = new CSVWriter(new FileWriter(csvFile));
+					CSVWriter csvWriter = new CSVWriter(new FileWriter(csvFile,
+							true)); // true -- I want to append.
 					SessionData data = collector.getData();
 					data.write(csvWriter);
 					csvWriter.close();

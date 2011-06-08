@@ -11,7 +11,7 @@ with paths that were relative to the base directory of the maven project.
 TODO: 
 1) DONE: MainGui should size to the biggest image
    a) Logic about writing CSV file when ending the session early.
-   b) Always append to the CSV file.
+   b) DONE: Always append to the CSV file.
    c) Use a file chooser to save the CSV file.
    d) Think about using config files in the home directory to remember things
 2) CrudFrame should populate the images and audio files in a session.  And 
