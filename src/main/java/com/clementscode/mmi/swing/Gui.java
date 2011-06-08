@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.Queue;
@@ -19,6 +20,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -66,6 +68,8 @@ public class Gui {
 	private Mediator mediator;
 	private ActionRecorder openHttpAction;
 	private File tmpDir;
+	private ArrayList<JComponent> lstButtons;
+	private ImageIcon iiSmilingFace;
 
 	public Gui() {
 		String tmpDirStr = "/tmp/mmi";
@@ -79,6 +83,19 @@ public class Gui {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(mainPanel);
 		setupMenus();
+		disableButtons();
+	}
+
+	private void disableButtons() {
+		for (JComponent jc : lstButtons) {
+			jc.setEnabled(false);
+		}
+	}
+
+	private void enableButtons() {
+		for (JComponent jc : lstButtons) {
+			jc.setEnabled(true);
+		}
 	}
 
 	private void setupMenus() {
@@ -135,14 +152,12 @@ public class Gui {
 		JPanel southPanel = new JPanel();
 		attending = new JCheckBox(attendingAction);
 		southPanel.add(attending);
-		JButton responseButton = new JButton(independentAction);
-		southPanel.add(responseButton);
-		responseButton = new JButton(verbalAction);
-		southPanel.add(responseButton);
-		responseButton = new JButton(modelingAction);
-		southPanel.add(responseButton);
-		responseButton = new JButton(noAnswerAction);
-		southPanel.add(responseButton);
+		lstButtons = new ArrayList<JComponent>();
+		lstButtons.add(attending);
+		addButton(southPanel, independentAction);
+		addButton(southPanel, verbalAction);
+		addButton(southPanel, modelingAction);
+		addButton(southPanel, noAnswerAction);
 
 		// http://download.oracle.com/javase/tutorial/uiswing/misc/action.html
 
@@ -151,39 +166,81 @@ public class Gui {
 		// prompt but before the answer), modeling (child answered anytime after
 		// the answer audio) or the child did not answer.
 		panel.add(southPanel, BorderLayout.SOUTH);
-		byte[] imageData = readImageDataFromClasspath("images/happy-face.jpg",
-				17833);
-		ImageIcon ii = new ImageIcon(imageData);
-		centerButton = new JButton(ii);
+		byte[] imageData = null;
+		try {
+			imageData = readImageDataFromClasspath("images/a-happy-face.jpg",
+					17833);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Could not find image from classpath...");
+			e.printStackTrace();
+		}
+
+		iiSmilingFace = null;
+
+		if (null != imageData) {
+			iiSmilingFace = new ImageIcon(imageData);
+		}
+
+		if (null == imageData) {
+			try {
+
+				iiSmilingFace = new ImageIcon(new URL(
+						"http://MattPayne.org/mmi/happy-face.jpg"));
+
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		centerButton = new JButton(iiSmilingFace);
 		panel.add(centerButton, BorderLayout.CENTER);
 
 		return panel;
 	}
 
-	private byte[] readImageDataFromClasspath(String fileName, int lazy) {
-		byte[] imageData = null;
-		try {
-			// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
-			// Do it this way and no relative path huha is needed.
-			InputStream in = this.getClass().getClassLoader()
-					.getResourceAsStream(fileName);
-			imageData = new byte[lazy];
+	public void backToStartScreen() {
+		centerButton.setIcon(iiSmilingFace);
+		refreshGui();
+		disableButtons();
+	}
 
-			int numBytesRead = 0, totalBytesRead = 0;
-			// Yes, I feel dirty for not finding the size of the file by hand
-			// here.
-			// I'm in a hurry.
-			// Yes, I know I'll burn in hell. Unless Jesus saves me. Which he
-			// has. Thanks!
-			while (totalBytesRead < lazy) {
-				numBytesRead = in.read(imageData, totalBytesRead, lazy);
-				totalBytesRead += numBytesRead;
-			}
-			in.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	private void addButton(JPanel southPanel, ActionRecorder independentAction2) {
+		JButton responseButton = new JButton(independentAction2);
+		southPanel.add(responseButton);
+		lstButtons.add(responseButton);
+	}
+
+	private byte[] readImageDataFromClasspath(String fileName, int lazy)
+			throws IOException {
+
+		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
+		// Do it this way and no relative path huha is needed.
+		InputStream in = this.getClass().getClassLoader()
+				.getResourceAsStream(fileName);
+
+		return readImageDataFromInputStream(in, lazy);
+
+	}
+
+	private byte[] readImageDataFromInputStream(InputStream in, int lazy)
+			throws IOException {
+
+		byte[] imageData = new byte[lazy];
+
+		int numBytesRead = 0, totalBytesRead = 0;
+		// Yes, I feel dirty for not finding the size of the file by hand
+		// here.
+		// I'm in a hurry.
+		// Yes, I know I'll burn in hell. Unless Jesus saves me. Which he
+		// has. Thanks!
+		while (totalBytesRead < lazy) {
+			numBytesRead = in.read(imageData, totalBytesRead, lazy);
+			totalBytesRead += numBytesRead;
 		}
+		in.close();
+
 		return imageData;
 	}
 
@@ -369,6 +426,7 @@ public class Gui {
 			setFrameTitle();
 			refreshGui();
 			setupTimer();
+			enableButtons();
 		}
 	}
 
@@ -396,6 +454,7 @@ public class Gui {
 				SessionConfig.class);
 		if (null != newItemBase) {
 			config.setItemBase(newItemBase);
+			config.setPrompt(newItemBase + "/prompt.wav");
 		}
 		session = new Session(config, sndExts);
 	}
@@ -431,6 +490,7 @@ public class Gui {
 					.getAbsolutePath());
 			readSessionFile(new File(zipPath + "/session.txt"), zipPath);
 			useNewSession();
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

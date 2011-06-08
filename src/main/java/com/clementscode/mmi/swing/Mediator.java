@@ -126,7 +126,8 @@ public class Mediator implements MediatorListener {
 					e.printStackTrace();
 				}
 
-				System.exit(0);
+				// System.exit(0);
+				gui.backToStartScreen();
 			} else {
 				item = gui.getItemQueue().remove();
 				gui.switchImage(item.getImgFile());
