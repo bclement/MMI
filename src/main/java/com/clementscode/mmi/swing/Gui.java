@@ -65,8 +65,12 @@ public class Gui {
 	private JPanel mainPanel;
 	private Mediator mediator;
 	private ActionRecorder openHttpAction;
+	private File tmpDir;
 
 	public Gui() {
+		String tmpDirStr = "/tmp/mmi";
+		tmpDir = new File(tmpDirStr);
+		tmpDir.mkdirs();
 		mediator = new Mediator(this);
 		setupActions(mediator);
 		mainPanel = setupMainPanel();
@@ -368,6 +372,11 @@ public class Gui {
 	}
 
 	private void readSessionFile(File file) throws Exception {
+		readSessionFile(file, null);
+	}
+
+	private void readSessionFile(File file, String newItemBase)
+			throws Exception {
 		Properties props = new Properties();
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
@@ -384,6 +393,9 @@ public class Gui {
 				.withAnnotationIntrospector(introspector);
 		SessionConfig config = mapper.readValue(new FileInputStream(file),
 				SessionConfig.class);
+		if (null != newItemBase) {
+			config.setItemBase(newItemBase);
+		}
 		session = new Session(config, sndExts);
 	}
 
@@ -408,15 +420,14 @@ public class Gui {
 	}
 
 	private void unpackToTempDirectory(String strUrl) {
-		String tempDirectory = "";
 
 		try {
 			File tempZipFile = fetchViaHttp(strUrl);
-			String zipPath = File.createTempFile("mmi", "").getAbsolutePath()
-					+ ".dir";
+			String zipPath = File.createTempFile("mmi", "", tmpDir)
+					.getAbsolutePath() + ".dir";
 			ExtractFileSubDirectories.unzip(zipPath,
 					tempZipFile.getAbsolutePath());
-			readSessionFile(new File(tempDirectory + "/session.txt"));
+			readSessionFile(new File(zipPath + "/session.txt"), zipPath);
 			useNewSession();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -425,7 +436,13 @@ public class Gui {
 	}
 
 	private File fetchViaHttp(String strUrl) throws IOException {
-		File tempZipFile = File.createTempFile("mmiSession", "zip");
+
+		// Since Mac's OS X make f-ed up temp directories like this:
+		// Extracting
+		// /var/folders/IL/ILL0adgsGq89FHBGBZvCF++++TI/-Tmp-/mmi7319452195262685629.dir/food/foobar/redbar.jpg
+		// We're going to specify the temp directory
+
+		File tempZipFile = File.createTempFile("mmiSession", "zip", tmpDir);
 
 		URL url = new URL(strUrl);
 		InputStream in = url.openStream();
