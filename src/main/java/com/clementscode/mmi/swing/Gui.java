@@ -408,8 +408,8 @@ public class Gui {
 	public void openHttpSession() {
 		// Started with clues from
 		// http://download.oracle.com/javase/tutorial/uiswing/components/dialog.html
-		Object[] possibilities = { "http://MattPayne.org/mmi/mp.zip", "spam",
-				"yam" };
+		Object[] possibilities = { "http://MattPayne.org/mmi/mp.zip",
+				"http://MattPayne.org/mmi/bc.zip", "more to come later..." };
 		String s = (String) JOptionPane.showInputDialog(frame,
 				"Complete the sentence:\n" + "\"Green eggs and...\"",
 				"Customized Dialog", JOptionPane.PLAIN_MESSAGE, null,
