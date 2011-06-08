@@ -4,9 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.Queue;
@@ -25,6 +28,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
+
+import junk.ExtractFileSubDirectories;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -59,6 +64,7 @@ public class Gui {
 	private ActionRecorder openAction;
 	private JPanel mainPanel;
 	private Mediator mediator;
+	private ActionRecorder openHttpAction;
 
 	public Gui() {
 		mediator = new Mediator(this);
@@ -84,8 +90,11 @@ public class Gui {
 
 		// a group of JMenuItems
 		JMenuItem menuItem = new JMenuItem(openAction);
-
 		menu.add(menuItem);
+
+		menuItem = new JMenuItem(openHttpAction);
+		menu.add(menuItem);
+
 		/*
 		 * menuItem = new JMenuItem(crudAction); menu.add(menuItem);
 		 */
@@ -239,6 +248,13 @@ public class Gui {
 				new Integer(KeyEvent.VK_L),
 				KeyStroke.getKeyStroke("control O"), Mediator.OPEN, mediator);
 
+		openHttpAction = new ActionRecorder(
+				Messages.getString("Gui.Open.Http"), null, //$NON-NLS-1$
+				Messages.getString("Gui.OpenHttpDescription"), //$NON-NLS-1$
+				new Integer(KeyEvent.VK_L),
+				KeyStroke.getKeyStroke("control H"), Mediator.OPEN_HTTP,
+				mediator);
+
 	}
 
 	public void run(Session session) {
@@ -327,9 +343,12 @@ public class Gui {
 				e.printStackTrace();
 			}
 		}
+		useNewSession();
+	}
 
+	public void useNewSession() {
 		if (null != session) {
-			this.session = session;
+
 			CategoryItem[] copy = Arrays.copyOf(session.getItems(),
 					session.getItems().length);
 			for (int i = 0; i < session.getShuffleCount(); ++i) {
@@ -372,6 +391,53 @@ public class Gui {
 
 		mainPanel.revalidate();
 		frame.pack();
+	}
+
+	public void openHttpSession() {
+		// Started with clues from
+		// http://download.oracle.com/javase/tutorial/uiswing/components/dialog.html
+		Object[] possibilities = { "http://MattPayne.org/mmi/mp.zip", "spam",
+				"yam" };
+		String s = (String) JOptionPane.showInputDialog(frame,
+				"Complete the sentence:\n" + "\"Green eggs and...\"",
+				"Customized Dialog", JOptionPane.PLAIN_MESSAGE, null,
+				possibilities, "ham");
+		System.out.println("s=" + s);
+		unpackToTempDirectory(s);
+
+	}
+
+	private void unpackToTempDirectory(String strUrl) {
+		String tempDirectory = "";
+
+		try {
+			File tempZipFile = fetchViaHttp(strUrl);
+			String zipPath = File.createTempFile("mmi", "").getAbsolutePath()
+					+ ".dir";
+			ExtractFileSubDirectories.unzip(zipPath,
+					tempZipFile.getAbsolutePath());
+			readSessionFile(new File(tempDirectory + "/session.txt"));
+			useNewSession();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private File fetchViaHttp(String strUrl) throws IOException {
+		File tempZipFile = File.createTempFile("mmiSession", "zip");
+
+		URL url = new URL(strUrl);
+		InputStream in = url.openStream();
+		byte[] chunk = new byte[8 * 1024];
+		OutputStream out = new FileOutputStream(tempZipFile);
+		int numBytesRead = 0;
+		while (-1 != (numBytesRead = in.read(chunk))) {
+			out.write(chunk, 0, numBytesRead);
+		}
+		out.close();
+		in.close();
+		return tempZipFile;
 	}
 
 }

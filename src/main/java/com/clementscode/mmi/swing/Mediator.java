@@ -41,6 +41,7 @@ public class Mediator implements MediatorListener {
 	public static final int CRUD = 8;
 	public static final int SAVE_AS = 9;
 	public static final int SAVE = 10;
+	public static final int OPEN_HTTP = 11;
 	protected Log log = LogFactory.getLog(this.getClass());
 	private Gui gui;
 	private boolean playPrompt = true;
@@ -101,6 +102,9 @@ public class Mediator implements MediatorListener {
 			break;
 		case OPEN:
 			gui.openSession();
+			break;
+		case OPEN_HTTP:
+			gui.openHttpSession();
 			break;
 		}
 		if (hit) {

@@ -54,6 +54,8 @@ public class MainGui {
 		// new Gui().run(session);
 		//
 
-		new Gui().openSession();
+		// new Gui().openSession(); // Ask for a Session file right away...
+		new Gui(); // Don't ask for anything right away....
+		// new Gui().openHttpSession(); // Ask for a URL right away....
 	}
 }
