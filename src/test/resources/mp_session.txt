@@ -1,0 +1,23 @@
+{
+	"name":"name",
+	"description":"description",
+	"shuffleCount":1,
+	"itemBase":"/Users/mgpayne/MMI/src/test/resources/mp/",
+	"items":
+		[
+			"animals/fooduck/fooduck.gif",
+			"animals/fooduck/fooduck.gif",
+			"animals/fooduck/fooduck.gif",
+			"animals/fooduck/fooduck.gif",
+			"animals/fooduck/fooduck.gif",
+			"animals/fooduck/fooduck.gif",
+			"animals/fooduck/fooduck.jpg",
+			"animals/fooduck/fooduck.png",
+			"food/foobar/bluebar.jpg",
+			"food/foobar/greenbar.jpg",
+			"food/foobar/redbar.jpg"
+		],
+	"prompt":"src/test/resources/bc/prompt.wav",
+	"timeDelayPrompt":3,
+	"timeDelayAnswer":3
+}

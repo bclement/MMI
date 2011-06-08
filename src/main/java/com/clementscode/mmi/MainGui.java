@@ -3,18 +3,6 @@
  */
 package com.clementscode.mmi;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Properties;
-
-import org.codehaus.jackson.map.AnnotationIntrospector;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
-
-import com.clementscode.mmi.res.Session;
-import com.clementscode.mmi.res.SessionConfig;
 import com.clementscode.mmi.swing.Gui;
 
 /**
@@ -44,23 +32,28 @@ public class MainGui {
 	}
 
 	public void run() throws Exception {
-		Properties props = new Properties();
+		// Properties props = new Properties();
+		// //
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
-		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader()
-				.getResourceAsStream(MainGui.propFile);
-		props.load(new InputStreamReader(in));
-		String[] sndExts = props.getProperty(sndKey).split(",");
+		// // Do it this way and no relative path huha is needed.
+		// InputStream in = this.getClass().getClassLoader()
+		// .getResourceAsStream(MainGui.propFile);
+		// props.load(new InputStreamReader(in));
+		// String[] sndExts = props.getProperty(sndKey).split(",");
+		//
+		// ObjectMapper mapper = new ObjectMapper();
+		// AnnotationIntrospector introspector = new
+		// JaxbAnnotationIntrospector();
+		// mapper.getDeserializationConfig().withAnnotationIntrospector(
+		// introspector);
+		// mapper.getSerializationConfig()
+		// .withAnnotationIntrospector(introspector);
+		// SessionConfig config = mapper.readValue(new FileInputStream(new File(
+		// confFile)), SessionConfig.class);
+		// Session session = new Session(config, sndExts);
+		// new Gui().run(session);
+		//
 
-		ObjectMapper mapper = new ObjectMapper();
-		AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
-		mapper.getDeserializationConfig().withAnnotationIntrospector(
-				introspector);
-		mapper.getSerializationConfig()
-				.withAnnotationIntrospector(introspector);
-		SessionConfig config = mapper.readValue(new FileInputStream(new File(
-				confFile)), SessionConfig.class);
-		Session session = new Session(config, sndExts);
-		new Gui().run(session);
+		new Gui().openSession();
 	}
 }

@@ -3,29 +3,39 @@ package com.clementscode.mmi.swing;
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.map.AnnotationIntrospector;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 
+import com.clementscode.mmi.MainGui;
 import com.clementscode.mmi.res.CategoryItem;
 import com.clementscode.mmi.res.Session;
+import com.clementscode.mmi.res.SessionConfig;
 import com.clementscode.mmi.sound.SoundUtility;
 import com.clementscode.mmi.util.Shuffler;
 
@@ -39,116 +49,29 @@ public class Gui {
 	private JCheckBox attending;
 	private JFrame frame;
 	private String frameTitle = Messages.getString("Gui.FrameTitle"); //$NON-NLS-1$
+	private ActionRecorder attendingAction;
+	private ActionRecorder independentAction;
+	private ActionRecorder verbalAction;
+	private ActionRecorder modelingAction;
+	private ActionRecorder noAnswerAction;
+	private ActionRecorder quitAction;
+	private ActionRecorder timerAction;
+	private ActionRecorder openAction;
+	private JPanel mainPanel;
+	private Mediator mediator;
 
-	public void run(Session session) {
-
-		if (null != session) {
-			this.session = session;
-			CategoryItem[] copy = Arrays.copyOf(session.getItems(),
-					session.getItems().length);
-			for (int i = 0; i < session.getShuffleCount(); ++i) {
-				Shuffler.shuffle(copy);
-			}
-			itemQueue = new ConcurrentLinkedQueue<CategoryItem>();
-			for (CategoryItem item : copy) {
-				// TODO: Is there a collections add all I could use here?
-				itemQueue.add(item);
-			}
-		}
-
-		MediatorListener mediator = new Mediator(this);
-
-		// TODO: Fix bug that control A does not toggle the checkbox
-		Action attendingAction = new ActionRecorder(
-				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
-				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F1), KeyStroke.getKeyStroke("control A"),
-				Mediator.ATTENDING, mediator);
-		Action independentAction = new ActionRecorder(
-				Messages.getString("Gui.Independent"), null, //$NON-NLS-1$
-				Messages.getString("Gui.IndependentDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F2), KeyStroke.getKeyStroke("control I"),
-				Mediator.INDEPENDENT, mediator);
-		Action verbalAction = new ActionRecorder(
-				Messages.getString("Gui.Verbal"), null, //$NON-NLS-1$
-				Messages.getString("Gui.VerbalDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_F3),
-				KeyStroke.getKeyStroke("control V"), Mediator.VERBAL, mediator);
-		Action modelingAction = new ActionRecorder(
-				Messages.getString("Gui.Modeling"), null, //$NON-NLS-1$
-				Messages.getString("Gui.ModelingDescriptin"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F4), KeyStroke.getKeyStroke("control M"),
-				Mediator.MODELING, mediator);
-		Action noAnswerAction = new ActionRecorder(
-				Messages.getString("Gui.NoAnswer"), null, //$NON-NLS-1$
-				Messages.getString("Gui.NoAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("control N"), Mediator.NO_ANSWER,
-				mediator);
-
-		Action quitAction = new ActionRecorder(
-				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
-				Messages.getString("Gui.QuitDescriptino"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("control Q"), Mediator.QUIT, mediator);
-
-		Action timerAction = new ActionRecorder(
-				Messages.getString("Gui.TimerSwing"), null, //$NON-NLS-1$
-				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("control F2"), Mediator.TIMER, mediator);
-
-		Action openAction = new ActionRecorder(
-				Messages.getString("Gui.Open"), null, //$NON-NLS-1$
-				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control O"), Mediator.OPEN, mediator);
-
-		// Action crudAction = new ActionRecorder(
-		//				Messages.getString("Gui.Crud"), null, //$NON-NLS-1$
-		//				Messages.getString("Gui.CrudDescription"), //$NON-NLS-1$
-		// new Integer(KeyEvent.VK_L), Mediator.CRUD, mediator);
-
-		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-
-		JPanel southPanel = new JPanel();
-		attending = new JCheckBox(attendingAction);
-		southPanel.add(attending);
-		JButton responseButton = new JButton(independentAction);
-		southPanel.add(responseButton);
-		responseButton = new JButton(verbalAction);
-		southPanel.add(responseButton);
-		responseButton = new JButton(modelingAction);
-		southPanel.add(responseButton);
-		responseButton = new JButton(noAnswerAction);
-		southPanel.add(responseButton);
-
-		// http://download.oracle.com/javase/tutorial/uiswing/misc/action.html
-
-		// response value. This can be 1 of 4 things: independent (child
-		// answered before the prompt audio), verbal (child answered after the
-		// prompt but before the answer), modeling (child answered anytime after
-		// the answer audio) or the child did not answer.
-		panel.add(southPanel, BorderLayout.SOUTH);
-
-		CategoryItem first = itemQueue.remove();
-		try {
-			imgIconCenter = new ImageIcon(first.getImgFile().getCanonicalPath());
-		} catch (IOException e) {
-			log.error(
-					"Odd, this error should not happen.  Can't find the first image",
-					e);
-			e.printStackTrace();
-		}
-		centerButton = new JButton(imgIconCenter);
-		centerButton.setPreferredSize(session.getMaxDimensions());
-		panel.add(centerButton, BorderLayout.CENTER);
-
+	public Gui() {
+		mediator = new Mediator(this);
+		setupActions(mediator);
+		mainPanel = setupMainPanel();
 		// TODO: Check to see if there's a logic bug here....
-		frame = new JFrame(frameTitle
-				+ String.format("%d of %d", session.getItems().length - 1, //$NON-NLS-1$
-						session.getItems().length));
+		frame = new JFrame(frameTitle);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().add(panel);
+		frame.getContentPane().add(mainPanel);
+		setupMenus();
+	}
 
+	private void setupMenus() {
 		// http://download.oracle.com/javase/tutorial/uiswing/components/menu.html
 		// http://download.oracle.com/javase/tutorial/uiswing/misc/action.html
 		// Create the menu bar.
@@ -187,16 +110,139 @@ public class Gui {
 		menuBar.add(buttonMenu);
 		frame.setJMenuBar(menuBar);
 
-		// TODO: Size the frame to the whole screen or the size needed for the
-		// biggest picture...
 		frame.pack();
 
 		frame.setVisible(true);
+	}
 
+	private JPanel setupMainPanel() {
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+
+		JPanel southPanel = new JPanel();
+		attending = new JCheckBox(attendingAction);
+		southPanel.add(attending);
+		JButton responseButton = new JButton(independentAction);
+		southPanel.add(responseButton);
+		responseButton = new JButton(verbalAction);
+		southPanel.add(responseButton);
+		responseButton = new JButton(modelingAction);
+		southPanel.add(responseButton);
+		responseButton = new JButton(noAnswerAction);
+		southPanel.add(responseButton);
+
+		// http://download.oracle.com/javase/tutorial/uiswing/misc/action.html
+
+		// response value. This can be 1 of 4 things: independent (child
+		// answered before the prompt audio), verbal (child answered after the
+		// prompt but before the answer), modeling (child answered anytime after
+		// the answer audio) or the child did not answer.
+		panel.add(southPanel, BorderLayout.SOUTH);
+		byte[] imageData = readImageDataFromClasspath("images/happy-face.jpg",
+				17833);
+		ImageIcon ii = new ImageIcon(imageData);
+		centerButton = new JButton(ii);
+		panel.add(centerButton, BorderLayout.CENTER);
+
+		return panel;
+	}
+
+	private byte[] readImageDataFromClasspath(String fileName, int lazy) {
+		byte[] imageData = null;
+		try {
+			// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
+			// Do it this way and no relative path huha is needed.
+			InputStream in = this.getClass().getClassLoader()
+					.getResourceAsStream(fileName);
+			imageData = new byte[lazy];
+
+			int numBytesRead = 0, totalBytesRead = 0;
+			// Yes, I feel dirty for not finding the size of the file by hand
+			// here.
+			// I'm in a hurry.
+			// Yes, I know I'll burn in hell. Unless Jesus saves me. Which he
+			// has. Thanks!
+			while (totalBytesRead < lazy) {
+				numBytesRead = in.read(imageData, totalBytesRead, lazy);
+				totalBytesRead += numBytesRead;
+			}
+			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return imageData;
+	}
+
+	public void setupTimer() {
 		timer = new Timer(session.getTimeDelayAnswer(), timerAction);
 		timer.setInitialDelay(session.getTimeDelayPrompt());
 		timer.setRepeats(true);
 		timer.start();
+	}
+
+	public void setupCenterButton() {
+		// TODO: Call this when we get a new session file read in....
+		CategoryItem first = itemQueue.remove();
+		try {
+			imgIconCenter = new ImageIcon(first.getImgFile().getCanonicalPath());
+		} catch (IOException e) {
+			log.error(
+					"Odd, this error should not happen.  Can't find the first image",
+					e);
+			e.printStackTrace();
+		}
+		// centerButton = new JButton(imgIconCenter);
+		centerButton.setIcon(imgIconCenter);
+		centerButton.setPreferredSize(session.getMaxDimensions());
+	}
+
+	private void setupActions(MediatorListener mediator) {
+		// TODO: Fix bug that control A does not toggle the checkbox
+		attendingAction = new ActionRecorder(
+				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
+				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
+						KeyEvent.VK_F1), KeyStroke.getKeyStroke("control A"),
+				Mediator.ATTENDING, mediator);
+		independentAction = new ActionRecorder(
+				Messages.getString("Gui.Independent"), null, //$NON-NLS-1$
+				Messages.getString("Gui.IndependentDescription"), new Integer( //$NON-NLS-1$
+						KeyEvent.VK_F2), KeyStroke.getKeyStroke("control I"),
+				Mediator.INDEPENDENT, mediator);
+		verbalAction = new ActionRecorder(
+				Messages.getString("Gui.Verbal"), null, //$NON-NLS-1$
+				Messages.getString("Gui.VerbalDescription"), //$NON-NLS-1$
+				new Integer(KeyEvent.VK_F3),
+				KeyStroke.getKeyStroke("control V"), Mediator.VERBAL, mediator);
+		modelingAction = new ActionRecorder(
+				Messages.getString("Gui.Modeling"), null, //$NON-NLS-1$
+				Messages.getString("Gui.ModelingDescriptin"), new Integer( //$NON-NLS-1$
+						KeyEvent.VK_F4), KeyStroke.getKeyStroke("control M"),
+				Mediator.MODELING, mediator);
+		noAnswerAction = new ActionRecorder(
+				Messages.getString("Gui.NoAnswer"), null, //$NON-NLS-1$
+				Messages.getString("Gui.NoAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
+				KeyStroke.getKeyStroke("control N"), Mediator.NO_ANSWER,
+				mediator);
+
+		quitAction = new ActionRecorder(Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
+				Messages.getString("Gui.QuitDescriptino"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
+				KeyStroke.getKeyStroke("control Q"), Mediator.QUIT, mediator);
+
+		timerAction = new ActionRecorder(
+				Messages.getString("Gui.TimerSwing"), null, //$NON-NLS-1$
+				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
+				KeyStroke.getKeyStroke("control F2"), Mediator.TIMER, mediator);
+
+		openAction = new ActionRecorder(Messages.getString("Gui.Open"), null, //$NON-NLS-1$
+				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
+				new Integer(KeyEvent.VK_L),
+				KeyStroke.getKeyStroke("control O"), Mediator.OPEN, mediator);
+
+	}
+
+	public void run(Session session) {
+
 	}
 
 	public void playSound(File file) {
@@ -219,9 +265,7 @@ public class Gui {
 	public void switchImage(File file) {
 
 		try {
-			frame.setTitle(frameTitle
-					+ String.format("%d of %d", itemQueue.size() + 1, //$NON-NLS-1$
-							session.getItems().length));
+			setFrameTitle();
 			centerButton.setIcon(new ImageIcon(file.getCanonicalPath()));
 		} catch (IOException e) {
 			log.error(
@@ -229,6 +273,12 @@ public class Gui {
 					e);
 			e.printStackTrace();
 		}
+	}
+
+	private void setFrameTitle() {
+		frame.setTitle(frameTitle
+				+ String.format("%d of %d", itemQueue.size() + 1, //$NON-NLS-1$
+						session.getItems().length));
 	}
 
 	public Session getSession() {
@@ -259,4 +309,69 @@ public class Gui {
 		frame.setVisible(b);
 
 	}
+
+	public void openSession() {
+		File file;
+		// TODO: Remove hard coded directory.
+		// TODO: Get application to remember the last place we opened this...
+		JFileChooser chooser = new JFileChooser(new File(
+				"/Users/mgpayne/MMI/src/test/resources"));
+		int returnVal = chooser.showOpenDialog(frame);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			file = chooser.getSelectedFile();
+			try {
+				readSessionFile(file);
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(frame, String.format(
+						"Problem reading %s exception was %s", file, e));
+				e.printStackTrace();
+			}
+		}
+
+		if (null != session) {
+			this.session = session;
+			CategoryItem[] copy = Arrays.copyOf(session.getItems(),
+					session.getItems().length);
+			for (int i = 0; i < session.getShuffleCount(); ++i) {
+				Shuffler.shuffle(copy);
+			}
+			itemQueue = new ConcurrentLinkedQueue<CategoryItem>();
+			for (CategoryItem item : copy) {
+				// TODO: Is there a collections add all I could use here?
+				itemQueue.add(item);
+			}
+			mediator.setSession(session);
+			setupCenterButton();
+			setFrameTitle();
+			refreshGui();
+			setupTimer();
+		}
+	}
+
+	private void readSessionFile(File file) throws Exception {
+		Properties props = new Properties();
+		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
+		// Do it this way and no relative path huha is needed.
+		InputStream in = this.getClass().getClassLoader()
+				.getResourceAsStream(MainGui.propFile);
+		props.load(new InputStreamReader(in));
+		String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
+
+		ObjectMapper mapper = new ObjectMapper();
+		AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
+		mapper.getDeserializationConfig().withAnnotationIntrospector(
+				introspector);
+		mapper.getSerializationConfig()
+				.withAnnotationIntrospector(introspector);
+		SessionConfig config = mapper.readValue(new FileInputStream(file),
+				SessionConfig.class);
+		session = new Session(config, sndExts);
+	}
+
+	void refreshGui() {
+
+		mainPanel.revalidate();
+		frame.pack();
+	}
+
 }

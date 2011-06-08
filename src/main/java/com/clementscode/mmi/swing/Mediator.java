@@ -13,6 +13,7 @@ import com.clementscode.mmi.data.SessionData;
 import com.clementscode.mmi.data.SessionDataCollector;
 import com.clementscode.mmi.data.SessionDataCollector.RespType;
 import com.clementscode.mmi.res.CategoryItem;
+import com.clementscode.mmi.res.Session;
 
 /*
 
@@ -48,8 +49,12 @@ public class Mediator implements MediatorListener {
 
 	public Mediator(Gui gui) {
 		this.gui = gui;
-		collector = new SessionDataCollector(gui.getSession().getName(), gui
-				.getSession().getDescription());
+
+	}
+
+	public void setSession(Session session) {
+		collector = new SessionDataCollector(session.getName(),
+				session.getDescription());
 		item = gui.getItemQueue().remove();
 	}
 
@@ -95,6 +100,7 @@ public class Mediator implements MediatorListener {
 			timer();
 			break;
 		case OPEN:
+			gui.openSession();
 			break;
 		}
 		if (hit) {

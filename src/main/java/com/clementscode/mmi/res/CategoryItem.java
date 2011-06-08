@@ -42,6 +42,8 @@ public class CategoryItem {
 	}
 
 	protected BufferedImage readImage(File f) throws IOException {
+		System.out.println(String.format("About to read file='%s'",
+				f.getCanonicalPath()));
 		return ImageIO.read(f);
 	}
 
