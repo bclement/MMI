@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.Queue;
@@ -19,6 +20,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -66,6 +68,8 @@ public class Gui {
 	private Mediator mediator;
 	private ActionRecorder openHttpAction;
 	private File tmpDir;
+	private ArrayList<JComponent> lstButtons;
+	private ImageIcon iiSmilingFace;
 
 	public Gui() {
 		String tmpDirStr = "/tmp/mmi";
@@ -79,6 +83,19 @@ public class Gui {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().add(mainPanel);
 		setupMenus();
+		disableButtons();
+	}
+
+	private void disableButtons() {
+		for (JComponent jc : lstButtons) {
+			jc.setEnabled(false);
+		}
+	}
+
+	private void enableButtons() {
+		for (JComponent jc : lstButtons) {
+			jc.setEnabled(true);
+		}
 	}
 
 	private void setupMenus() {
@@ -135,14 +152,12 @@ public class Gui {
 		JPanel southPanel = new JPanel();
 		attending = new JCheckBox(attendingAction);
 		southPanel.add(attending);
-		JButton responseButton = new JButton(independentAction);
-		southPanel.add(responseButton);
-		responseButton = new JButton(verbalAction);
-		southPanel.add(responseButton);
-		responseButton = new JButton(modelingAction);
-		southPanel.add(responseButton);
-		responseButton = new JButton(noAnswerAction);
-		southPanel.add(responseButton);
+		lstButtons = new ArrayList<JComponent>();
+		lstButtons.add(attending);
+		addButton(southPanel, independentAction);
+		addButton(southPanel, verbalAction);
+		addButton(southPanel, modelingAction);
+		addButton(southPanel, noAnswerAction);
 
 		// http://download.oracle.com/javase/tutorial/uiswing/misc/action.html
 
@@ -161,16 +176,16 @@ public class Gui {
 			e.printStackTrace();
 		}
 
-		ImageIcon ii = null;
+		iiSmilingFace = null;
 
 		if (null != imageData) {
-			ii = new ImageIcon(imageData);
+			iiSmilingFace = new ImageIcon(imageData);
 		}
 
 		if (null == imageData) {
 			try {
 
-				ii = new ImageIcon(new URL(
+				iiSmilingFace = new ImageIcon(new URL(
 						"http://MattPayne.org/mmi/happy-face.jpg"));
 
 			} catch (Exception e) {
@@ -179,10 +194,22 @@ public class Gui {
 			}
 		}
 
-		centerButton = new JButton(ii);
+		centerButton = new JButton(iiSmilingFace);
 		panel.add(centerButton, BorderLayout.CENTER);
 
 		return panel;
+	}
+
+	public void backToStartScreen() {
+		centerButton.setIcon(iiSmilingFace);
+		refreshGui();
+		disableButtons();
+	}
+
+	private void addButton(JPanel southPanel, ActionRecorder independentAction2) {
+		JButton responseButton = new JButton(independentAction2);
+		southPanel.add(responseButton);
+		lstButtons.add(responseButton);
 	}
 
 	private byte[] readImageDataFromClasspath(String fileName, int lazy)
@@ -218,8 +245,8 @@ public class Gui {
 	}
 
 	public void setupTimer() {
-		timer = new Timer(session.getTimeDelayAnswer(), timerAction);
-		timer.setInitialDelay(session.getTimeDelayPrompt());
+		timer = new Timer(session.getTimeDelayAnswer() * 1000, timerAction);
+		timer.setInitialDelay(session.getTimeDelayPrompt() * 1000);
 		timer.setRepeats(true);
 		timer.start();
 	}
@@ -398,6 +425,7 @@ public class Gui {
 			setFrameTitle();
 			refreshGui();
 			setupTimer();
+			enableButtons();
 		}
 	}
 
@@ -460,6 +488,7 @@ public class Gui {
 					tempZipFile.getAbsolutePath());
 			readSessionFile(new File(zipPath + "/session.txt"), zipPath);
 			useNewSession();
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
