@@ -1,6 +1,8 @@
 package com.clementscode.mmi.swing;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,7 +48,7 @@ import com.clementscode.mmi.res.SessionConfig;
 import com.clementscode.mmi.sound.SoundUtility;
 import com.clementscode.mmi.util.Shuffler;
 
-public class Gui {
+public class Gui implements ActionListener {
 	private ImageIcon imgIconCenter;
 	private JButton centerButton;
 	private Queue<CategoryItem> itemQueue = null;
@@ -69,7 +71,7 @@ public class Gui {
 	private ActionRecorder openHttpAction;
 	private File tmpDir;
 	private ArrayList<JComponent> lstButtons;
-	private ImageIcon iiSmilingFace;
+	private ImageIcon iiSmilingFace, iiSmilingFaceClickToBegin;
 
 	public Gui() {
 		String tmpDirStr = "/tmp/mmi";
@@ -167,9 +169,12 @@ public class Gui {
 		// the answer audio) or the child did not answer.
 		panel.add(southPanel, BorderLayout.SOUTH);
 		byte[] imageData = null;
+		byte[] imageDataClickToBegin = null;
 		try {
 			imageData = readImageDataFromClasspath("images/a-happy-face.jpg",
 					17833);
+			imageDataClickToBegin = readImageDataFromClasspath(
+					"images/a-happy-face-click-to-begin.jpg", 30055);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.out.println("Could not find image from classpath...");
@@ -180,12 +185,15 @@ public class Gui {
 
 		if (null != imageData) {
 			iiSmilingFace = new ImageIcon(imageData);
+			iiSmilingFaceClickToBegin = new ImageIcon(imageDataClickToBegin);
 		}
 
 		if (null == imageData) {
 			try {
 
 				iiSmilingFace = new ImageIcon(new URL(
+						"http://MattPayne.org/mmi/happy-face.jpg"));
+				iiSmilingFaceClickToBegin = new ImageIcon(new URL(
 						"http://MattPayne.org/mmi/happy-face.jpg"));
 
 			} catch (Exception e) {
@@ -195,6 +203,7 @@ public class Gui {
 		}
 
 		centerButton = new JButton(iiSmilingFace);
+		centerButton.addActionListener(this);
 		panel.add(centerButton, BorderLayout.CENTER);
 
 		return panel;
@@ -404,10 +413,12 @@ public class Gui {
 				e.printStackTrace();
 			}
 		}
-		useNewSession();
+		displayClickToBegin();
 	}
 
 	public void useNewSession() {
+		centerButton.removeActionListener(this);
+		centerButton.setText("");
 		if (null != session) {
 
 			CategoryItem[] copy = Arrays.copyOf(session.getItems(),
@@ -423,6 +434,7 @@ public class Gui {
 			mediator.setSession(session);
 			setupCenterButton();
 			setFrameTitle();
+
 			refreshGui();
 			setupTimer();
 			enableButtons();
@@ -487,12 +499,21 @@ public class Gui {
 			ExtractFileSubDirectories.unzip(zipPath,
 					tempZipFile.getAbsolutePath());
 			readSessionFile(new File(zipPath + "/session.txt"), zipPath);
-			useNewSession();
+
+			displayClickToBegin();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private void displayClickToBegin() {
+		centerButton.setEnabled(true);
+		centerButton.setIcon(iiSmilingFaceClickToBegin);
+		centerButton.setText("Click to Begin");
+		centerButton.invalidate();
+		refreshGui();
 	}
 
 	private File fetchViaHttp(String strUrl) throws IOException {
@@ -515,6 +536,13 @@ public class Gui {
 		out.close();
 		in.close();
 		return tempZipFile;
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		if (centerButton == e.getSource()) {
+			useNewSession();
+		}
+
 	}
 
 }
