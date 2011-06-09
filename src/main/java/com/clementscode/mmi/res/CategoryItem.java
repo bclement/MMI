@@ -41,9 +41,18 @@ public class CategoryItem {
 		this.img = readImage(imgFile);
 	}
 
+	public CategoryItem(File imgFile, BufferedImage img, File audio)
+			throws IOException {
+		// for unit tests
+		super();
+		this.audio = audio;
+		this.imgFile = imgFile;
+		this.img = img;
+	}
+
 	protected BufferedImage readImage(File f) throws IOException {
-		System.out.println(String.format("About to read file='%s'",
-				f.getCanonicalPath()));
+		System.out.println(String.format("About to read file='%s'", f
+				.getCanonicalPath()));
 		return ImageIO.read(f);
 	}
 
