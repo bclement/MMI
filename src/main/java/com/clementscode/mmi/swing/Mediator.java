@@ -108,6 +108,7 @@ public class Mediator implements MediatorListener {
 			break;
 		}
 		if (hit) {
+			gui.getTimer().stop(); // hope this is a fix to issue #4
 			if (gui.getItemQueue().size() == 0) {
 				// TODO: Have filename come from session
 				String fileName = System.getProperty("user.home")
@@ -128,6 +129,7 @@ public class Mediator implements MediatorListener {
 
 				// System.exit(0);
 				gui.backToStartScreen();
+				gui.getTimer().stop();
 			} else {
 				item = gui.getItemQueue().remove();
 				gui.switchImage(item.getImgFile());

@@ -210,6 +210,7 @@ public class Gui implements ActionListener {
 	}
 
 	public void backToStartScreen() {
+		frame.setTitle(frameTitle);
 		centerButton.setIcon(iiSmilingFace);
 		refreshGui();
 		disableButtons();
@@ -254,6 +255,9 @@ public class Gui implements ActionListener {
 	}
 
 	public void setupTimer() {
+		if (null != timer) {
+			timer.stop(); // fix for issue #
+		}
 		timer = new Timer(session.getTimeDelayAnswer() * 1000, timerAction);
 		timer.setInitialDelay(session.getTimeDelayPrompt() * 1000);
 		timer.setRepeats(true);
@@ -510,6 +514,7 @@ public class Gui implements ActionListener {
 
 	private void displayClickToBegin() {
 		centerButton.setEnabled(true);
+		centerButton.addActionListener(this); // fix for issue #3
 		centerButton.setIcon(iiSmilingFaceClickToBegin);
 		centerButton.setText("Click to Begin");
 		centerButton.invalidate();
