@@ -39,8 +39,8 @@ public class SessionDataCollectorTest {
 	public SessionDataCollectorTest() throws IOException {
 		tmp = File.createTempFile("foo", "bar");
 		tmp1 = File.createTempFile("foo", "bar");
-		item1 = new CategoryItem(tmp, tmp);
-		item2 = new CategoryItem(tmp1, tmp1);
+		item1 = new CategoryItem(tmp, null, tmp);
+		item2 = new CategoryItem(tmp1, null, tmp1);
 	}
 
 	@Test

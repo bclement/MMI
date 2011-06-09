@@ -7,7 +7,7 @@ package com.clementscode.mmi;
  * @author bclement
  * 
  */
-public class TestUtils {
+public class MockUtils {
 	public static final String resPath = "src/test/resources";
 
 	public static final String itempath = resPath + "/bc/animals/fooduck";
