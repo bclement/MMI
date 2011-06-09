@@ -256,7 +256,7 @@ public class Gui implements ActionListener {
 
 	public void setupTimer() {
 		if (null != timer) {
-			timer.stop(); // fix for issue #
+			timer.stop(); // fix for issue #4
 		}
 		timer = new Timer(session.getTimeDelayAnswer() * 1000, timerAction);
 		timer.setInitialDelay(session.getTimeDelayPrompt() * 1000);
