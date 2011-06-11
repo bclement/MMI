@@ -55,6 +55,7 @@ import com.clementscode.mmi.util.Shuffler;
 import com.clementscode.mmi.util.Utils;
 
 public class Gui implements ActionListener {
+	private static final String BROWSE_SESSION_DATA_FILE = "BROWSE_SESSION_DATA_FILE";
 	private ImageIcon imgIconCenter;
 	private JButton centerButton;
 	private Queue<CategoryItem> itemQueue = null;
@@ -185,14 +186,20 @@ public class Gui implements ActionListener {
 		belowSouthPanel.setLayout(new GridLayout(0, 1));
 		tfSessionName = new JTextField(30);
 		if (null != session) {
-
 			tfSessionName.setText(session.getSessionName());
+		} else {
+			tfSessionName.setText("ADTV Study " + new java.util.Date());
 		}
 		belowSouthPanel.add(new LabelAndField("Session Name: ", tfSessionName));
 		tfSessionDataFile = new JTextField(30);
 		try {
-			tfSessionDataFile.setText(session.getSessionDataFile()
-					.getCanonicalPath());
+			if (null != session) {
+				tfSessionDataFile.setText(session.getSessionDataFile()
+						.getCanonicalPath());
+			} else {
+				tfSessionDataFile.setText(System.getProperty("user.home")
+						+ "/adtv.csv");
+			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -201,8 +208,8 @@ public class Gui implements ActionListener {
 		midBelowSouthPanel.add(new LabelAndField("Session Data File: ",
 				tfSessionDataFile));
 		JButton browse = new JButton("Browse...");
-		// browse.setActionCommand(BROWSE_IMAGE_FILE);
-		// browse.addActionListener(this);
+		browse.setActionCommand(BROWSE_SESSION_DATA_FILE);
+		browse.addActionListener(this);
 		midBelowSouthPanel.add(browse);
 		belowSouthPanel.add(midBelowSouthPanel);
 		clickToStartButton = new JButton("Click to Start");
@@ -625,6 +632,24 @@ public class Gui implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (clickToStartButton == e.getSource()) {
 			useNewSession();
+		} else if (BROWSE_SESSION_DATA_FILE.equals(e.getActionCommand())) {
+			chooseSessionDataFile();
+		}
+
+	}
+
+	private void chooseSessionDataFile() {
+		JFileChooser chooser = new JFileChooser(new File(
+				tfSessionDataFile.getText()));
+		int returnVal = chooser.showSaveDialog(frame);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			File file = chooser.getSelectedFile();
+			try {
+				tfSessionDataFile.setText(file.getCanonicalPath());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 	}
