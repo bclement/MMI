@@ -541,7 +541,8 @@ public class Gui implements ActionListener {
 	public void openHttpSession() {
 		// Started with clues from
 		// http://download.oracle.com/javase/tutorial/uiswing/components/dialog.html
-		Object[] possibilities = { "http://MattPayne.org/mmi/mp.zip",
+		Object[] possibilities = { "http://MattPayne.org/mmi/demo1.zip",
+				"http://MattPayne.org/mmi/mp.zip",
 				"http://MattPayne.org/mmi/bc.zip", "more to come later..." };
 		String s = (String) JOptionPane.showInputDialog(frame,
 				"Complete the sentence:\n" + "\"Green eggs and...\"",
