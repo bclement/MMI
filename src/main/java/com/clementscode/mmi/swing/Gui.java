@@ -1,6 +1,7 @@
 package com.clementscode.mmi.swing;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -493,6 +494,7 @@ public class Gui implements ActionListener {
 	public void useNewSession() {
 		centerButton.removeActionListener(this);
 		clickToStartButton.setEnabled(false);
+		clickToStartButton.setForeground(Color.white);
 		// centerButton.setText("");
 		if (null != session) {
 
@@ -594,6 +596,7 @@ public class Gui implements ActionListener {
 		// centerButton.setText("Click to Begin");
 		centerButton.invalidate();
 		clickToStartButton.setEnabled(true);
+		clickToStartButton.setForeground(Color.red);
 		refreshGui();
 	}
 
