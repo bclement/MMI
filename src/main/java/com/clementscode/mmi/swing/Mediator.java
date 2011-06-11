@@ -133,6 +133,7 @@ public class Mediator implements MediatorListener {
 			} else {
 				item = gui.getItemQueue().remove();
 				gui.switchImage(item.getImgFile());
+				gui.switchImage(item.getImg());
 				// TODO: There may be different times between sessions....
 				gui.getTimer().start();
 			}

@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -270,10 +271,9 @@ public class Gui implements ActionListener {
 		try {
 			imgIconCenter = new ImageIcon(first.getImgFile().getCanonicalPath());
 		} catch (IOException e) {
-			log
-					.error(
-							"Odd, this error should not happen.  Can't find the first image",
-							e);
+			log.error(
+					"Odd, this error should not happen.  Can't find the first image",
+					e);
 			e.printStackTrace();
 		}
 		// centerButton = new JButton(imgIconCenter);
@@ -283,21 +283,21 @@ public class Gui implements ActionListener {
 
 	private void setupActions(MediatorListener mediator) {
 		// TODO: Fix bug that control A does not toggle the checkbox
-		attendingAction = new ActionRecorder(Messages
-				.getString("Gui.Attending"), null, //$NON-NLS-1$
+		attendingAction = new ActionRecorder(
+				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
 				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_F1), KeyStroke.getKeyStroke("control A"),
 				Mediator.ATTENDING, mediator);
-		independentAction = new ActionRecorder(Messages
-				.getString("Gui.Independent"), null, //$NON-NLS-1$
+		independentAction = new ActionRecorder(
+				Messages.getString("Gui.Independent"), null, //$NON-NLS-1$
 				Messages.getString("Gui.IndependentDescription"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_F2), KeyStroke.getKeyStroke("control I"),
 				Mediator.INDEPENDENT, mediator);
 		verbalAction = new ActionRecorder(
 				Messages.getString("Gui.Verbal"), null, //$NON-NLS-1$
 				Messages.getString("Gui.VerbalDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_F3), KeyStroke
-						.getKeyStroke("control V"), Mediator.VERBAL, mediator);
+				new Integer(KeyEvent.VK_F3),
+				KeyStroke.getKeyStroke("control V"), Mediator.VERBAL, mediator);
 		modelingAction = new ActionRecorder(
 				Messages.getString("Gui.Modeling"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ModelingDescriptin"), new Integer( //$NON-NLS-1$
@@ -309,8 +309,7 @@ public class Gui implements ActionListener {
 				KeyStroke.getKeyStroke("control N"), Mediator.NO_ANSWER,
 				mediator);
 
-		quitAction = new ActionRecorder(
-				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
+		quitAction = new ActionRecorder(Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
 				Messages.getString("Gui.QuitDescriptino"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
 				KeyStroke.getKeyStroke("control Q"), Mediator.QUIT, mediator);
 
@@ -355,15 +354,32 @@ public class Gui implements ActionListener {
 	}
 
 	public void switchImage(File file) {
-
 		try {
-			setFrameTitle();
-			centerButton.setIcon(new ImageIcon(file.getCanonicalPath()));
+			switchImage(new ImageIcon(file.getCanonicalPath()));
 		} catch (IOException e) {
-			log.error(String.format("Problem switching image to file='%s'",
-					file), e);
+			log.error(
+					String.format("Problem switching image to file='%s'", file),
+					e);
 			e.printStackTrace();
 		}
+	}
+
+	public void switchImage(ImageIcon ii) {
+		setFrameTitle();
+		centerButton.setIcon(ii);
+
+	}
+
+	/*
+	 * They use bmp images which don't display with the program right now. I
+	 * looked at the code and noticed that you don't use the 'img' field of the
+	 * CategoryItem. You use the image file to get a path to the image and read
+	 * it in again using an icon. I suspect that it will work better if you use
+	 * the image that ImageIO already read into memory.
+	 */
+	public void switchImage(BufferedImage img) {
+		ImageIcon ii = new ImageIcon(img);
+		switchImage(ii);
 	}
 
 	private void setFrameTitle() {
@@ -426,8 +442,8 @@ public class Gui implements ActionListener {
 		centerButton.setText("");
 		if (null != session) {
 
-			CategoryItem[] copy = Arrays.copyOf(session.getItems(), session
-					.getItems().length);
+			CategoryItem[] copy = Arrays.copyOf(session.getItems(),
+					session.getItems().length);
 			for (int i = 0; i < session.getShuffleCount(); ++i) {
 				Shuffler.shuffle(copy);
 			}
@@ -455,8 +471,8 @@ public class Gui implements ActionListener {
 		Properties props = new Properties();
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader().getResourceAsStream(
-				MainGui.propFile);
+		InputStream in = this.getClass().getClassLoader()
+				.getResourceAsStream(MainGui.propFile);
 		props.load(new InputStreamReader(in));
 		String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
 
@@ -500,10 +516,9 @@ public class Gui implements ActionListener {
 		try {
 			File tempZipFile = fetchViaHttp(strUrl);
 			String zipPath = File.createTempFile("mmi", "", tmpDir)
-					.getAbsolutePath()
-					+ ".dir";
-			ExtractFileSubDirectories.unzip(zipPath, tempZipFile
-					.getAbsolutePath());
+					.getAbsolutePath() + ".dir";
+			ExtractFileSubDirectories.unzip(zipPath,
+					tempZipFile.getAbsolutePath());
 			readSessionFile(new File(zipPath + "/session.txt"), zipPath);
 
 			displayClickToBegin();
