@@ -14,6 +14,8 @@ import java.io.IOException;
 public class Session {
 
 	protected String name;
+	protected String sessionName;
+	protected File sessionDataFile;
 
 	protected CategoryItem[] items;
 
@@ -253,6 +255,22 @@ public class Session {
 	 */
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getSessionName() {
+		return sessionName;
+	}
+
+	public void setSessionName(String sessionName) {
+		this.sessionName = sessionName;
+	}
+
+	public File getSessionDataFile() {
+		return sessionDataFile;
+	}
+
+	public void setSessionDataFile(File sessionDataFile) {
+		this.sessionDataFile = sessionDataFile;
 	}
 
 }

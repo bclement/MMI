@@ -1,6 +1,7 @@
 package com.clementscode.mmi.swing;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -31,6 +32,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
@@ -73,6 +75,9 @@ public class Gui implements ActionListener {
 	private File tmpDir;
 	private ArrayList<JComponent> lstButtons;
 	private ImageIcon iiSmilingFace, iiSmilingFaceClickToBegin;
+	private JTextField tfSessionName;
+	private JTextField tfSessionDataFile;
+	private JButton clickToStartButton;
 
 	public Gui() {
 		String tmpDirStr = "/tmp/mmi";
@@ -153,6 +158,7 @@ public class Gui implements ActionListener {
 		panel.setLayout(new BorderLayout());
 
 		JPanel southPanel = new JPanel();
+
 		attending = new JCheckBox(attendingAction);
 		southPanel.add(attending);
 		lstButtons = new ArrayList<JComponent>();
@@ -161,6 +167,34 @@ public class Gui implements ActionListener {
 		addButton(southPanel, verbalAction);
 		addButton(southPanel, modelingAction);
 		addButton(southPanel, noAnswerAction);
+		JPanel belowSouthPanel = new JPanel();
+		belowSouthPanel.setLayout(new GridLayout(0, 1));
+		tfSessionName = new JTextField(30);
+		if (null != session) {
+
+			tfSessionName.setText(session.getSessionName());
+		}
+		belowSouthPanel.add(new LabelAndField("Session Name: ", tfSessionName));
+		tfSessionDataFile = new JTextField(30);
+		try {
+			tfSessionDataFile.setText(session.getSessionDataFile()
+					.getCanonicalPath());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		JPanel midBelowSouthPanel = new JPanel();
+		midBelowSouthPanel.add(new LabelAndField("Session Data File: ",
+				tfSessionDataFile));
+		JButton browse = new JButton("Browse...");
+		// browse.setActionCommand(BROWSE_IMAGE_FILE);
+		// browse.addActionListener(this);
+		midBelowSouthPanel.add(browse);
+		belowSouthPanel.add(midBelowSouthPanel);
+		clickToStartButton = new JButton("Click to Start");
+		belowSouthPanel.add(clickToStartButton);
+		clickToStartButton.setEnabled(false);
+		clickToStartButton.addActionListener(this);
 
 		// http://download.oracle.com/javase/tutorial/uiswing/misc/action.html
 
@@ -168,7 +202,13 @@ public class Gui implements ActionListener {
 		// answered before the prompt audio), verbal (child answered after the
 		// prompt but before the answer), modeling (child answered anytime after
 		// the answer audio) or the child did not answer.
-		panel.add(southPanel, BorderLayout.SOUTH);
+
+		JPanel southContainerPanel = new JPanel();
+		southContainerPanel.setLayout(new GridLayout(0, 1));
+		southContainerPanel.add(southPanel);
+		southContainerPanel.add(belowSouthPanel);
+
+		panel.add(southContainerPanel, BorderLayout.SOUTH);
 		byte[] imageData = null;
 		byte[] imageDataClickToBegin = null;
 		try {
@@ -439,7 +479,8 @@ public class Gui implements ActionListener {
 
 	public void useNewSession() {
 		centerButton.removeActionListener(this);
-		centerButton.setText("");
+		clickToStartButton.setEnabled(false);
+		// centerButton.setText("");
 		if (null != session) {
 
 			CategoryItem[] copy = Arrays.copyOf(session.getItems(),
@@ -531,10 +572,11 @@ public class Gui implements ActionListener {
 
 	private void displayClickToBegin() {
 		centerButton.setEnabled(true);
-		centerButton.addActionListener(this); // fix for issue #3
+		// centerButton.addActionListener(this); // fix for issue #3
 		centerButton.setIcon(iiSmilingFaceClickToBegin);
-		centerButton.setText("Click to Begin");
+		// centerButton.setText("Click to Begin");
 		centerButton.invalidate();
+		clickToStartButton.setEnabled(true);
 		refreshGui();
 	}
 
@@ -561,7 +603,7 @@ public class Gui implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (centerButton == e.getSource()) {
+		if (clickToStartButton == e.getSource()) {
 			useNewSession();
 		}
 
