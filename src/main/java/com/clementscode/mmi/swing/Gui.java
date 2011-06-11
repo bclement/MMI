@@ -609,4 +609,16 @@ public class Gui implements ActionListener {
 
 	}
 
+	public void populateSessionName() {
+		session.setSessionName(tfSessionName.getText());
+
+	}
+
+	public void populateSessionDataFile() {
+		String fileName = System.getProperty("user.home") + "/brian.csv";
+		String str = tfSessionDataFile.getText();
+		str = "".equals(str) ? fileName : str;
+		session.setSessionDataFile(new File(str));
+	}
+
 }

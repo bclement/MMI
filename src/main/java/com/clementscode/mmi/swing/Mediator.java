@@ -110,11 +110,13 @@ public class Mediator implements MediatorListener {
 		if (hit) {
 			gui.getTimer().stop(); // hope this is a fix to issue #4
 			if (gui.getItemQueue().size() == 0) {
-				// TODO: Have filename come from session
-				String fileName = System.getProperty("user.home")
-						+ "/brian.csv";
+
+				gui.populateSessionName();
+				gui.populateSessionDataFile();
+
+				File csvFile = null;
 				try {
-					File csvFile = new File(fileName);
+					csvFile = gui.getSession().getSessionDataFile();
 					CSVWriter csvWriter = new CSVWriter(new FileWriter(csvFile,
 							true)); // true -- I want to append.
 					SessionData data = collector.getData();
@@ -123,7 +125,8 @@ public class Mediator implements MediatorListener {
 					System.out.println("Wrote to " + csvFile);
 				} catch (IOException e) {
 					log.error(String.format(
-							"Problem writting stats to file='%s'", fileName), e);
+							"Problem writting stats to file='%s'",
+							csvFile.getAbsolutePath()), e);
 					e.printStackTrace();
 				}
 
@@ -132,7 +135,7 @@ public class Mediator implements MediatorListener {
 				gui.getTimer().stop();
 			} else {
 				item = gui.getItemQueue().remove();
-				gui.switchImage(item.getImgFile());
+				// gui.switchImage(item.getImgFile());
 				gui.switchImage(item.getImg());
 				// TODO: There may be different times between sessions....
 				gui.getTimer().start();
