@@ -42,6 +42,7 @@ import junk.ExtractFileSubDirectories;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
@@ -55,6 +56,9 @@ import com.clementscode.mmi.util.Shuffler;
 import com.clementscode.mmi.util.Utils;
 
 public class Gui implements ActionListener {
+
+	private Logger logger = Logger.getLogger(this.getClass().getName());
+
 	private static final String BROWSE_SESSION_DATA_FILE = "BROWSE_SESSION_DATA_FILE";
 	private ImageIcon imgIconCenter;
 	private JButton centerButton;
@@ -84,7 +88,12 @@ public class Gui implements ActionListener {
 	private JButton clickToStartButton;
 	private List<String> lstTempDirectories;
 
+	private LoggingFrame loggingFrame;
+
+	private ActionRecorder showLoggingFrameAction;
+
 	public Gui() {
+		loggingFrame = new LoggingFrame();
 		String tmpDirStr = "/tmp/mmi";
 		tmpDir = new File(tmpDirStr);
 		tmpDir.mkdirs();
@@ -144,6 +153,9 @@ public class Gui implements ActionListener {
 		 */
 		menuItem = new JMenuItem(quitAction);
 		menuItem.setMnemonic(KeyEvent.VK_B);
+		menu.add(menuItem);
+
+		menuItem = new JMenuItem(showLoggingFrameAction);
 		menu.add(menuItem);
 
 		menuBar.add(menu);
@@ -239,7 +251,7 @@ public class Gui implements ActionListener {
 					"images/a-happy-face-click-to-begin.jpg", 30055);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("Could not find image from classpath...");
+			logger.warn("Could not find image from classpath...", e);
 			e.printStackTrace();
 		}
 
@@ -390,6 +402,13 @@ public class Gui implements ActionListener {
 				new Integer(KeyEvent.VK_L),
 				KeyStroke.getKeyStroke("control H"), Mediator.OPEN_HTTP,
 				mediator);
+
+		showLoggingFrameAction = new ActionRecorder(
+				Messages.getString("Gui.Open.ShowLoggingFrame"), null, //$NON-NLS-1$
+				Messages.getString("Gui.ShowLoggingFrameDescription"), //$NON-NLS-1$
+				new Integer(KeyEvent.VK_L),
+				KeyStroke.getKeyStroke("control D"),
+				Mediator.SHOW_LOGGING_FRAME, mediator);
 
 	}
 
@@ -664,6 +683,11 @@ public class Gui implements ActionListener {
 		String str = tfSessionDataFile.getText();
 		str = "".equals(str) ? fileName : str;
 		session.setSessionDataFile(new File(str));
+	}
+
+	public void showLoggingFrame() {
+		loggingFrame.setVisible(true);
+
 	}
 
 }
