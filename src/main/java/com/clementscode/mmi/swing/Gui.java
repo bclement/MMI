@@ -16,6 +16,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -50,6 +51,7 @@ import com.clementscode.mmi.res.Session;
 import com.clementscode.mmi.res.SessionConfig;
 import com.clementscode.mmi.sound.SoundUtility;
 import com.clementscode.mmi.util.Shuffler;
+import com.clementscode.mmi.util.Utils;
 
 public class Gui implements ActionListener {
 	private ImageIcon imgIconCenter;
@@ -78,6 +80,7 @@ public class Gui implements ActionListener {
 	private JTextField tfSessionName;
 	private JTextField tfSessionDataFile;
 	private JButton clickToStartButton;
+	private List<String> lstTempDirectories;
 
 	public Gui() {
 		String tmpDirStr = "/tmp/mmi";
@@ -92,6 +95,16 @@ public class Gui implements ActionListener {
 		frame.getContentPane().add(mainPanel);
 		setupMenus();
 		disableButtons();
+
+		lstTempDirectories = new ArrayList<String>();
+		// Register a shutdown thread
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			// This method is called during shutdown
+			public void run() {
+				// Do shutdown work ...
+				Utils.deleteTempDirectories(lstTempDirectories);
+			}
+		});
 	}
 
 	private void disableButtons() {
@@ -557,10 +570,13 @@ public class Gui implements ActionListener {
 
 		try {
 			File tempZipFile = fetchViaHttp(strUrl);
-			String zipPath = File.createTempFile("mmi", "", tmpDir)
-					.getAbsolutePath() + ".dir";
+			File tmp = File.createTempFile("mmi", "", tmpDir);
+			String zipPath = tmp.getAbsolutePath() + ".dir";
+			tmp.delete();
+			lstTempDirectories.add(zipPath);
 			ExtractFileSubDirectories.unzip(zipPath,
 					tempZipFile.getAbsolutePath());
+			tempZipFile.delete();
 			readSessionFile(new File(zipPath + "/session.txt"), zipPath);
 
 			displayClickToBegin();
