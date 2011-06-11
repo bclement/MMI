@@ -184,7 +184,7 @@ public class Gui implements ActionListener {
 		addButton(southPanel, noAnswerAction);
 		JPanel belowSouthPanel = new JPanel();
 		belowSouthPanel.setLayout(new GridLayout(0, 1));
-		tfSessionName = new JTextField(30);
+		tfSessionName = new JTextField(40);
 		if (null != session) {
 			tfSessionName.setText(session.getSessionName());
 		} else {
