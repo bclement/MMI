@@ -328,18 +328,7 @@ public class Gui implements ActionListener {
 		lstButtons.add(responseButton);
 	}
 
-	@Deprecated
-	protected byte[] readImageDataFromClasspath(String fileName, int lazy)
-			throws IOException {
 
-		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
-		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader().getResourceAsStream(
-				fileName);
-
-		return readImageDataFromInputStream(in, lazy);
-
-	}
 
 	private BufferedImage readImageDataFromClasspath(String fileName)
 			throws IOException {
@@ -352,26 +341,7 @@ public class Gui implements ActionListener {
 		return ImageIO.read(in);
 	}
 
-	@Deprecated
-	private byte[] readImageDataFromInputStream(InputStream in, int lazy)
-			throws IOException {
 
-		byte[] imageData = new byte[lazy];
-
-		int numBytesRead = 0, totalBytesRead = 0;
-		// Yes, I feel dirty for not finding the size of the file by hand
-		// here.
-		// I'm in a hurry.
-		// Yes, I know I'll burn in hell. Unless Jesus saves me. Which he
-		// has. Thanks!
-		while (totalBytesRead < lazy) {
-			numBytesRead = in.read(imageData, totalBytesRead, lazy);
-			totalBytesRead += numBytesRead;
-		}
-		in.close();
-
-		return imageData;
-	}
 
 	public void setupTimer() {
 		if (null != timer) {
@@ -499,16 +469,7 @@ public class Gui implements ActionListener {
 		return itemQueue;
 	}
 
-	@Deprecated
-	public void switchImage(File file) {
-		try {
-			switchImage(new ImageIcon(file.getCanonicalPath()));
-		} catch (IOException e) {
-			log.error(String.format("Problem switching image to file='%s'",
-					file), e);
-			e.printStackTrace();
-		}
-	}
+
 
 	public void switchImage(ImageIcon ii) {
 		setFrameTitle();
