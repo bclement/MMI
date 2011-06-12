@@ -12,8 +12,9 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class SoundUtility {
-	public static void playSound(File audio) throws UnsupportedAudioFileException,
-			IOException {
+	public static void playSound(File audio)
+			throws UnsupportedAudioFileException, IOException {
+
 		// this probably isn't the best way to play sound in java, but it seems
 		// to work
 		// TODO use whatever media framework the GUI person wants to use
@@ -56,4 +57,5 @@ public class SoundUtility {
 		}
 
 	}
+
 }

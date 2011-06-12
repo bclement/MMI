@@ -14,6 +14,7 @@ import com.clementscode.mmi.data.SessionDataCollector;
 import com.clementscode.mmi.data.SessionDataCollector.RespType;
 import com.clementscode.mmi.res.CategoryItem;
 import com.clementscode.mmi.res.Session;
+import com.clementscode.mmi.sound.SoundRunner;
 
 /*
 
@@ -48,6 +49,8 @@ public class Mediator implements MediatorListener {
 	private boolean playPrompt = true;
 	private SessionDataCollector collector;
 	private CategoryItem item;
+
+	private Thread soundThread = null;
 
 	public Mediator(Gui gui) {
 		this.gui = gui;
@@ -113,6 +116,7 @@ public class Mediator implements MediatorListener {
 		}
 		if (hit) {
 			gui.getTimer().stop(); // hope this is a fix to issue #4
+			stopSound();
 			if (gui.getItemQueue().size() == 0) {
 
 				gui.populateSessionName();
@@ -162,12 +166,26 @@ public class Mediator implements MediatorListener {
 	private void timer() {
 		if (playPrompt) {
 			playPrompt = false;
-			gui.playSound(gui.getSession().getPrompt());
+			startSound(gui.getSession().getPrompt());
 		} else {
 			playPrompt = true;
 
-			gui.playSound(item.getAudio());
+			startSound(item.getAudio());
 			gui.getTimer().stop();
+		}
+	}
+
+	private void startSound(File f) {
+		SoundRunner runner = new SoundRunner(f);
+		soundThread = new Thread(runner);
+		soundThread.start();
+	}
+
+	@SuppressWarnings("deprecation")
+	private void stopSound() {
+		if (soundThread != null) {
+			soundThread.stop();
+			soundThread = null;
 		}
 	}
 

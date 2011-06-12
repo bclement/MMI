@@ -23,7 +23,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.imageio.ImageIO;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -52,7 +51,6 @@ import com.clementscode.mmi.MainGui;
 import com.clementscode.mmi.res.CategoryItem;
 import com.clementscode.mmi.res.Session;
 import com.clementscode.mmi.res.SessionConfig;
-import com.clementscode.mmi.sound.SoundUtility;
 import com.clementscode.mmi.util.Shuffler;
 import com.clementscode.mmi.util.Utils;
 
@@ -431,18 +429,19 @@ public class Gui implements ActionListener {
 
 	}
 
-	public void playSound(File file) {
-		try {
-			SoundUtility.playSound(file);
-			// "src/test/resources/bc/animals/fooduck/answer.wav"));
-		} catch (UnsupportedAudioFileException e) {
-			log.error("Problem with playSound: " + file, e);
-			e.printStackTrace();
-		} catch (IOException e) {
-			log.error("Problem with playSound: " + file, e);
-			e.printStackTrace();
-		}
-	}
+	//
+	// public void playSound(File file) {
+	// try {
+	// SoundUtility.playSound(file);
+	// // "src/test/resources/bc/animals/fooduck/answer.wav"));
+	// } catch (UnsupportedAudioFileException e) {
+	// log.error("Problem with playSound: " + file, e);
+	// e.printStackTrace();
+	// } catch (IOException e) {
+	// log.error("Problem with playSound: " + file, e);
+	// e.printStackTrace();
+	// }
+	// }
 
 	public Queue<CategoryItem> getItemQueue() {
 		return itemQueue;
