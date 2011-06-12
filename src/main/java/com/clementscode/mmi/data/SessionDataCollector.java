@@ -5,7 +5,9 @@ package com.clementscode.mmi.data;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.clementscode.mmi.res.CategoryItem;
 
@@ -19,7 +21,14 @@ public class SessionDataCollector {
 		INDEPENDANT, VERBAL, MODEL, NONE
 	};
 
-	protected static class Response {
+	protected static class Counts {
+		EnumMap<RespType, Integer> respMap = new EnumMap<RespType, Integer>(
+				RespType.class);
+		int attendings = 0;
+		int totalCount = 0;
+	}
+
+	public static class Response {
 		CategoryItem item;
 		boolean attending;
 		RespType type;
@@ -39,6 +48,10 @@ public class SessionDataCollector {
 
 	protected List<Response> responses = new ArrayList<Response>();
 
+	protected Map<String, Counts> perItemMap = new HashMap<String, Counts>();
+
+	protected Counts overallCounts = new Counts();
+
 	public SessionDataCollector(String session, String description) {
 		this.session = session;
 		this.description = description;
@@ -46,6 +59,19 @@ public class SessionDataCollector {
 
 	public void addResponse(CategoryItem item, boolean attending,
 			RespType response) {
+
+		Counts itemCounts = perItemMap.get(item.toString());
+		if (itemCounts == null) {
+			itemCounts = new Counts();
+			perItemMap.put(item.toString(), itemCounts);
+		}
+		inc(response, itemCounts.respMap);
+		inc(response, overallCounts.respMap);
+		if (attending) {
+			++overallCounts.attendings;
+			++itemCounts.attendings;
+		}
+		++itemCounts.totalCount;
 		responses.add(new Response(item, attending, response));
 	}
 
@@ -54,38 +80,31 @@ public class SessionDataCollector {
 	 * @return
 	 */
 	public SessionData getData() {
-		int count = responses.size();
-		if (count < 1) {
-			return new SessionData(session, description, false, 0d, 0d, 0d,
-					null);
+		int totalNumber = responses.size();
+		if (totalNumber < 1) {
+			return new SessionData(null, null, null);
 		}
-		EnumMap<RespType, Integer> totalMap = new EnumMap<RespType, Integer>(
-				RespType.class);
-		// Map<CategoryItem, EnumMap<RespType, Integer>> itemMap = new
-		// HashMap<CategoryItem, EnumMap<RespType, Integer>>();
-		for (Response r : responses) {
-			inc(r.type, totalMap);
-			// TODO stats by item
-			// EnumMap<RespType, Integer> m = itemMap.get(r.item);
-			// if (m == null) {
-			// m = new EnumMap<RespType, Integer>(RespType.class);
-			// }
-			// inc(r.type, m);
+		Stats overall = parseTotals(session, totalNumber, overallCounts);
+		List<Stats> perItems = new ArrayList<Stats>(perItemMap.size());
+		for (String name : perItemMap.keySet()) {
+			Counts counts = perItemMap.get(name);
+			perItems.add(parseTotals(name, counts.totalCount, counts));
 		}
-		SessionData rval = parseTotals(count, totalMap);
-		rval.setName(session);
-		rval.setDescription(description);
-		return rval;
+
+		return new SessionData(overall, perItems, responses);
 	}
 
-	protected SessionData parseTotals(int count, EnumMap<RespType, Integer> map) {
-		SessionData rval = new SessionData();
+	protected Stats parseTotals(String name, int total, Counts counts) {
+		Stats rval = new Stats();
+		rval.setName(name);
+		EnumMap<RespType, Integer> map = counts.respMap;
 		int i = getIntSafe(map.get(RespType.INDEPENDANT));
-		rval.setPercentIndep(getPercent(i, count));
+		rval.setPercentIndep(getPercent(i, total));
 		i = getIntSafe(map.get(RespType.VERBAL));
-		rval.setPercentVerbal(getPercent(i, count));
+		rval.setPercentVerbal(getPercent(i, total));
 		i = getIntSafe(map.get(RespType.MODEL));
-		rval.setPercentModel(getPercent(i, count));
+		rval.setPercentModel(getPercent(i, total));
+		rval.setPercentAttending(getPercent(counts.attendings, total));
 		return rval;
 	}
 
@@ -100,7 +119,7 @@ public class SessionDataCollector {
 		return i;
 	}
 
-	protected void inc(RespType type, EnumMap<RespType, Integer> map) {
+	protected <T> void inc(T type, Map<T, Integer> map) {
 		Integer i = map.get(type);
 		if (i == null) {
 			i = new Integer(0);

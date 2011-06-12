@@ -52,10 +52,10 @@ public class SessionDataCollectorTest {
 		collector.addResponse(item2, false, RespType.NONE);
 		SessionData data = collector.getData();
 		assertNotNull(data);
-		assertEquals(25, data.getPercentIndep(), 0);
-		assertEquals(25, data.getPercentVerbal(), 0);
-		assertEquals(25, data.getPercentModel(), 0);
-		assertEquals(session, data.getName());
-		assertEquals(desc, data.getDescription());
+		Stats overall = data.getOverall();
+		assertEquals(25, overall.getPercentIndep(), 0);
+		assertEquals(25, overall.getPercentVerbal(), 0);
+		assertEquals(25, overall.getPercentModel(), 0);
+		assertEquals(session, overall.getName());
 	}
 }

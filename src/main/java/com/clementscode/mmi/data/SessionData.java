@@ -3,7 +3,14 @@
  */
 package com.clementscode.mmi.data;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
 import au.com.bytecode.opencsv.CSVWriter;
+
+import com.clementscode.mmi.data.SessionDataCollector.Response;
 
 /**
  * @author bclement
@@ -11,158 +18,168 @@ import au.com.bytecode.opencsv.CSVWriter;
  */
 public class SessionData {
 
-	protected String name;
+	protected SimpleDateFormat format = new SimpleDateFormat("MM/DD/yyyy");
 
-	protected String description;
+	protected Stats overall;
 
-	protected boolean attending;
+	protected List<Stats> perItem;
 
-	protected double percentIndep;
-
-	protected double percentVerbal;
-
-	protected double percentModel;
-
-	protected String[][] itemStats;
+	protected List<Response> respones;
 
 	/**
-	 * 
+	 * @param overall
+	 * @param perItem
 	 */
-	public SessionData() {
-	}
-
-	/**
-	 * @param name
-	 * @param description
-	 * @param attending
-	 * @param percentIndep
-	 * @param percentVerbal
-	 * @param percentModel
-	 * @param itemStats
-	 */
-	public SessionData(String name, String description, boolean attending,
-			double percentIndep, double percentVerbal, double percentModel,
-			String[][] itemStats) {
+	public SessionData(Stats overall, List<Stats> perItem,
+			List<Response> responses) {
 		super();
-		this.name = name;
-		this.description = description;
-		this.attending = attending;
-		this.percentIndep = percentIndep;
-		this.percentVerbal = percentVerbal;
-		this.percentModel = percentModel;
-		this.itemStats = itemStats;
+		this.overall = overall;
+		this.perItem = perItem;
+		this.respones = responses;
 	}
 
-	public void write(CSVWriter writer) {
-		String[] rval = { name, description, String.valueOf(attending),
-				Double.toString(percentIndep), Double.toString(percentVerbal),
-				Double.toString(percentModel) };
+	public void writeSummaryHeader(CSVWriter writer) {
+		String[] header = { "Date", "Session", "Therapist", "Condition",
+				"targets", "% independent", "% verbal", "% model", "% attend" };
+		writer.writeNext(header);
+	}
+
+	public void writeSummary(CSVWriter writer) {
+		if (overall == null) {
+			return;
+		}
+		String date = format.format(new Date());
+		String session = overall.getName();
+		String therapist = "";
+		String condition = "";
+		String targets = getUniqueTargets(perItem);
+		String ind = Double.toString(overall.getPercentIndep());
+		String verb = Double.toString(overall.percentVerbal);
+		String model = Double.toString(overall.percentModel);
+		String attend = Double.toString(overall.percentAttending);
+		String[] rval = { date, session, therapist, condition, targets, ind,
+				verb, model, attend };
 		writer.writeNext(rval);
 	}
 
-	/**
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
+	public void writeSessionFile(CSVWriter writer) {
+		String[] date = { "date", format.format(new Date()) };
+		String[] session = { "session", overall.getName() };
+		writer.writeNext(date);
+		writer.writeNext(session);
+		writer.writeNext(new String[] {});
+		writer.writeNext(new String[] { "Session responses" });
+		for (Response r : respones) {
+			writeResponse(r, writer);
+		}
+		writer.writeNext(new String[] {});
+		writer.writeNext(new String[] { "Item stats" });
+		for (Stats s : perItem) {
+			writeItemStats(s, writer);
+		}
 	}
 
 	/**
-	 * @param name
-	 *            the name to set
+	 * @param s
+	 * @param writer
 	 */
-	public void setName(String name) {
-		this.name = name;
+	private void writeItemStats(Stats s, CSVWriter writer) {
+		String[] name = { "name", s.getName() };
+		String[] ind = { "% independant", Double.toString(s.getPercentIndep()) };
+		String[] verb = { "% verbal", Double.toString(s.getPercentVerbal()) };
+		String[] model = { "% model", Double.toString(s.getPercentModel()) };
+		String[] attend = { "% attending",
+				Double.toString(s.getPercentAttending()) };
+		writer.writeNext(name);
+		writer.writeNext(ind);
+		writer.writeNext(verb);
+		writer.writeNext(model);
+		writer.writeNext(attend);
 	}
 
 	/**
-	 * @return the description
+	 * @param r
+	 * @param writer
 	 */
-	public String getDescription() {
-		return description;
+	private void writeResponse(Response r, CSVWriter writer) {
+		String[] name = { "name", r.item.getImgFile().getAbsolutePath() };
+		String[] attend = { "attend", Boolean.toString(r.attending) };
+		String[] response = { "response", r.type.toString() };
+		writer.writeNext(name);
+		writer.writeNext(attend);
+		writer.writeNext(response);
+	}
+
+	private String getUniqueTargets(List<Stats> stats) {
+		if (stats == null || stats.isEmpty()) {
+			return "";
+		}
+		Iterator<Stats> i = stats.iterator();
+		StringBuilder sb = new StringBuilder(i.next().getName());
+		while (i.hasNext()) {
+			sb.append(", ").append(i.next().getName());
+		}
+		return sb.toString();
 	}
 
 	/**
-	 * @param description
-	 *            the description to set
+	 * @return the overall
 	 */
-	public void setDescription(String description) {
-		this.description = description;
+	public Stats getOverall() {
+		return overall;
 	}
 
 	/**
-	 * @return the attending
+	 * @param overall
+	 *            the overall to set
 	 */
-	public boolean isAttending() {
-		return attending;
+	public void setOverall(Stats overall) {
+		this.overall = overall;
 	}
 
 	/**
-	 * @param attending
-	 *            the attending to set
+	 * @return the perItem
 	 */
-	public void setAttending(boolean attending) {
-		this.attending = attending;
+	public List<Stats> getPerItem() {
+		return perItem;
 	}
 
 	/**
-	 * @return the percentIndep
+	 * @param perItem
+	 *            the perItem to set
 	 */
-	public double getPercentIndep() {
-		return percentIndep;
+	public void setPerItem(List<Stats> perItem) {
+		this.perItem = perItem;
 	}
 
 	/**
-	 * @param percentIndep
-	 *            the percentIndep to set
+	 * @return the respones
 	 */
-	public void setPercentIndep(double percentIndep) {
-		this.percentIndep = percentIndep;
+	public List<Response> getRespones() {
+		return respones;
 	}
 
 	/**
-	 * @return the percentVerbal
+	 * @param respones
+	 *            the respones to set
 	 */
-	public double getPercentVerbal() {
-		return percentVerbal;
+	public void setRespones(List<Response> respones) {
+		this.respones = respones;
 	}
 
 	/**
-	 * @param percentVerbal
-	 *            the percentVerbal to set
+	 * @return the format
 	 */
-	public void setPercentVerbal(double percentVerbal) {
-		this.percentVerbal = percentVerbal;
+	public SimpleDateFormat getFormat() {
+		return format;
 	}
 
 	/**
-	 * @return the percentModel
+	 * @param format
+	 *            the format to set
 	 */
-	public double getPercentModel() {
-		return percentModel;
-	}
-
-	/**
-	 * @param percentModel
-	 *            the percentModel to set
-	 */
-	public void setPercentModel(double percentModel) {
-		this.percentModel = percentModel;
-	}
-
-	/**
-	 * @return the itemStats
-	 */
-	public String[][] getItemStats() {
-		return itemStats;
-	}
-
-	/**
-	 * @param itemStats
-	 *            the itemStats to set
-	 */
-	public void setItemStats(String[][] itemStats) {
-		this.itemStats = itemStats;
+	public void setFormat(SimpleDateFormat format) {
+		this.format = format;
 	}
 
 }

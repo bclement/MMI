@@ -14,6 +14,7 @@ import com.clementscode.mmi.data.SessionDataCollector;
 import com.clementscode.mmi.data.SessionDataCollector.RespType;
 import com.clementscode.mmi.res.CategoryItem;
 import com.clementscode.mmi.res.Session;
+import com.clementscode.mmi.sound.SoundRunner;
 
 /*
 
@@ -49,14 +50,17 @@ public class Mediator implements MediatorListener {
 	private SessionDataCollector collector;
 	private CategoryItem item;
 
+	// private Thread soundThread = null;
+	private SoundRunner soundRunner = null;
+
 	public Mediator(Gui gui) {
 		this.gui = gui;
 
 	}
 
 	public void setSession(Session session) {
-		collector = new SessionDataCollector(session.getName(),
-				session.getDescription());
+		collector = new SessionDataCollector(session.getName(), session
+				.getDescription());
 		item = gui.getItemQueue().remove();
 	}
 
@@ -113,6 +117,8 @@ public class Mediator implements MediatorListener {
 		}
 		if (hit) {
 			gui.getTimer().stop(); // hope this is a fix to issue #4
+			stopSound();
+			playPrompt = true;
 			if (gui.getItemQueue().size() == 0) {
 
 				gui.populateSessionName();
@@ -121,16 +127,27 @@ public class Mediator implements MediatorListener {
 				File csvFile = null;
 				try {
 					csvFile = gui.getSession().getSessionDataFile();
+					boolean writeHeader = !csvFile.exists();
 					CSVWriter csvWriter = new CSVWriter(new FileWriter(csvFile,
 							true)); // true -- I want to append.
 					SessionData data = collector.getData();
-					data.write(csvWriter);
+					if (writeHeader) {
+						data.writeSummaryHeader(csvWriter);
+					}
+					data.writeSummary(csvWriter);
 					csvWriter.close();
+
+					File session = new File(csvFile.getParentFile(), data
+							.getOverall().getName()
+							+ ".csv");
+					CSVWriter writer = new CSVWriter(new FileWriter(session));
+					data.writeSessionFile(writer);
+					writer.close();
 					System.out.println("Wrote to " + csvFile);
 				} catch (IOException e) {
 					log.error(String.format(
-							"Problem writting stats to file='%s'",
-							csvFile.getAbsolutePath()), e);
+							"Problem writting stats to file='%s'", csvFile
+									.getAbsolutePath()), e);
 					e.printStackTrace();
 				}
 
@@ -151,12 +168,25 @@ public class Mediator implements MediatorListener {
 	private void timer() {
 		if (playPrompt) {
 			playPrompt = false;
-			gui.playSound(gui.getSession().getPrompt());
+			startSound(gui.getSession().getPrompt());
 		} else {
 			playPrompt = true;
 
-			gui.playSound(item.getAudio());
+			startSound(item.getAudio());
 			gui.getTimer().stop();
+		}
+	}
+
+	private void startSound(File f) {
+		soundRunner = new SoundRunner(f);
+		new Thread(soundRunner).start();
+
+	}
+
+	private void stopSound() {
+		if (soundRunner != null) {
+			soundRunner.stop();
+			soundRunner = null;
 		}
 	}
 

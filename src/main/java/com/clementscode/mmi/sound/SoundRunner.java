@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package com.clementscode.mmi.sound;
 
 import java.io.File;
@@ -11,8 +14,50 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-public class SoundUtility {
-	public static void playSound(File audio) throws UnsupportedAudioFileException,
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+/**
+ * @author bclement
+ * 
+ */
+public class SoundRunner implements Runnable {
+
+	protected File soundFile;
+
+	protected Log log = LogFactory.getLog(this.getClass());
+
+	protected Boolean go = true;
+
+	/**
+	 * @param soundFile
+	 */
+	public SoundRunner(File soundFile) {
+		super();
+		this.soundFile = soundFile;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Runnable#run()
+	 */
+	public void run() {
+		try {
+			playSound(soundFile);
+		} catch (Exception e) {
+			log.error("Problem playing sound: " + soundFile, e);
+		}
+
+	}
+
+	public void stop() {
+		synchronized (go) {
+			go = false;
+		}
+	}
+
+	public void playSound(File audio) throws UnsupportedAudioFileException,
 			IOException {
 		// this probably isn't the best way to play sound in java, but it seems
 		// to work
@@ -39,11 +84,14 @@ public class SoundUtility {
 
 		auline.start();
 		int nBytesRead = 0;
-		byte[] abData = new byte[524288];
+		byte[] abData = new byte[1024];
 
 		try {
 			while (nBytesRead != -1) {
 				nBytesRead = audioInputStream.read(abData, 0, abData.length);
+				if (!go) {
+					break;
+				}
 				if (nBytesRead >= 0)
 					auline.write(abData, 0, nBytesRead);
 			}
@@ -54,6 +102,6 @@ public class SoundUtility {
 			auline.drain();
 			auline.close();
 		}
-
 	}
+
 }

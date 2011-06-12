@@ -22,7 +22,10 @@ import java.util.Properties;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -51,7 +54,6 @@ import com.clementscode.mmi.MainGui;
 import com.clementscode.mmi.res.CategoryItem;
 import com.clementscode.mmi.res.Session;
 import com.clementscode.mmi.res.SessionConfig;
-import com.clementscode.mmi.sound.SoundUtility;
 import com.clementscode.mmi.util.Shuffler;
 import com.clementscode.mmi.util.Utils;
 
@@ -242,13 +244,12 @@ public class Gui implements ActionListener {
 		southContainerPanel.add(belowSouthPanel);
 
 		panel.add(southContainerPanel, BorderLayout.SOUTH);
-		byte[] imageData = null;
-		byte[] imageDataClickToBegin = null;
+		BufferedImage imageData = null;
+		BufferedImage imageDataClickToBegin = null;
 		try {
-			imageData = readImageDataFromClasspath("images/a-happy-face.jpg",
-					17833);
-			imageDataClickToBegin = readImageDataFromClasspath(
-					"images/a-happy-face-click-to-begin.jpg", 30055);
+			imageData = readImageDataFromClasspath("images/happy-face.jpg");
+			imageDataClickToBegin = readImageDataFromClasspath("images/happy-face-click-to-begin.jpg");
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.warn("Could not find image from classpath...", e);
@@ -296,18 +297,31 @@ public class Gui implements ActionListener {
 		lstButtons.add(responseButton);
 	}
 
-	private byte[] readImageDataFromClasspath(String fileName, int lazy)
+	@Deprecated
+	protected byte[] readImageDataFromClasspath(String fileName, int lazy)
 			throws IOException {
 
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader()
-				.getResourceAsStream(fileName);
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream(
+				fileName);
 
 		return readImageDataFromInputStream(in, lazy);
 
 	}
 
+	private BufferedImage readImageDataFromClasspath(String fileName)
+			throws IOException {
+
+		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
+		// Do it this way and no relative path huha is needed.
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream(
+				fileName);
+
+		return ImageIO.read(in);
+	}
+
+	@Deprecated
 	private byte[] readImageDataFromInputStream(InputStream in, int lazy)
 			throws IOException {
 
@@ -332,10 +346,28 @@ public class Gui implements ActionListener {
 		if (null != timer) {
 			timer.stop(); // fix for issue #4
 		}
-		timer = new Timer(session.getTimeDelayAnswer() * 1000, timerAction);
+		// FIXME this assumes same prompt file length for every item
+		int answerDelay = session.getTimeDelayAnswer()
+				+ getPromptLen(session.getPrompt());
+		timer = new Timer(answerDelay * 1000, timerAction);
 		timer.setInitialDelay(session.getTimeDelayPrompt() * 1000);
 		timer.setRepeats(true);
 		timer.start();
+	}
+
+	private int getPromptLen(File sndFile) {
+		// FIXME I'm a horrible hack
+		AudioInputStream audioInputStream;
+		try {
+			audioInputStream = AudioSystem.getAudioInputStream(sndFile);
+			AudioFormat format = audioInputStream.getFormat();
+			long frames = audioInputStream.getFrameLength();
+			audioInputStream.close();
+			return (int) (frames / format.getFrameRate());
+		} catch (Exception e) {
+			log.error("Horrible hack blew up, karma", e);
+			return 0;
+		}
 	}
 
 	public void setupCenterButton() {
@@ -344,9 +376,10 @@ public class Gui implements ActionListener {
 		try {
 			imgIconCenter = new ImageIcon(first.getImgFile().getCanonicalPath());
 		} catch (IOException e) {
-			log.error(
-					"Odd, this error should not happen.  Can't find the first image",
-					e);
+			log
+					.error(
+							"Odd, this error should not happen.  Can't find the first image",
+							e);
 			e.printStackTrace();
 		}
 		// centerButton = new JButton(imgIconCenter);
@@ -356,21 +389,21 @@ public class Gui implements ActionListener {
 
 	private void setupActions(MediatorListener mediator) {
 		// TODO: Fix bug that control A does not toggle the checkbox
-		attendingAction = new ActionRecorder(
-				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
+		attendingAction = new ActionRecorder(Messages
+				.getString("Gui.Attending"), null, //$NON-NLS-1$
 				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_F1), KeyStroke.getKeyStroke("control A"),
 				Mediator.ATTENDING, mediator);
-		independentAction = new ActionRecorder(
-				Messages.getString("Gui.Independent"), null, //$NON-NLS-1$
+		independentAction = new ActionRecorder(Messages
+				.getString("Gui.Independent"), null, //$NON-NLS-1$
 				Messages.getString("Gui.IndependentDescription"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_F2), KeyStroke.getKeyStroke("control I"),
 				Mediator.INDEPENDENT, mediator);
 		verbalAction = new ActionRecorder(
 				Messages.getString("Gui.Verbal"), null, //$NON-NLS-1$
 				Messages.getString("Gui.VerbalDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_F3),
-				KeyStroke.getKeyStroke("control V"), Mediator.VERBAL, mediator);
+				new Integer(KeyEvent.VK_F3), KeyStroke
+						.getKeyStroke("control V"), Mediator.VERBAL, mediator);
 		modelingAction = new ActionRecorder(
 				Messages.getString("Gui.Modeling"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ModelingDescriptin"), new Integer( //$NON-NLS-1$
@@ -382,7 +415,8 @@ public class Gui implements ActionListener {
 				KeyStroke.getKeyStroke("control N"), Mediator.NO_ANSWER,
 				mediator);
 
-		quitAction = new ActionRecorder(Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
+		quitAction = new ActionRecorder(
+				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
 				Messages.getString("Gui.QuitDescriptino"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
 				KeyStroke.getKeyStroke("control Q"), Mediator.QUIT, mediator);
 
@@ -416,30 +450,31 @@ public class Gui implements ActionListener {
 
 	}
 
-	public void playSound(File file) {
-		try {
-			SoundUtility.playSound(file);
-			// "src/test/resources/bc/animals/fooduck/answer.wav"));
-		} catch (UnsupportedAudioFileException e) {
-			log.error("Problem with playSound: " + file, e);
-			e.printStackTrace();
-		} catch (IOException e) {
-			log.error("Problem with playSound: " + file, e);
-			e.printStackTrace();
-		}
-	}
+	//
+	// public void playSound(File file) {
+	// try {
+	// SoundUtility.playSound(file);
+	// // "src/test/resources/bc/animals/fooduck/answer.wav"));
+	// } catch (UnsupportedAudioFileException e) {
+	// log.error("Problem with playSound: " + file, e);
+	// e.printStackTrace();
+	// } catch (IOException e) {
+	// log.error("Problem with playSound: " + file, e);
+	// e.printStackTrace();
+	// }
+	// }
 
 	public Queue<CategoryItem> getItemQueue() {
 		return itemQueue;
 	}
 
+	@Deprecated
 	public void switchImage(File file) {
 		try {
 			switchImage(new ImageIcon(file.getCanonicalPath()));
 		} catch (IOException e) {
-			log.error(
-					String.format("Problem switching image to file='%s'", file),
-					e);
+			log.error(String.format("Problem switching image to file='%s'",
+					file), e);
 			e.printStackTrace();
 		}
 	}
@@ -524,8 +559,8 @@ public class Gui implements ActionListener {
 		// centerButton.setText("");
 		if (null != session) {
 
-			CategoryItem[] copy = Arrays.copyOf(session.getItems(),
-					session.getItems().length);
+			CategoryItem[] copy = Arrays.copyOf(session.getItems(), session
+					.getItems().length);
 			for (int i = 0; i < session.getShuffleCount(); ++i) {
 				Shuffler.shuffle(copy);
 			}
@@ -553,8 +588,8 @@ public class Gui implements ActionListener {
 		Properties props = new Properties();
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader()
-				.getResourceAsStream(MainGui.propFile);
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream(
+				MainGui.propFile);
 		props.load(new InputStreamReader(in));
 		String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
 
@@ -602,8 +637,8 @@ public class Gui implements ActionListener {
 			String zipPath = tmp.getAbsolutePath() + ".dir";
 			tmp.delete();
 			lstTempDirectories.add(zipPath);
-			ExtractFileSubDirectories.unzip(zipPath,
-					tempZipFile.getAbsolutePath());
+			ExtractFileSubDirectories.unzip(zipPath, tempZipFile
+					.getAbsolutePath());
 			tempZipFile.delete();
 			readSessionFile(new File(zipPath + "/session.txt"), zipPath);
 
@@ -658,8 +693,8 @@ public class Gui implements ActionListener {
 	}
 
 	private void chooseSessionDataFile() {
-		JFileChooser chooser = new JFileChooser(new File(
-				tfSessionDataFile.getText()));
+		JFileChooser chooser = new JFileChooser(new File(tfSessionDataFile
+				.getText()));
 		int returnVal = chooser.showSaveDialog(frame);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = chooser.getSelectedFile();

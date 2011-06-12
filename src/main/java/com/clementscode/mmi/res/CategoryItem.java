@@ -63,7 +63,7 @@ public class CategoryItem {
 	 */
 	@Override
 	public String toString() {
-		return "CategoryItem [audio=" + audio + ", imgFile=" + imgFile + "]";
+		return imgFile.getName();
 	}
 
 	/*
