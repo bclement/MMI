@@ -22,6 +22,8 @@ public class SessionData {
 
 	protected Stats overall;
 
+	protected String sessionName;
+
 	protected List<Stats> perItem;
 
 	protected List<Response> respones;
@@ -30,9 +32,10 @@ public class SessionData {
 	 * @param overall
 	 * @param perItem
 	 */
-	public SessionData(Stats overall, List<Stats> perItem,
+	public SessionData(String sessionName, Stats overall, List<Stats> perItem,
 			List<Response> responses) {
 		super();
+		this.sessionName = sessionName;
 		this.overall = overall;
 		this.perItem = perItem;
 		this.respones = responses;

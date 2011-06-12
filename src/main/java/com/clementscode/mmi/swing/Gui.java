@@ -141,7 +141,9 @@ public class Gui implements ActionListener {
 			logger.error("Could not look up BasicService.", e);
 			e.printStackTrace();
 		} catch (Exception bland) {
-			logger.error("Some odd JNLP related problem: bland=" + bland, bland);
+			logger
+					.error("Some odd JNLP related problem: bland=" + bland,
+							bland);
 		}
 	}
 
@@ -227,7 +229,7 @@ public class Gui implements ActionListener {
 		if (null != session) {
 			tfSessionName.setText(session.getSessionName());
 		} else {
-			tfSessionName.setText("ADTV Study " + new java.util.Date());
+			tfSessionName.setText("Session 1");
 		}
 		belowSouthPanel.add(new LabelAndField("Session Name: ", tfSessionName));
 		tfSessionDataFile = new JTextField(30);
