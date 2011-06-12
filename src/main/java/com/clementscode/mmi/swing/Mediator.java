@@ -50,7 +50,8 @@ public class Mediator implements MediatorListener {
 	private SessionDataCollector collector;
 	private CategoryItem item;
 
-	private Thread soundThread = null;
+	// private Thread soundThread = null;
+	private SoundRunner soundRunner = null;
 
 	public Mediator(Gui gui) {
 		this.gui = gui;
@@ -176,16 +177,15 @@ public class Mediator implements MediatorListener {
 	}
 
 	private void startSound(File f) {
-		SoundRunner runner = new SoundRunner(f);
-		soundThread = new Thread(runner);
-		soundThread.start();
+		soundRunner = new SoundRunner(f);
+		new Thread(soundRunner).start();
+
 	}
 
-	@SuppressWarnings("deprecation")
 	private void stopSound() {
-		if (soundThread != null) {
-			soundThread.stop();
-			soundThread = null;
+		if (soundRunner != null) {
+			soundRunner.stop();
+			soundRunner = null;
 		}
 	}
 

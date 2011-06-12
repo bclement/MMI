@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -21,7 +20,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.clementscode.mmi.res.CategoryItem;
-import com.clementscode.mmi.sound.SoundUtility;
+import com.clementscode.mmi.sound.SoundRunner;
 
 public class GuiForCategoryItem extends JPanel implements ActionListener {
 
@@ -86,15 +85,9 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 
 		if (PLAY_SOUND.equals(e.getActionCommand())) {
 			File soundFile = new File(tfAudioFileName.getText());
-			try {
-				SoundUtility.playSound(soundFile);
-			} catch (UnsupportedAudioFileException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+
+			new Thread(new SoundRunner(soundFile)).start();
+
 		} else {
 
 			JFileChooser chooser = null;
