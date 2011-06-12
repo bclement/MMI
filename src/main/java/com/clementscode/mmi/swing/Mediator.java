@@ -118,6 +118,7 @@ public class Mediator implements MediatorListener {
 		if (hit) {
 			gui.getTimer().stop(); // hope this is a fix to issue #4
 			stopSound();
+			playPrompt = true;
 			if (gui.getItemQueue().size() == 0) {
 
 				gui.populateSessionName();
