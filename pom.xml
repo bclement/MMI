@@ -53,7 +53,27 @@
   		
   	</plugins>
   </build>
+  
+  
+  <repositories>
+  
+  
+        <repository>
+            <id>aduna</id>
+            <name>Aduna-software Repository</name>
+            <url>http://repository.aduna-software.org/maven2/</url>
+        </repository>
+  
+  </repositories>
+  
   <dependencies>
+  
+  <dependency>
+  <groupId>javax.jnlp</groupId>
+<artifactId>jnlp-api</artifactId>
+<version>1.5.0</version>
+  </dependency>
+  
   <dependency>
     <groupId>net.sf.squirrel-sql.thirdparty-non-maven</groupId>
     <artifactId>napkinlaf</artifactId>

@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.imageio.ImageIO;
+import javax.jnlp.BasicService;
+import javax.jnlp.UnavailableServiceException;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -94,8 +97,11 @@ public class Gui implements ActionListener {
 
 	private ActionRecorder showLoggingFrameAction;
 
+	private URL codeBaseUrl = null;
+
 	public Gui() {
 		loggingFrame = new LoggingFrame();
+		jnlpSetup();
 		String tmpDirStr = "/tmp/mmi";
 		tmpDir = new File(tmpDirStr);
 		tmpDir.mkdirs();
@@ -118,6 +124,25 @@ public class Gui implements ActionListener {
 				Utils.deleteTempDirectories(lstTempDirectories);
 			}
 		});
+	}
+
+	private void jnlpSetup() {
+		try {
+			String[] sn = javax.jnlp.ServiceManager.getServiceNames();
+			for (String string : sn) {
+				logger.info("A service name is: " + string);
+			}
+
+			Object obj = javax.jnlp.ServiceManager
+					.lookup("javax.jnlp.BasicService");
+			BasicService bs = (BasicService) obj;
+			codeBaseUrl = bs.getCodeBase();
+		} catch (UnavailableServiceException e) {
+			logger.error("Could not look up BasicService.", e);
+			e.printStackTrace();
+		} catch (Exception bland) {
+			logger.error("Some odd JNLP related problem: bland=" + bland, bland);
+		}
 	}
 
 	private void disableButtons() {
@@ -617,9 +642,14 @@ public class Gui implements ActionListener {
 	public void openHttpSession() {
 		// Started with clues from
 		// http://download.oracle.com/javase/tutorial/uiswing/components/dialog.html
-		Object[] possibilities = { "http://MattPayne.org/mmi/demo1.zip",
+
+		// Messages.getString("Gui.Verbal")
+		String[] possibilities = { "http://MattPayne.org/mmi/demo1.zip",
 				"http://MattPayne.org/mmi/mp.zip",
 				"http://MattPayne.org/mmi/bc.zip", "more to come later..." };
+		if (null != codeBaseUrl) {
+			possibilities = readPossiblitiesFromUrl(codeBaseUrl, "sessions.txt");
+		}
 		String s = (String) JOptionPane.showInputDialog(frame,
 				"Complete the sentence:\n" + "\"Green eggs and...\"",
 				"Customized Dialog", JOptionPane.PLAIN_MESSAGE, null,
@@ -627,6 +657,28 @@ public class Gui implements ActionListener {
 		System.out.println("s=" + s);
 		unpackToTempDirectory(s);
 
+	}
+
+	private String[] readPossiblitiesFromUrl(URL codeBaseUrl2, String fileName) {
+		String[] possiblities = null;
+		String line;
+		List<String> lst = new ArrayList<String>();
+		try {
+			URL url = new URL(codeBaseUrl2.toString() + fileName);
+			InputStream is = url.openStream();
+			LineNumberReader in = new LineNumberReader(
+					new InputStreamReader(is));
+			while (null != (line = in.readLine())) {
+				lst.add(line);
+			}
+			in.close();
+			possiblities = (String[]) lst.toArray(new String[lst.size()]);
+		} catch (Exception e) {
+			logger.error(String.format("Problem reading %s/%s", codeBaseUrl2,
+					fileName), e);
+			e.printStackTrace();
+		}
+		return possiblities;
 	}
 
 	private void unpackToTempDirectory(String strUrl) {
