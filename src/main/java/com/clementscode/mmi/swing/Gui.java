@@ -99,6 +99,12 @@ public class Gui implements ActionListener {
 
 	private URL codeBaseUrl = null;
 
+	private int shownItemCount = 1;
+
+	private int totalItemCount;
+
+	private boolean bDebounce = false; // DISGUSTING! and Mysterious.
+
 	public Gui() {
 		loggingFrame = new LoggingFrame();
 		jnlpSetup();
@@ -524,8 +530,7 @@ public class Gui implements ActionListener {
 
 	private void setFrameTitle() {
 		frame.setTitle(frameTitle
-				+ String.format("%d of %d", itemQueue.size() + 1, //$NON-NLS-1$
-						session.getItems().length));
+				+ String.format("%d of %d", shownItemCount++, totalItemCount));
 	}
 
 	public Session getSession() {
@@ -558,6 +563,7 @@ public class Gui implements ActionListener {
 	}
 
 	public void openSession() {
+		bDebounce = false;
 		File file;
 		// TODO: Remove hard coded directory.
 		// TODO: Get application to remember the last place we opened this...
@@ -578,7 +584,12 @@ public class Gui implements ActionListener {
 	}
 
 	public void useNewSession() {
+		if (bDebounce) {
+			return;
+		}
+		bDebounce = true;
 		centerButton.removeActionListener(this);
+
 		clickToStartButton.setEnabled(false);
 		clickToStartButton.setForeground(Color.white);
 		// centerButton.setText("");
@@ -594,6 +605,8 @@ public class Gui implements ActionListener {
 				// TODO: Is there a collections add all I could use here?
 				itemQueue.add(item);
 			}
+			itemQueue.add(copy[copy.length - 1]); // DISGUSTING!
+			totalItemCount = itemQueue.size() - 1; // DISGUSTING!
 			mediator.setSession(session);
 			setupCenterButton();
 			setFrameTitle();
@@ -640,6 +653,7 @@ public class Gui implements ActionListener {
 	}
 
 	public void openHttpSession() {
+		bDebounce = false;
 		// Started with clues from
 		// http://download.oracle.com/javase/tutorial/uiswing/components/dialog.html
 
@@ -704,7 +718,7 @@ public class Gui implements ActionListener {
 
 	private void displayClickToBegin() {
 		centerButton.setEnabled(true);
-		// centerButton.addActionListener(this); // fix for issue #3
+		centerButton.addActionListener(this); // fix for issue #3
 		centerButton.setIcon(iiSmilingFaceClickToBegin);
 		// centerButton.setText("Click to Begin");
 		centerButton.invalidate();
@@ -736,12 +750,12 @@ public class Gui implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (clickToStartButton == e.getSource()) {
+		if ((clickToStartButton == e.getSource())
+				|| (centerButton == e.getSource())) {
 			useNewSession();
 		} else if (BROWSE_SESSION_DATA_FILE.equals(e.getActionCommand())) {
 			chooseSessionDataFile();
 		}
-
 	}
 
 	private void chooseSessionDataFile() {
