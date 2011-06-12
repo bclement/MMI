@@ -23,6 +23,9 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -343,10 +346,28 @@ public class Gui implements ActionListener {
 		if (null != timer) {
 			timer.stop(); // fix for issue #4
 		}
-		timer = new Timer(session.getTimeDelayAnswer() * 1000, timerAction);
+		// FIXME this assumes same prompt file length for every item
+		int answerDelay = session.getTimeDelayAnswer()
+				+ getPromptLen(session.getPrompt());
+		timer = new Timer(answerDelay * 1000, timerAction);
 		timer.setInitialDelay(session.getTimeDelayPrompt() * 1000);
 		timer.setRepeats(true);
 		timer.start();
+	}
+
+	private int getPromptLen(File sndFile) {
+		// FIXME I'm a horrible hack
+		AudioInputStream audioInputStream;
+		try {
+			audioInputStream = AudioSystem.getAudioInputStream(sndFile);
+			AudioFormat format = audioInputStream.getFormat();
+			long frames = audioInputStream.getFrameLength();
+			audioInputStream.close();
+			return (int) (frames / format.getFrameRate());
+		} catch (Exception e) {
+			log.error("Horrible hack blew up, karma", e);
+			return 0;
+		}
 	}
 
 	public void setupCenterButton() {
