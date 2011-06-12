@@ -75,7 +75,7 @@ public class ExtractFileSubDirectories {
 			 * STEP 2 : Extract entries while creating required sub-directories
 			 */
 			ZipFile zipFile = new ZipFile(fSourceZip);
-			Enumeration e = zipFile.entries();
+			Enumeration<? extends ZipEntry> e = zipFile.entries();
 
 			while (e.hasMoreElements()) {
 				ZipEntry entry = (ZipEntry) e.nextElement();
@@ -96,8 +96,8 @@ public class ExtractFileSubDirectories {
 					 * 
 					 * InputStream getInputStream(Entry entry) method.
 					 */
-					BufferedInputStream bis = new BufferedInputStream(
-							zipFile.getInputStream(entry));
+					BufferedInputStream bis = new BufferedInputStream(zipFile
+							.getInputStream(entry));
 
 					int b;
 					byte buffer[] = new byte[1024];

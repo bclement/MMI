@@ -54,6 +54,8 @@ import javax.swing.table.AbstractTableModel;
  * the color data.
  */
 public class TableDialogEditDemo extends JPanel {
+
+	private static final long serialVersionUID = 3590800646678002010L;
 	private boolean DEBUG = false;
 	private TableDialogEditDemo tableDialogEditDemo;
 	private MyTableModel myTableModel;
@@ -79,6 +81,8 @@ public class TableDialogEditDemo extends JPanel {
 	}
 
 	class MyTableModel extends AbstractTableModel {
+
+		private static final long serialVersionUID = 9048563302510456132L;
 		private String[] columnNames = { "First Name", "Favorite Color",
 				"Sport", "# of Years", "Vegetarian" };
 		private Object[][] data = {
@@ -202,6 +206,7 @@ public class TableDialogEditDemo extends JPanel {
 		 * each cell. If we didn't implement this method, then the last column
 		 * would contain text ("true"/"false"), rather than a check box.
 		 */
+		@SuppressWarnings("unchecked")
 		public Class getColumnClass(int c) {
 			return getValueAt(0, c).getClass();
 		}

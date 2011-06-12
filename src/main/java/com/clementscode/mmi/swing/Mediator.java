@@ -55,8 +55,8 @@ public class Mediator implements MediatorListener {
 	}
 
 	public void setSession(Session session) {
-		collector = new SessionDataCollector(session.getName(),
-				session.getDescription());
+		collector = new SessionDataCollector(session.getName(), session
+				.getDescription());
 		item = gui.getItemQueue().remove();
 	}
 
@@ -121,16 +121,27 @@ public class Mediator implements MediatorListener {
 				File csvFile = null;
 				try {
 					csvFile = gui.getSession().getSessionDataFile();
+					boolean writeHeader = !csvFile.exists();
 					CSVWriter csvWriter = new CSVWriter(new FileWriter(csvFile,
 							true)); // true -- I want to append.
 					SessionData data = collector.getData();
-					data.write(csvWriter);
+					if (writeHeader) {
+						data.writeSummaryHeader(csvWriter);
+					}
+					data.writeSummary(csvWriter);
 					csvWriter.close();
+
+					File session = new File(csvFile.getParentFile(), data
+							.getOverall().getName()
+							+ ".csv");
+					CSVWriter writer = new CSVWriter(new FileWriter(session));
+					data.writeSessionFile(writer);
+					writer.close();
 					System.out.println("Wrote to " + csvFile);
 				} catch (IOException e) {
 					log.error(String.format(
-							"Problem writting stats to file='%s'",
-							csvFile.getAbsolutePath()), e);
+							"Problem writting stats to file='%s'", csvFile
+									.getAbsolutePath()), e);
 					e.printStackTrace();
 				}
 
