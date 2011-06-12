@@ -36,6 +36,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
 import org.codehaus.jackson.util.DefaultPrettyPrinter;
 import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
+import org.lemoine.MemoryMonitorBar;
 
 import com.clementscode.mmi.MainGui;
 import com.clementscode.mmi.res.CategoryItem;
@@ -110,7 +111,13 @@ public class CrudFrame extends JFrame {
 		Dimension ps = scrollPane.getPreferredSize();
 		ps.setSize(ps.getWidth(), ps.getHeight() * 2);
 		scrollPane.setPreferredSize(ps);
-		mainPanel.add(scrollPane, BorderLayout.SOUTH);
+		JPanel southPane = new JPanel();
+		southPane.setLayout(new GridLayout(0, 1));
+		southPane.add(scrollPane);
+		MemoryMonitorBar mmb = new MemoryMonitorBar();
+		// TODO: Figure out how to make not as tall...
+		southPane.add(mmb);
+		mainPanel.add(southPane, BorderLayout.SOUTH);
 		setupMenus();
 		pack();
 		setVisible(true);
@@ -132,13 +139,13 @@ public class CrudFrame extends JFrame {
 				Mediator.OPEN, mediator);
 
 		Action saveAction = new ActionRecorder("Save", null,
-				"Save the session.", new Integer(KeyEvent.VK_L), KeyStroke
-						.getKeyStroke("control S"), Mediator.SAVE, mediator);
+				"Save the session.", new Integer(KeyEvent.VK_L),
+				KeyStroke.getKeyStroke("control S"), Mediator.SAVE, mediator);
 
 		Action saveAsAction = new ActionRecorder("Save As...", null,
 				"Choose the file to Save the session.", new Integer(
-						KeyEvent.VK_L), KeyStroke
-						.getKeyStroke("control shift S"), Mediator.SAVE_AS,
+						KeyEvent.VK_L),
+				KeyStroke.getKeyStroke("control shift S"), Mediator.SAVE_AS,
 				mediator);
 
 		Action quitAction = new ActionRecorder(
@@ -261,8 +268,8 @@ public class CrudFrame extends JFrame {
 		Properties props = new Properties();
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader().getResourceAsStream(
-				MainGui.propFile);
+		InputStream in = this.getClass().getClassLoader()
+				.getResourceAsStream(MainGui.propFile);
 
 		props.load(new InputStreamReader(in));
 		String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
