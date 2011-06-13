@@ -44,6 +44,7 @@ public class Mediator implements MediatorListener {
 	public static final int SAVE = 10;
 	public static final int OPEN_HTTP = 11;
 	public static final int SHOW_LOGGING_FRAME = 12;
+	public static final int BETWEEN_TIMER = 13;
 	protected Log log = LogFactory.getLog(this.getClass());
 	private Gui gui;
 	private boolean playPrompt = true;
@@ -53,14 +54,19 @@ public class Mediator implements MediatorListener {
 	// private Thread soundThread = null;
 	private SoundRunner soundRunner = null;
 
+	private boolean waiting = false;
+
+	private boolean justWaited = false;
+
 	public Mediator(Gui gui) {
 		this.gui = gui;
 
 	}
 
 	public void setSession(Session session) {
-		collector = new SessionDataCollector(session.getName(), session
-				.getDescription());
+		// FIXME session.getSessionName is null here
+		collector = new SessionDataCollector(session.getConfigName(), session
+				.getSessionName());
 		item = gui.getItemQueue().remove();
 	}
 
@@ -75,24 +81,32 @@ public class Mediator implements MediatorListener {
 		case ATTENDING:
 			break;
 		case INDEPENDENT:
-			collector.addResponse(item, gui.getAttending().isSelected(),
-					RespType.INDEPENDANT);
-			hit = true;
+			if (!waiting) {
+				collector.addResponse(item, gui.getAttending().isSelected(),
+						RespType.INDEPENDANT);
+				hit = true;
+			}
 			break;
 		case VERBAL:
-			collector.addResponse(item, gui.getAttending().isSelected(),
-					RespType.VERBAL);
-			hit = true;
+			if (!waiting) {
+				collector.addResponse(item, gui.getAttending().isSelected(),
+						RespType.VERBAL);
+				hit = true;
+			}
 			break;
 		case MODELING:
-			collector.addResponse(item, gui.getAttending().isSelected(),
-					RespType.MODEL);
-			hit = true;
+			if (!waiting) {
+				collector.addResponse(item, gui.getAttending().isSelected(),
+						RespType.MODEL);
+				hit = true;
+			}
 			break;
 		case NO_ANSWER:
-			collector.addResponse(item, gui.getAttending().isSelected(),
-					RespType.NONE);
-			hit = true;
+			if (!waiting) {
+				collector.addResponse(item, gui.getAttending().isSelected(),
+						RespType.NONE);
+				hit = true;
+			}
 			break;
 		case QUIT:
 			// TODO: Ask them if they want to save the file anyway....
@@ -104,6 +118,11 @@ public class Mediator implements MediatorListener {
 		// break;
 		case TIMER:
 			timer();
+			break;
+		case BETWEEN_TIMER:
+			hit = true;
+			waiting = false;
+			justWaited = true;
 			break;
 		case SHOW_LOGGING_FRAME:
 			gui.showLoggingFrame();
@@ -124,6 +143,9 @@ public class Mediator implements MediatorListener {
 				gui.populateSessionName();
 				gui.populateSessionDataFile();
 
+				// FIXME this should be poplulated when collector is created
+				collector.setSessionName(gui.getSession().getSessionName());
+
 				File csvFile = null;
 				try {
 					csvFile = gui.getSession().getSessionDataFile();
@@ -136,10 +158,10 @@ public class Mediator implements MediatorListener {
 					}
 					data.writeSummary(csvWriter);
 					csvWriter.close();
-
-					File session = new File(csvFile.getParentFile(), data
-							.getOverall().getName()
-							+ ".csv");
+					String sessionCsvName = data.getOverall().getName() + " "
+							+ data.getSessionName() + ".csv";
+					File session = new File(csvFile.getParentFile(),
+							sessionCsvName);
 					CSVWriter writer = new CSVWriter(new FileWriter(session));
 					data.writeSessionFile(writer);
 					writer.close();
@@ -155,11 +177,18 @@ public class Mediator implements MediatorListener {
 				gui.backToStartScreen();
 				gui.getTimer().stop();
 			} else {
-				item = gui.getItemQueue().remove();
-				// gui.switchImage(item.getImgFile());
-				gui.switchImage(item.getImg());
-				// TODO: There may be different times between sessions....
-				gui.getTimer().start();
+
+				if (justWaited) {
+					item = gui.getItemQueue().remove();
+					gui.switchImage(item.getImg());
+					// TODO: There may be different times between sessions....
+					gui.getTimer().start();
+					justWaited = false;
+				} else {
+					gui.clearImage();
+					gui.getBetweenTimer().start();
+					waiting = true;
+				}
 			}
 		}
 

@@ -18,9 +18,11 @@ import com.clementscode.mmi.data.SessionDataCollector.Response;
  */
 public class SessionData {
 
-	protected SimpleDateFormat format = new SimpleDateFormat("MM/DD/yyyy");
+	protected SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 
 	protected Stats overall;
+
+	protected String sessionName;
 
 	protected List<Stats> perItem;
 
@@ -30,9 +32,10 @@ public class SessionData {
 	 * @param overall
 	 * @param perItem
 	 */
-	public SessionData(Stats overall, List<Stats> perItem,
+	public SessionData(String sessionName, Stats overall, List<Stats> perItem,
 			List<Response> responses) {
 		super();
+		this.sessionName = sessionName;
 		this.overall = overall;
 		this.perItem = perItem;
 		this.respones = responses;
@@ -49,7 +52,7 @@ public class SessionData {
 			return;
 		}
 		String date = format.format(new Date());
-		String session = overall.getName();
+		String session = overall.getName() + " " + sessionName;
 		String therapist = "";
 		String condition = "";
 		String targets = getUniqueTargets(perItem);
@@ -64,8 +67,10 @@ public class SessionData {
 
 	public void writeSessionFile(CSVWriter writer) {
 		String[] date = { "date", format.format(new Date()) };
-		String[] session = { "session", overall.getName() };
+		String[] config = { "config", overall.getName() };
+		String[] session = { "session", sessionName };
 		writer.writeNext(date);
+		writer.writeNext(config);
 		writer.writeNext(session);
 		writer.writeNext(new String[] {});
 		writer.writeNext(new String[] { "Session responses" });
@@ -180,6 +185,21 @@ public class SessionData {
 	 */
 	public void setFormat(SimpleDateFormat format) {
 		this.format = format;
+	}
+
+	/**
+	 * @return the sessionName
+	 */
+	public String getSessionName() {
+		return sessionName;
+	}
+
+	/**
+	 * @param sessionName
+	 *            the sessionName to set
+	 */
+	public void setSessionName(String sessionName) {
+		this.sessionName = sessionName;
 	}
 
 }

@@ -42,9 +42,9 @@ public class SessionDataCollector {
 
 	}
 
-	protected String session;
+	protected String configName;
 
-	protected String description;
+	protected String sessionName;
 
 	protected List<Response> responses = new ArrayList<Response>();
 
@@ -52,9 +52,14 @@ public class SessionDataCollector {
 
 	protected Counts overallCounts = new Counts();
 
-	public SessionDataCollector(String session, String description) {
-		this.session = session;
-		this.description = description;
+	/**
+	 * @param configName
+	 * @param sessionName
+	 */
+	public SessionDataCollector(String configName, String sessionName) {
+		super();
+		this.configName = configName;
+		this.sessionName = sessionName;
 	}
 
 	public void addResponse(CategoryItem item, boolean attending,
@@ -82,16 +87,16 @@ public class SessionDataCollector {
 	public SessionData getData() {
 		int totalNumber = responses.size();
 		if (totalNumber < 1) {
-			return new SessionData(null, null, null);
+			return new SessionData(sessionName, null, null, null);
 		}
-		Stats overall = parseTotals(session, totalNumber, overallCounts);
+		Stats overall = parseTotals(configName, totalNumber, overallCounts);
 		List<Stats> perItems = new ArrayList<Stats>(perItemMap.size());
 		for (String name : perItemMap.keySet()) {
 			Counts counts = perItemMap.get(name);
 			perItems.add(parseTotals(name, counts.totalCount, counts));
 		}
 
-		return new SessionData(overall, perItems, responses);
+		return new SessionData(sessionName, overall, perItems, responses);
 	}
 
 	protected Stats parseTotals(String name, int total, Counts counts) {
@@ -126,4 +131,35 @@ public class SessionDataCollector {
 		}
 		map.put(type, i + 1);
 	}
+
+	/**
+	 * @return the configName
+	 */
+	public String getConfigName() {
+		return configName;
+	}
+
+	/**
+	 * @param configName
+	 *            the configName to set
+	 */
+	public void setConfigName(String configName) {
+		this.configName = configName;
+	}
+
+	/**
+	 * @return the sessionName
+	 */
+	public String getSessionName() {
+		return sessionName;
+	}
+
+	/**
+	 * @param sessionName
+	 *            the sessionName to set
+	 */
+	public void setSessionName(String sessionName) {
+		this.sessionName = sessionName;
+	}
+
 }

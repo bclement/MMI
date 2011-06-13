@@ -139,13 +139,13 @@ public class CrudFrame extends JFrame {
 				Mediator.OPEN, mediator);
 
 		Action saveAction = new ActionRecorder("Save", null,
-				"Save the session.", new Integer(KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control S"), Mediator.SAVE, mediator);
+				"Save the session.", new Integer(KeyEvent.VK_L), KeyStroke
+						.getKeyStroke("control S"), Mediator.SAVE, mediator);
 
 		Action saveAsAction = new ActionRecorder("Save As...", null,
 				"Choose the file to Save the session.", new Integer(
-						KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control shift S"), Mediator.SAVE_AS,
+						KeyEvent.VK_L), KeyStroke
+						.getKeyStroke("control shift S"), Mediator.SAVE_AS,
 				mediator);
 
 		Action quitAction = new ActionRecorder(
@@ -233,7 +233,8 @@ public class CrudFrame extends JFrame {
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File file = chooser.getSelectedFile();
 			SessionConfig config = new SessionConfig();
-			config.setDescription(tfDescription.getText());
+			// no more description, you can remove it from the crud
+			// config.setDescription(tfDescription.getText());
 			config.setName(tfName.getText());
 			config.setShuffleCount(Integer.parseInt(tfShuffleCount.getText()));
 			config.setTimeDelayAnswer(Integer.parseInt(tfDelayForAnswer
@@ -268,8 +269,8 @@ public class CrudFrame extends JFrame {
 		Properties props = new Properties();
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader()
-				.getResourceAsStream(MainGui.propFile);
+		InputStream in = this.getClass().getClassLoader().getResourceAsStream(
+				MainGui.propFile);
 
 		props.load(new InputStreamReader(in));
 		String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
@@ -294,8 +295,9 @@ public class CrudFrame extends JFrame {
 	}
 
 	private void populateGui(Session session, String sessionPath) {
-		tfName.setText(session.getName());
-		tfDescription.setText(session.getDescription());
+		tfName.setText(session.getConfigName());
+		// no more description
+		// tfDescription.setText(session.getDescription());
 		tfDelayForAnswer.setText("" + session.getTimeDelayAnswer());
 		tfDelayForPrompt.setText("" + session.getTimeDelayPrompt());
 		CategoryItem[] items = session.getItems();

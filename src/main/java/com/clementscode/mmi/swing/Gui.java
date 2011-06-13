@@ -2,6 +2,8 @@ package com.clementscode.mmi.swing;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -70,6 +72,7 @@ public class Gui implements ActionListener {
 	private Queue<CategoryItem> itemQueue = null;
 	private Session session = null;
 	private Timer timer;
+	private Timer betweenTimer;
 	protected Log log = LogFactory.getLog(this.getClass());
 	private JCheckBox attending;
 	private JFrame frame;
@@ -81,6 +84,7 @@ public class Gui implements ActionListener {
 	private ActionRecorder noAnswerAction;
 	private ActionRecorder quitAction;
 	private ActionRecorder timerAction;
+	private ActionRecorder timerBetweenAction;
 	private ActionRecorder openAction;
 	private JPanel mainPanel;
 	private Mediator mediator;
@@ -104,6 +108,8 @@ public class Gui implements ActionListener {
 	private int totalItemCount;
 
 	private boolean bDebounce = false; // DISGUSTING! and Mysterious.
+
+	private BufferedImage clearImage;
 
 	public Gui() {
 		loggingFrame = new LoggingFrame();
@@ -147,7 +153,9 @@ public class Gui implements ActionListener {
 			logger.error("Could not look up BasicService.", e);
 			e.printStackTrace();
 		} catch (Exception bland) {
-			logger.error("Some odd JNLP related problem: bland=" + bland, bland);
+			logger
+					.error("Some odd JNLP related problem: bland=" + bland,
+							bland);
 		}
 	}
 
@@ -233,7 +241,7 @@ public class Gui implements ActionListener {
 		if (null != session) {
 			tfSessionName.setText(session.getSessionName());
 		} else {
-			tfSessionName.setText("ADTV Study " + new java.util.Date());
+			tfSessionName.setText("Session 1");
 		}
 		belowSouthPanel.add(new LabelAndField("Session Name: ", tfSessionName));
 		tfSessionDataFile = new JTextField(30);
@@ -328,8 +336,6 @@ public class Gui implements ActionListener {
 		lstButtons.add(responseButton);
 	}
 
-
-
 	private BufferedImage readImageDataFromClasspath(String fileName)
 			throws IOException {
 
@@ -340,8 +346,6 @@ public class Gui implements ActionListener {
 
 		return ImageIO.read(in);
 	}
-
-
 
 	public void setupTimer() {
 		if (null != timer) {
@@ -354,6 +358,25 @@ public class Gui implements ActionListener {
 		timer.setInitialDelay(session.getTimeDelayPrompt() * 1000);
 		timer.setRepeats(true);
 		timer.start();
+	}
+
+	/**
+	 * 
+	 */
+	private void setupBetweenTimer() {
+
+		if (betweenTimer != null) {
+			// just in case
+			betweenTimer.stop();
+		}
+		betweenTimer = new Timer(session.getTimeDelayBetweenItems() * 1000,
+				timerBetweenAction);
+		betweenTimer.setRepeats(false);
+
+	}
+
+	public Timer getBetweenTimer() {
+		return betweenTimer;
 	}
 
 	private int getPromptLen(File sndFile) {
@@ -374,18 +397,21 @@ public class Gui implements ActionListener {
 	public void setupCenterButton() {
 		// TODO: Call this when we get a new session file read in....
 		CategoryItem first = itemQueue.remove();
-		try {
-			imgIconCenter = new ImageIcon(first.getImgFile().getCanonicalPath());
-		} catch (IOException e) {
-			log
-					.error(
-							"Odd, this error should not happen.  Can't find the first image",
-							e);
-			e.printStackTrace();
-		}
+
+		imgIconCenter = new ImageIcon(first.getImg());
+
 		// centerButton = new JButton(imgIconCenter);
 		centerButton.setIcon(imgIconCenter);
-		centerButton.setPreferredSize(session.getMaxDimensions());
+		Dimension max = session.getMaxDimensions();
+		centerButton.setPreferredSize(max);
+		int width = (int) max.getWidth();
+		int height = (int) max.getHeight();
+		clearImage = new BufferedImage(width, height,
+				BufferedImage.TYPE_INT_RGB);
+		Graphics g = clearImage.getGraphics();
+		g.setColor(Color.WHITE);
+		g.fillRect(0, 0, width, height);
+		g.dispose();
 	}
 
 	private void setupActions(MediatorListener mediator) {
@@ -425,6 +451,12 @@ public class Gui implements ActionListener {
 				Messages.getString("Gui.TimerSwing"), null, //$NON-NLS-1$
 				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
 				KeyStroke.getKeyStroke("control F2"), Mediator.TIMER, mediator);
+
+		timerBetweenAction = new ActionRecorder(Messages
+				.getString("Gui.TimerBetweenSwing"), null, //$NON-NLS-1$
+				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
+				KeyStroke.getKeyStroke("control F2"), Mediator.BETWEEN_TIMER,
+				mediator);
 
 		openAction = new ActionRecorder(Messages.getString("Gui.Open"), null, //$NON-NLS-1$
 				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
@@ -469,7 +501,10 @@ public class Gui implements ActionListener {
 		return itemQueue;
 	}
 
-
+	public void clearImage() {
+		centerButton.setIcon(new ImageIcon(clearImage));
+		refreshGui();
+	}
 
 	public void switchImage(ImageIcon ii) {
 		setFrameTitle();
@@ -574,6 +609,7 @@ public class Gui implements ActionListener {
 
 			refreshGui();
 			setupTimer();
+			setupBetweenTimer();
 			enableButtons();
 		}
 	}
