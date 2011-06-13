@@ -180,6 +180,8 @@ public class Mediator implements MediatorListener {
 
 				if (justWaited) {
 					item = gui.getItemQueue().remove();
+					log.info(String.format("About to switch image to %s (#%d)",
+							item.getImgFile(), item.getItemNumber()));
 					gui.switchImage(item.getImg());
 					// TODO: There may be different times between sessions....
 					gui.getTimer().start();
@@ -197,16 +199,18 @@ public class Mediator implements MediatorListener {
 	private void timer() {
 		if (playPrompt) {
 			playPrompt = false;
-			startSound(gui.getSession().getPrompt());
+			startSound(gui.getSession().getPrompt(), -1);
 		} else {
 			playPrompt = true;
 
-			startSound(item.getAudio());
+			startSound(item.getAudio(), item.getItemNumber());
 			gui.getTimer().stop();
 		}
 	}
 
-	private void startSound(File f) {
+	private void startSound(File f, int n) {
+		log.info(String.format("About to play sound: %s from itemNumber %d", f,
+				n));
 		soundRunner = new SoundRunner(f);
 		new Thread(soundRunner).start();
 

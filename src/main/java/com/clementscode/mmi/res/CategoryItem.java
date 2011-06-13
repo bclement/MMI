@@ -23,8 +23,14 @@ public class CategoryItem {
 
 	protected Log log = LogFactory.getLog(this.getClass());
 
+	private int itemNumber;
+
+	private static int itemSerialNumber = 0;
+
 	protected CategoryItem() {
 		// for unit tests
+
+		idObject();
 	}
 
 	/**
@@ -36,15 +42,21 @@ public class CategoryItem {
 	 */
 	public CategoryItem(File imgFile, File audio) throws IOException {
 		super();
+		idObject();
 		this.audio = audio;
 		this.imgFile = imgFile;
 		this.img = readImage(imgFile);
+	}
+
+	private void idObject() {
+		itemNumber = itemSerialNumber++;
 	}
 
 	public CategoryItem(File imgFile, BufferedImage img, File audio)
 			throws IOException {
 		// for unit tests
 		super();
+		idObject();
 		this.audio = audio;
 		this.imgFile = imgFile;
 		this.img = img;
@@ -150,6 +162,22 @@ public class CategoryItem {
 	 */
 	public void setImgFile(File imgFile) {
 		this.imgFile = imgFile;
+	}
+
+	public int getItemNumber() {
+		return itemNumber;
+	}
+
+	public void setItemNumber(int itemNumber) {
+		this.itemNumber = itemNumber;
+	}
+
+	public static int getItemSerialNumber() {
+		return itemSerialNumber;
+	}
+
+	public static void setItemSerialNumber(int itemSerialNumber) {
+		CategoryItem.itemSerialNumber = itemSerialNumber;
 	}
 
 }

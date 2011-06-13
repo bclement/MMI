@@ -397,7 +397,8 @@ public class Gui implements ActionListener {
 	public void setupCenterButton() {
 		// TODO: Call this when we get a new session file read in....
 		CategoryItem first = itemQueue.remove();
-
+		log.info(String.format("About to display image: %s from item=%d",
+				first.getImgFile(), first.getItemNumber()));
 		imgIconCenter = new ImageIcon(first.getImg());
 
 		// centerButton = new JButton(imgIconCenter);
