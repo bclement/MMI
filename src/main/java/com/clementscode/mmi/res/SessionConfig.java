@@ -20,6 +20,8 @@ public class SessionConfig {
 	protected String name;
 
 	@XmlElement
+	@Deprecated
+	// only here for backward compatibility in configs - not used by programs
 	protected String description;
 
 	@XmlElement
@@ -39,6 +41,9 @@ public class SessionConfig {
 
 	@XmlElement
 	protected int timeDelayAnswer;
+
+	@XmlElement
+	protected int timeDelayBetweenItems = 3;
 
 	/**
 	 * @return the name
@@ -146,8 +151,24 @@ public class SessionConfig {
 	}
 
 	/**
+	 * @return the timeDelayBetweenItem
+	 */
+	public int getTimeDelayBetweenItems() {
+		return timeDelayBetweenItems;
+	}
+
+	/**
+	 * @param timeDelayBetweenItem
+	 *            the timeDelayBetweenItem to set
+	 */
+	public void setTimeDelayBetweenItems(int timeDelayBetweenItem) {
+		this.timeDelayBetweenItems = timeDelayBetweenItem;
+	}
+
+	/**
 	 * @return the description
 	 */
+	@Deprecated
 	public String getDescription() {
 		return description;
 	}
@@ -156,6 +177,7 @@ public class SessionConfig {
 	 * @param description
 	 *            the description to set
 	 */
+	@Deprecated
 	public void setDescription(String description) {
 		this.description = description;
 	}

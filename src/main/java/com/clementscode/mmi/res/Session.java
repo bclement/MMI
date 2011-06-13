@@ -13,8 +13,10 @@ import java.io.IOException;
  */
 public class Session {
 
-	protected String name;
+	protected String configName;
+
 	protected String sessionName;
+
 	protected File sessionDataFile;
 
 	protected CategoryItem[] items;
@@ -29,9 +31,9 @@ public class Session {
 
 	protected int timeDelayAnswer;
 
-	protected int shuffleCount;
+	protected int timeDelayBetweenItems;
 
-	protected String description;
+	protected int shuffleCount;
 
 	/**
 	 * @param name
@@ -42,14 +44,15 @@ public class Session {
 			throws Exception {
 		super();
 		this.sndExtentions = sndExtentions;
-		this.name = config.getName();
+		this.configName = config.getName();
 		this.config = config;
 		this.items = parseItems(config);
 		this.prompt = parsePrompt(config);
 		this.shuffleCount = config.getShuffleCount();
 		this.timeDelayAnswer = config.getTimeDelayAnswer();
+		this.timeDelayBetweenItems = config.getTimeDelayBetweenItems();
 		timeDelayPrompt = config.getTimeDelayPrompt();
-		this.description = config.getDescription();
+
 	}
 
 	/**
@@ -123,18 +126,18 @@ public class Session {
 	}
 
 	/**
-	 * @return the name
+	 * @return the configName
 	 */
-	public String getName() {
-		return name;
+	public String getConfigName() {
+		return configName;
 	}
 
 	/**
-	 * @param name
-	 *            the name to set
+	 * @param configName
+	 *            the configName to set
 	 */
-	public void setName(String name) {
-		this.name = name;
+	public void setConfigName(String configName) {
+		this.configName = configName;
 	}
 
 	/**
@@ -242,21 +245,6 @@ public class Session {
 		this.shuffleCount = shuffleCount;
 	}
 
-	/**
-	 * @return the description
-	 */
-	public String getDescription() {
-		return description;
-	}
-
-	/**
-	 * @param description
-	 *            the description to set
-	 */
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	public String getSessionName() {
 		return sessionName;
 	}
@@ -271,6 +259,21 @@ public class Session {
 
 	public void setSessionDataFile(File sessionDataFile) {
 		this.sessionDataFile = sessionDataFile;
+	}
+
+	/**
+	 * @return the timeDelayBetweenItems
+	 */
+	public int getTimeDelayBetweenItems() {
+		return timeDelayBetweenItems;
+	}
+
+	/**
+	 * @param timeDelayBetweenItems
+	 *            the timeDelayBetweenItems to set
+	 */
+	public void setTimeDelayBetweenItems(int timeDelayBetweenItems) {
+		this.timeDelayBetweenItems = timeDelayBetweenItems;
 	}
 
 }
