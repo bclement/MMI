@@ -12,11 +12,13 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,10 +65,10 @@ import com.clementscode.mmi.util.Shuffler;
 import com.clementscode.mmi.util.Utils;
 
 public class Gui implements ActionListener {
-
 	private Logger logger = Logger.getLogger(this.getClass().getName());
-
 	private static final String BROWSE_SESSION_DATA_FILE = "BROWSE_SESSION_DATA_FILE";
+	private static final String SESSION_DIRECTORY = "SESSION_DIRECTORY";
+	private static final String ADVT_URL = "http://clementscode.com/avdt";
 	private ImageIcon imgIconCenter;
 	private JButton centerButton;
 	private Queue<CategoryItem> itemQueue = null;
@@ -111,9 +113,12 @@ public class Gui implements ActionListener {
 
 	private BufferedImage clearImage;
 
+	private Properties preferences;
+
 	public Gui() {
 		loggingFrame = new LoggingFrame();
 		jnlpSetup();
+		loadPreferences();
 		String tmpDirStr = "/tmp/mmi";
 		tmpDir = new File(tmpDirStr);
 		tmpDir.mkdirs();
@@ -137,6 +142,7 @@ public class Gui implements ActionListener {
 			}
 		});
 	}
+
 
 	private void jnlpSetup() {
 		try {
@@ -565,8 +571,11 @@ public class Gui implements ActionListener {
 		File file;
 		// TODO: Remove hard coded directory.
 		// TODO: Get application to remember the last place we opened this...
+		String sessionDir = (String) preferences.get(SESSION_DIRECTORY);
+		sessionDir = null == sessionDir ? System.getProperty("user.home")
+				: sessionDir;
 		JFileChooser chooser = new JFileChooser(new File(
-				"/Users/mgpayne/MMI/src/test/resources"));
+sessionDir));
 		int returnVal = chooser.showOpenDialog(frame);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			file = chooser.getSelectedFile();
@@ -577,8 +586,82 @@ public class Gui implements ActionListener {
 						"Problem reading %s exception was %s", file, e));
 				e.printStackTrace();
 			}
+			preferences.put(SESSION_DIRECTORY, getDirectory(file));
+			savePreferences();
 		}
+
 		displayClickToBegin();
+	}
+
+	private Object getDirectory(File file) {
+		String dirStr = file.getAbsolutePath();
+		int firstSlash = dirStr.lastIndexOf(File.separator);
+		dirStr = dirStr.substring(0, firstSlash);
+		return dirStr;
+	}
+
+	private void savePreferences() {
+		File preferencesFile = getPreferencesFile();
+		PrintWriter out;
+		try {
+			out = new PrintWriter(preferencesFile);
+			preferences.store(out, "Config information for " + ADVT_URL
+					+ " written on " + new java.util.Date());
+			out.close();
+		} catch (Exception e) {
+			log.error("Problem saving preferences to " + preferencesFile, e);
+			e.printStackTrace();
+		}
+
+	}
+
+	private void loadPreferences() {
+		File preferencesFile = getPreferencesFile();
+		preferences = new Properties();
+		FileReader in;
+		try {
+			in = new FileReader(preferencesFile);
+			preferences.load(in);
+			in.close();
+		} catch (Exception e) {
+			log.error("Problem loading preferences from " + preferencesFile, e);
+			e.printStackTrace();
+		}
+
+	}
+
+	private File getPreferencesFile() {
+		String home = System.getProperty("user.home");
+		//
+		String advtSettingsDirectory = home + "/AVDT_Settings";
+		File preferencesDir = new File(advtSettingsDirectory);
+		if (!preferencesDir.exists()) {
+			createPreferencesDirectory(advtSettingsDirectory);
+		}
+		File prefsFile = new File(advtSettingsDirectory + "/advt_prefs.ini");
+		return prefsFile;
+	}
+
+
+
+	private void createPreferencesDirectory(String advtSettingsDirectory) {
+		File dir = new File(advtSettingsDirectory);
+		dir.mkdirs();
+		try {
+			PrintWriter out = new PrintWriter(advtSettingsDirectory
+					+ "/README.txt");
+			out.println("This directory contains settings for the program AVDT.");
+			out.println("For more information, please visit " + ADVT_URL);
+			out.println("This directory was initially created at "
+					+ new java.util.Date());
+			out.println("Please do not delete these files or this directory.");
+			out.close();
+		} catch (Exception e) {
+			log.error("Problem making readme in directory: "
+					+ advtSettingsDirectory, e);
+			e.printStackTrace();
+		}
+
 	}
 
 	public void useNewSession() {
