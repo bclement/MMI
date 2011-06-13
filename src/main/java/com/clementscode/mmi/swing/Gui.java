@@ -198,11 +198,12 @@ public class Gui implements ActionListener {
 		/*
 		 * menuItem = new JMenuItem(crudAction); menu.add(menuItem);
 		 */
-		menuItem = new JMenuItem(quitAction);
-		menuItem.setMnemonic(KeyEvent.VK_B);
-		menu.add(menuItem);
+
 
 		menuItem = new JMenuItem(showLoggingFrameAction);
+		menu.add(menuItem);
+
+		menuItem = new JMenuItem(quitAction);
 		menu.add(menuItem);
 
 		menuBar.add(menu);
