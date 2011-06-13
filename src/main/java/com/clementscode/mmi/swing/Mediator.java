@@ -83,7 +83,7 @@ public class Mediator implements MediatorListener {
 		case INDEPENDENT:
 			if (!waiting) {
 				collector.addResponse(item, gui.getAttending().isSelected(),
-						RespType.INDEPENDANT);
+						RespType.INDEPENDENT);
 				hit = true;
 			}
 			break;

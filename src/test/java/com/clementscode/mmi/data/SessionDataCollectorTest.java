@@ -46,7 +46,7 @@ public class SessionDataCollectorTest {
 	@Test
 	public void percentTest() {
 		SessionDataCollector collector = new SessionDataCollector(session, desc);
-		collector.addResponse(item1, true, RespType.INDEPENDANT);
+		collector.addResponse(item1, true, RespType.INDEPENDENT);
 		collector.addResponse(item1, false, RespType.MODEL);
 		collector.addResponse(item2, true, RespType.VERBAL);
 		collector.addResponse(item2, false, RespType.NONE);
