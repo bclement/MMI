@@ -251,7 +251,7 @@ public class Gui implements ActionListener {
 						.getCanonicalPath());
 			} else {
 				tfSessionDataFile.setText(System.getProperty("user.home")
-						+ "/adtv.csv");
+						+ "/avdt.csv");
 			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -403,8 +403,6 @@ public class Gui implements ActionListener {
 		//
 		// // centerButton = new JButton(imgIconCenter);
 		// centerButton.setIcon(imgIconCenter);
-
-
 
 		Dimension max = session.getMaxDimensions();
 		centerButton.setPreferredSize(max);

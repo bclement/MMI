@@ -18,7 +18,7 @@ import com.clementscode.mmi.res.CategoryItem;
 public class SessionDataCollector {
 
 	public enum RespType {
-		INDEPENDANT, VERBAL, MODEL, NONE
+		INDEPENDENT, VERBAL, MODEL, NONE
 	};
 
 	protected static class Counts {
@@ -103,7 +103,7 @@ public class SessionDataCollector {
 		Stats rval = new Stats();
 		rval.setName(name);
 		EnumMap<RespType, Integer> map = counts.respMap;
-		int i = getIntSafe(map.get(RespType.INDEPENDANT));
+		int i = getIntSafe(map.get(RespType.INDEPENDENT));
 		rval.setPercentIndep(getPercent(i, total));
 		i = getIntSafe(map.get(RespType.VERBAL));
 		rval.setPercentVerbal(getPercent(i, total));
