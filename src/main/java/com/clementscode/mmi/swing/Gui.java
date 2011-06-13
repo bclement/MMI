@@ -395,14 +395,17 @@ public class Gui implements ActionListener {
 	}
 
 	public void setupCenterButton() {
-		// TODO: Call this when we get a new session file read in....
-		CategoryItem first = itemQueue.remove();
-		log.info(String.format("About to display image: %s from item=%d",
-				first.getImgFile(), first.getItemNumber()));
-		imgIconCenter = new ImageIcon(first.getImg());
+		// // TODO: Call this when we get a new session file read in....
+		// CategoryItem first = itemQueue.remove();
+		// log.info(String.format("About to display image: %s from item=%d",
+		// first.getImgFile(), first.getItemNumber()));
+		// imgIconCenter = new ImageIcon(first.getImg());
+		//
+		// // centerButton = new JButton(imgIconCenter);
+		// centerButton.setIcon(imgIconCenter);
 
-		// centerButton = new JButton(imgIconCenter);
-		centerButton.setIcon(imgIconCenter);
+
+
 		Dimension max = session.getMaxDimensions();
 		centerButton.setPreferredSize(max);
 		int width = (int) max.getWidth();
@@ -612,6 +615,7 @@ public class Gui implements ActionListener {
 			setupTimer();
 			setupBetweenTimer();
 			enableButtons();
+			mediator.execute(Mediator.BETWEEN_TIMER);
 		}
 	}
 
