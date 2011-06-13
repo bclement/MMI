@@ -103,7 +103,7 @@ public class Gui implements ActionListener {
 
 	private URL codeBaseUrl = null;
 
-	private int shownItemCount = 1;
+	private int shownItemCount = 0;
 
 	private int totalItemCount;
 
