@@ -21,6 +21,7 @@ public class Round1 {
 	private LoggingFrame loggingFrame;
 	private JFrame frame;
 	private PictureTransferHandler picHandler;
+
 	/**
 	 * @param args
 	 */
@@ -31,8 +32,6 @@ public class Round1 {
 			bland.printStackTrace();
 		}
 	}
-
-
 
 	public Round1() {
 		// TODO: Make a menu to show the logging frame...
@@ -58,10 +57,8 @@ public class Round1 {
 		for (String img : imgs) {
 			if (img.indexOf("jpg") > 0) {
 				log.info("Processing img=" + img);
-				DTPicture pic1 = new DTPicture(
-new ImageIcon("images/" + img,
-						img)
-						.getImage());
+				DTPicture pic1 = new DTPicture(new ImageIcon("images/" + img,
+						img).getImage());
 				pic1.setTransferHandler(picHandler);
 				imgPanel.add(pic1);
 			}
