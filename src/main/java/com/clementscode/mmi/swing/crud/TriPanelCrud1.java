@@ -2,15 +2,13 @@ package com.clementscode.mmi.swing.crud;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.DropMode;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -21,16 +19,20 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.TransferHandler;
+import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
 
+import com.clementscode.mmi.swing.GuiForCategoryItem;
 import com.clementscode.mmi.swing.LabelAndField;
 import com.clementscode.mmi.swing.LoggingFrame;
 
-public class TriPanelCrud1 implements ActionListener, FocusListener {
+public class TriPanelCrud1 {
 	private Logger log = Logger.getLogger(this.getClass().getName());
 	private LoggingFrame loggingFrame;
 	private JFrame frame;
+	private Vector vector;
+	private JPanel mainPanel;
 
 	public static void main(String[] args) {
 		try {
@@ -41,19 +43,24 @@ public class TriPanelCrud1 implements ActionListener, FocusListener {
 
 	}
 
+	public TriPanelCrud1() {
+		vector = new Vector();
+	}
+
 	private void run() {
 		// TODO: Make a menu to show the logging frame...
 		loggingFrame = new LoggingFrame();
 		loggingFrame.setVisible(true);
 		frame = new JFrame("Round1");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		JPanel panel = new JPanel();
-		frame.getContentPane().add(panel);
-		panel.setLayout(new BorderLayout());
+		mainPanel = new JPanel();
+		frame.getContentPane().add(mainPanel);
+		mainPanel.setLayout(new BorderLayout());
 
-		panel.add(new JScrollPane(soundFilePanel()), BorderLayout.WEST);
-		panel.add(new JScrollPane(tripleStimulusPanel()), BorderLayout.CENTER);
-		panel.add(new JScrollPane(imageFilePanel()), BorderLayout.EAST);
+		mainPanel.add(new JScrollPane(soundFilePanel()), BorderLayout.WEST);
+		mainPanel.add(new JScrollPane(tripleStimulusPanel()),
+				BorderLayout.CENTER);
+		mainPanel.add(new JScrollPane(imageFilePanel()), BorderLayout.EAST);
 		frame.pack();
 		frame.setVisible(true);
 	}
@@ -61,25 +68,26 @@ public class TriPanelCrud1 implements ActionListener, FocusListener {
 	private JPanel imageFilePanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(0, 1));
-		String dirName = "/Users/mgpayne/resources/vehicles/boat/";
+		String dirName = "/Users/mgpayne/resources/";
 		File dir = new File(dirName);
 		String[] files = dir.list();
 
 		JList targetJList = new JList();
 		// targetJList.setCellRenderer(new CustomCellRenderer());
 
-		Vector vector = new Vector();
-		ImageIcon ii;
-
-
-		for (String fn : files) {
-			if (fn.indexOf("jpg") > 0) {
-				ii = new ImageIcon(dirName + fn);
-				vector.add(ii);
-				// makeDragable(label1);
-				// panel.add(label1);
-			}
-		}
+		// Vector vector = new Vector();
+		// ImageIcon ii;
+		//
+		//
+		// for (String fn : files) {
+		// if (fn.indexOf("jpg") > 0) {
+		// ii = new ImageIcon(dirName + fn);
+		// vector.add(ii);
+		// // makeDragable(label1);
+		// // panel.add(label1);
+		// }
+		// }
+		visitAllFiles(new File(dirName));
 		targetJList.setListData(vector);
 		targetJList.setDragEnabled(true);
 		targetJList.setDropMode(DropMode.ON);
@@ -87,15 +95,44 @@ public class TriPanelCrud1 implements ActionListener, FocusListener {
 		return panel;
 	}
 
+
+	// Process only files under dir
+	// Started with
+	// from http://www.exampledepot.com/egs/java.io/TraverseTree.html
+	public void visitAllFiles(File dir) {
+		if (dir.isDirectory()) {
+			String[] children = dir.list();
+			for (int i = 0; i < children.length; i++) {
+				visitAllFiles(new File(dir, children[i]));
+			}
+		} else {
+			String fn = dir.getAbsolutePath();
+			if (fn.indexOf("jpg") > 0) {
+				ImageIcon smallIi = smallImageIcon(fn, 128, 128);
+				vector.add(smallIi);
+			}
+		}
+	}
+
+	static ImageIcon smallImageIcon(String fn, int i, int j) {
+		ImageIcon ii = new ImageIcon(fn);
+		Image smallImg = GuiForCategoryItem.getScaledImage(ii.getImage(), 128,
+				128);
+		ImageIcon smallIi = new ImageIcon(smallImg);
+		smallIi.setDescription(fn);
+		return smallIi;
+	}
+
 	private JPanel tripleStimulusPanel() {
 		JPanel panel = new JPanel();
+
 		panel.setLayout(new GridLayout(0, 1));
 		for (int i = 0; i < 10; ++i) {
 			JPanel triPanel = new JPanel();
-			JTextField tf = new JTextField(20);
-			tf.addActionListener(this);
-			tf.addFocusListener(this);
-			triPanel.add(new LabelAndField("Image: ", tf));
+			TitledBorder title = BorderFactory.createTitledBorder("title");
+			triPanel.setBorder(title);
+			triPanel.add(new LabelAndFieldWithIcon("Image: ",
+					new JTextField(20), this));
 			triPanel.add(new LabelAndField("Prompt: ", new JTextField(20)));
 			triPanel.add(new LabelAndField("Answer: ", new JTextField(20)));
 			panel.add(triPanel);
@@ -138,21 +175,10 @@ public class TriPanelCrud1 implements ActionListener, FocusListener {
 
 	}
 
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		System.out.println(e);
-	}
+	void refreshGui() {
 
-	public void focusGained(FocusEvent arg0) {
-		// TODO Auto-generated method stub
-		System.out.println("focusGained: e=" + arg0);
-	}
-
-	public void focusLost(FocusEvent arg0) {
-		// TODO Auto-generated method stub
-		System.out.println("focusLost: e=" + arg0);
-		JTextField tf = (JTextField) arg0.getSource();
-		System.out.println("\ttf=" + tf.getText());
+		mainPanel.revalidate();
+		frame.pack();
 	}
 
 }

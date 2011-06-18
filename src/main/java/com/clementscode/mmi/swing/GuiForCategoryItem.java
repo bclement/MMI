@@ -134,7 +134,7 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 	 *            - desired height
 	 * @return - the new resized image
 	 */
-	private Image getScaledImage(Image srcImg, int w, int h) {
+	public static Image getScaledImage(Image srcImg, int w, int h) {
 		// from:
 		// http://download.oracle.com/javase/tutorial/uiswing/examples/components/IconDemoProject/src/components/IconDemoApp.java
 
