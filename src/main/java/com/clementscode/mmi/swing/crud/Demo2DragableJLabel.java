@@ -38,6 +38,7 @@ public class Demo2DragableJLabel {
 		for (int i = 0; i < 25; ++i) {
 			DragableJLabelWithImage lbl = new DragableJLabelWithImage();
 			lbl.setIcon(lstFileNames.get(i));
+			lbl.setName("i=" + i);// does not display, good for bookkeeping
 			panel.add(lbl);
 		}
 		frame.pack();

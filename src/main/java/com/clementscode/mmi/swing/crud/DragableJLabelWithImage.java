@@ -17,7 +17,7 @@ public class DragableJLabelWithImage extends JLabel {
 		// this property will be used in any drag-and-drop involving this
 		// label
 		final String propertyName = "icon";
-		setTransferHandler(new TransferHandler(propertyName));
+		setTransferHandler(new MattsTransferHandler(propertyName));
 
 		// Listen for mouse clicks
 		addMouseListener(new MouseAdapter() {
