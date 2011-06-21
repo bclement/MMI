@@ -1,4 +1,4 @@
-package com.clementscode.mmi.swing.crud;
+package com.clementscode.mmi.swing.crud.old;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -7,17 +7,17 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.TransferHandler;
 
-public class DragableJLabelWithImage extends JLabel {
+public class DragableJLabel extends JLabel {
 	private static final long serialVersionUID = 1L;
 
-	public DragableJLabelWithImage() {
+	public DragableJLabel() {
 		super();
 		// Specify that the label's text property be transferable; the value
 		// of
 		// this property will be used in any drag-and-drop involving this
 		// label
-		final String propertyName = "icon";
-		setTransferHandler(new MattsTransferHandler(propertyName));
+		final String propertyName = "text";
+		setTransferHandler(new TransferHandler(propertyName));
 
 		// Listen for mouse clicks
 		addMouseListener(new MouseAdapter() {

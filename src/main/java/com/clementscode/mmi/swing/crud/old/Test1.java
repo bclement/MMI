@@ -1,4 +1,4 @@
-package com.clementscode.mmi.swing.crud;
+package com.clementscode.mmi.swing.crud.old;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
