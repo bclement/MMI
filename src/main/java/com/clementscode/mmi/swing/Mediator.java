@@ -45,6 +45,7 @@ public class Mediator implements MediatorListener {
 	public static final int OPEN_HTTP = 11;
 	public static final int SHOW_LOGGING_FRAME = 12;
 	public static final int BETWEEN_TIMER = 13;
+	public static final int TOGGLE_BUTTONS = 14;
 	protected Log log = LogFactory.getLog(this.getClass());
 	private Gui gui;
 	private boolean playPrompt = true;
@@ -107,6 +108,9 @@ public class Mediator implements MediatorListener {
 						RespType.NONE);
 				hit = true;
 			}
+			break;
+		case TOGGLE_BUTTONS:
+			gui.toggleButtons();
 			break;
 		case QUIT:
 			// TODO: Ask them if they want to save the file anyway....

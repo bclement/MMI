@@ -114,6 +114,8 @@ public class Gui implements ActionListener {
 	private BufferedImage clearImage;
 
 	private Properties preferences;
+	private ActionRecorder toggleButtonsAction;
+	private boolean buttonsVisible;
 
 	public Gui() {
 		loggingFrame = new LoggingFrame();
@@ -131,6 +133,7 @@ public class Gui implements ActionListener {
 		frame.getContentPane().add(mainPanel);
 		setupMenus();
 		disableButtons();
+		hideButtons();
 
 		lstTempDirectories = new ArrayList<String>();
 		// Register a shutdown thread
@@ -169,6 +172,29 @@ public class Gui implements ActionListener {
 		for (JComponent jc : lstButtons) {
 			jc.setEnabled(false);
 		}
+	}
+
+	public void toggleButtons() {
+		if (buttonsVisible) {
+			hideButtons();
+		} else {
+			showButtons();
+		}
+	}
+
+	private void hideButtons() {
+		for (JComponent jc : lstButtons) {
+			jc.setVisible(false);
+
+		}
+		buttonsVisible = false;
+	}
+
+	private void showButtons() {
+		for (JComponent jc : lstButtons) {
+			jc.setVisible(true);
+		}
+		buttonsVisible = true;
 	}
 
 	private void enableButtons() {
@@ -218,6 +244,8 @@ public class Gui implements ActionListener {
 		menuItem = new JMenuItem(modelingAction);
 		buttonMenu.add(menuItem);
 		menuItem = new JMenuItem(noAnswerAction);
+		buttonMenu.add(menuItem);
+		menuItem = new JMenuItem(toggleButtonsAction);
 		buttonMenu.add(menuItem);
 
 		menuBar.add(buttonMenu);
@@ -425,31 +453,40 @@ public class Gui implements ActionListener {
 
 	private void setupActions(MediatorListener mediator) {
 		// TODO: Fix bug that control A does not toggle the checkbox
+		// TODO: Make attending not a checkbox.
+		// TODO: Make hot keys come from a properties file. Hopefully ask JNLP
+		// Utils where this program was loaded from and do a http get to there
+		// for the properties file.
 		attendingAction = new ActionRecorder(Messages
 				.getString("Gui.Attending"), null, //$NON-NLS-1$
 				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F1), KeyStroke.getKeyStroke("control A"),
+						KeyEvent.VK_F1), KeyStroke.getKeyStroke("A"),
 				Mediator.ATTENDING, mediator);
 		independentAction = new ActionRecorder(Messages
 				.getString("Gui.Independent"), null, //$NON-NLS-1$
 				Messages.getString("Gui.IndependentDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F2), KeyStroke.getKeyStroke("control I"),
+						KeyEvent.VK_F2), KeyStroke.getKeyStroke("1"),
 				Mediator.INDEPENDENT, mediator);
 		verbalAction = new ActionRecorder(
 				Messages.getString("Gui.Verbal"), null, //$NON-NLS-1$
 				Messages.getString("Gui.VerbalDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_F3), KeyStroke
-						.getKeyStroke("control V"), Mediator.VERBAL, mediator);
+				new Integer(KeyEvent.VK_F3), KeyStroke.getKeyStroke("2"),
+				Mediator.VERBAL, mediator);
 		modelingAction = new ActionRecorder(
 				Messages.getString("Gui.Modeling"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ModelingDescriptin"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F4), KeyStroke.getKeyStroke("control M"),
+						KeyEvent.VK_F4), KeyStroke.getKeyStroke("3"),
 				Mediator.MODELING, mediator);
 		noAnswerAction = new ActionRecorder(
 				Messages.getString("Gui.NoAnswer"), null, //$NON-NLS-1$
 				Messages.getString("Gui.NoAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("control N"), Mediator.NO_ANSWER,
+				KeyStroke.getKeyStroke("4"), Mediator.NO_ANSWER,
 				mediator);
+
+		toggleButtonsAction = new ActionRecorder(Messages
+				.getString("Gui.ToggleButtons"), null, //$NON-NLS-1$
+				Messages.getString("Gui.ToggleButtons.Description"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
+				KeyStroke.getKeyStroke("B"), Mediator.TOGGLE_BUTTONS, mediator);
 
 		quitAction = new ActionRecorder(
 				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
@@ -874,5 +911,6 @@ sessionDir));
 		loggingFrame.setVisible(true);
 
 	}
+
 
 }
