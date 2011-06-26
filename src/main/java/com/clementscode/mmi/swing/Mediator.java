@@ -46,6 +46,7 @@ public class Mediator implements MediatorListener {
 	public static final int SHOW_LOGGING_FRAME = 12;
 	public static final int BETWEEN_TIMER = 13;
 	public static final int TOGGLE_BUTTONS = 14;
+	public static final int WRONG_ANSWER = 15;
 	protected Log log = LogFactory.getLog(this.getClass());
 	private Gui gui;
 	private boolean playPrompt = true;
@@ -111,6 +112,13 @@ public class Mediator implements MediatorListener {
 			if (!waiting) {
 				collector.addResponse(item, bAttending,
 						RespType.NONE);
+				hit = true;
+				bAttending = false;
+			}
+			break;
+		case WRONG_ANSWER:
+			if (!waiting) {
+				collector.addResponse(item, bAttending, RespType.ERROR);
 				hit = true;
 				bAttending = false;
 			}

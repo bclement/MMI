@@ -120,6 +120,7 @@ public class Gui implements ActionListener {
 	private CategoryItem currentItem;
 
 	private ConfigParser parser = null;
+	private ActionRecorder wrongAnswerAction;
 
 	public Gui() {
 		loggingFrame = new LoggingFrame();
@@ -248,6 +249,9 @@ public class Gui implements ActionListener {
 		buttonMenu.add(menuItem);
 		menuItem = new JMenuItem(noAnswerAction);
 		buttonMenu.add(menuItem);
+		menuItem = new JMenuItem(wrongAnswerAction);
+		buttonMenu.add(menuItem);
+
 		menuItem = new JMenuItem(toggleButtonsAction);
 		buttonMenu.add(menuItem);
 
@@ -273,6 +277,8 @@ public class Gui implements ActionListener {
 		addButton(southPanel, verbalAction);
 		addButton(southPanel, modelingAction);
 		addButton(southPanel, noAnswerAction);
+		addButton(southPanel, wrongAnswerAction);
+
 		JPanel belowSouthPanel = new JPanel();
 		belowSouthPanel.setLayout(new GridLayout(0, 1));
 		tfSessionName = new JTextField(40);
@@ -491,6 +497,11 @@ public class Gui implements ActionListener {
 				Messages.getString("Gui.NoAnswer"), null, //$NON-NLS-1$
 				Messages.getString("Gui.NoAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
 				KeyStroke.getKeyStroke("4"), Mediator.NO_ANSWER, mediator);
+
+		wrongAnswerAction = new ActionRecorder(
+				Messages.getString("Gui.WrongAnswer"), null, //$NON-NLS-1$
+				Messages.getString("Gui.WrongAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
+				KeyStroke.getKeyStroke("5"), Mediator.WRONG_ANSWER, mediator);
 
 		toggleButtonsAction = new ActionRecorder(
 				Messages.getString("Gui.ToggleButtons"), null, //$NON-NLS-1$
