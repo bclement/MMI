@@ -121,6 +121,7 @@ public class Gui implements ActionListener {
 
 	private ConfigParser parser = null;
 	private ActionRecorder wrongAnswerAction;
+	private ActionRecorder timerTimeDelayAutoAdvance;
 
 	public Gui() {
 		loggingFrame = new LoggingFrame();
@@ -427,7 +428,13 @@ public class Gui implements ActionListener {
 		return betweenTimer;
 	}
 
-	private int getPromptLen(File sndFile) {
+	public void startTimerTimeDelayAutoAdvance(int timeDelayAutoAdvance) {
+		Timer xxx = new Timer(timeDelayAutoAdvance * 1000,
+				timerTimeDelayAutoAdvance);
+		xxx.setRepeats(false);
+	}
+
+	int getPromptLen(File sndFile) {
 		// FIXME I'm a horrible hack
 		if (sndFile == null) {
 			return 0;
@@ -523,6 +530,12 @@ public class Gui implements ActionListener {
 				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
 				KeyStroke.getKeyStroke("control F2"), Mediator.BETWEEN_TIMER,
 				mediator);
+
+		timerTimeDelayAutoAdvance = new ActionRecorder(
+				Messages.getString("Gui.TimeDelayAutoAdvance"), null, //$NON-NLS-1$
+				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
+				KeyStroke.getKeyStroke("control F2"),
+				Mediator.CHANGE_DELAY_TIMER, mediator);
 
 		openAction = new ActionRecorder(Messages.getString("Gui.Open"), null, //$NON-NLS-1$
 				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
@@ -925,5 +938,6 @@ public class Gui implements ActionListener {
 		loggingFrame.setVisible(true);
 
 	}
+
 
 }

@@ -16,6 +16,8 @@ import com.clementscode.mmi.res.CategoryItem;
 import com.clementscode.mmi.res.Session;
 import com.clementscode.mmi.sound.SoundRunner;
 
+//TODO: This code needs to be more state machine like and refactored heavily.  Too bad there is no time!
+
 /*
 
  <pre>
@@ -47,6 +49,7 @@ public class Mediator implements MediatorListener {
 	public static final int BETWEEN_TIMER = 13;
 	public static final int TOGGLE_BUTTONS = 14;
 	public static final int WRONG_ANSWER = 15;
+	public static final int CHANGE_DELAY_TIMER = 16;
 	protected Log log = LogFactory.getLog(this.getClass());
 	private Gui gui;
 	private boolean playPrompt = true;
@@ -138,6 +141,22 @@ public class Mediator implements MediatorListener {
 			waiting = false;
 			justWaited = true;
 			break;
+
+		case CHANGE_DELAY_TIMER:
+			/*
+			 * new stuff from issue 25: A new entry is in the session config
+			 * called timeDelayAutoAdvance. This timer should start after the
+			 * audioPrompt (formerly called the answer) is played. When the
+			 * timer goes off, advancement to the next item should be triggered
+			 * with a no response entry in the data collector. If the time delay
+			 * has a value of less than zero, there should be no timer and
+			 * advancement to the next item should only happen on response
+			 * entry.
+			 */
+			collector.addResponse(item, bAttending, RespType.NO_RESPONSE);
+			hit = true;
+			break;
+
 		case SHOW_LOGGING_FRAME:
 			gui.showLoggingFrame();
 			break;
@@ -209,6 +228,15 @@ public class Mediator implements MediatorListener {
 
 	}
 
+	/*
+	 * new stuff from issue 25: A new entry is in the session config called
+	 * timeDelayAutoAdvance. This timer should start after the audioPrompt
+	 * (formerly called the answer) is played. When the timer goes off,
+	 * advancement to the next item should be triggered with a no response entry
+	 * in the data collector. If the time delay has a value of less than zero,
+	 * there should be no timer and advancement to the next item should only
+	 * happen on response entry.
+	 */
 	private void timer() {
 		if (playPrompt) {
 			playPrompt = false;
@@ -219,6 +247,17 @@ public class Mediator implements MediatorListener {
 			// it's all so confusing when we don't update all the names at once
 			startSound(item.getAudioPrompt(), item.getItemNumber());
 			gui.stopTimer();
+			int timeDelayAutoAdvance = gui.getSession().getConfig()
+					.getTimeDelayAutoAdvance();
+			if (timeDelayAutoAdvance > 0) {
+				int audioPromptLen = gui.getPromptLen(item.getAudioPrompt());
+				timeDelayAutoAdvance += audioPromptLen;
+				if (timeDelayAutoAdvance > 0) {
+					gui.startTimerTimeDelayAutoAdvance(timeDelayAutoAdvance);
+				} else {
+					log.error("Arrgh!  This is auful!  audioPromptLen is larger than timeDelayAutoAdvance.");
+				}
+			}
 		}
 	}
 

@@ -18,7 +18,7 @@ import com.clementscode.mmi.res.CategoryItem;
 public class SessionDataCollector {
 
 	public enum RespType {
-		INDEPENDENT, VERBAL, MODEL, NONE, ERROR
+		INDEPENDENT, VERBAL, MODEL, NONE, ERROR, NO_RESPONSE
 	};
 
 	protected static class Counts {
