@@ -4,6 +4,11 @@
 	<groupId>com.clementscode</groupId>
 	<artifactId>mmi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	
+	<properties>
+	</properties>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -22,29 +27,24 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
+  	  	  	<groupId>org.apache.maven.plugins</groupId>
+  	  	  	<artifactId>maven-compiler-plugin</artifactId>
+  	  	  	<inherited>true</inherited>
+  	  	  	<configuration>
+  	  	  	  	<source>1.6</source>
+  	  	  	  	<target>1.6</target>
+  	  	  	</configuration>
+  	  	</plugin>
+			<!--
+				<plugin> <groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jarsigner-plugin</artifactId>
-				<version>1.2</version>
-				<executions>
-					<execution>
-						<id>sign</id>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>verify</id>
-						<goals>
-							<goal>verify</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<alias>Matt</alias>
-					<storepass>123456</storepass>
-					<keypass>123456</keypass>
-				</configuration>
-			</plugin>
+				<version>1.2</version> <executions> <execution> <id>sign</id>
+				<goals> <goal>sign</goal> </goals> </execution> <execution>
+				<id>verify</id> <goals> <goal>verify</goal> </goals> </execution>
+				</executions> <configuration> <alias>Matt</alias>
+				<storepass>123456</storepass> <keypass>123456</keypass>
+				</configuration> </plugin>
+			-->
 		</plugins>
 	</build>
 
