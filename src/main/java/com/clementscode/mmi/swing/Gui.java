@@ -68,6 +68,7 @@ public class Gui implements ActionListener {
 	private static final String BROWSE_SESSION_DATA_FILE = "BROWSE_SESSION_DATA_FILE";
 	private static final String SESSION_DIRECTORY = "SESSION_DIRECTORY";
 	private static final String ADVT_URL = "http://clementscode.com/avdt";
+	private static final Object OUTPUT_CSV_FILE_LOCATION = "OUTPUT_CSV_FILE_LOCATION";
 	// private ImageIcon imgIconCenter;
 	private JButton centerButton;
 	private Queue<CategoryItem> itemQueue = null;
@@ -145,6 +146,7 @@ public class Gui implements ActionListener {
 			// This method is called during shutdown
 			public void run() {
 				// Do shutdown work ...
+				savePreferences();
 				Utils.deleteTempDirectories(lstTempDirectories);
 			}
 		});
@@ -287,8 +289,10 @@ public class Gui implements ActionListener {
 				tfSessionDataFile.setText(session.getSessionDataFile()
 						.getCanonicalPath());
 			} else {
-				tfSessionDataFile.setText(System.getProperty("user.home")
-						+ "/avdt.csv");
+				tfSessionDataFile.setText((String) preferences
+						.get(OUTPUT_CSV_FILE_LOCATION));
+				// tfSessionDataFile.setText(System.getProperty("user.home")
+				// + "/avdt.csv");
 			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
@@ -630,6 +634,7 @@ public class Gui implements ActionListener {
 				e.printStackTrace();
 			}
 			preferences.put(SESSION_DIRECTORY, getDirectory(file));
+
 			savePreferences();
 		}
 
@@ -644,6 +649,7 @@ public class Gui implements ActionListener {
 	}
 
 	private void savePreferences() {
+		preferences.put(OUTPUT_CSV_FILE_LOCATION, tfSessionDataFile.getText());
 		File preferencesFile = getPreferencesFile();
 		PrintWriter out;
 		try {
