@@ -420,6 +420,9 @@ public class Gui implements ActionListener {
 
 	private int getPromptLen(File sndFile) {
 		// FIXME I'm a horrible hack
+		if (sndFile == null) {
+			return 0;
+		}
 		AudioInputStream audioInputStream;
 		try {
 			audioInputStream = AudioSystem.getAudioInputStream(sndFile);
