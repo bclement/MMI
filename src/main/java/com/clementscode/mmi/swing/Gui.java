@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -53,12 +52,12 @@ import junk.ExtractFileSubDirectories;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.AnnotationIntrospector;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 
 import com.clementscode.mmi.MainGui;
 import com.clementscode.mmi.res.CategoryItem;
+import com.clementscode.mmi.res.ConfigParser;
+import com.clementscode.mmi.res.ConfigParser100;
+import com.clementscode.mmi.res.LegacyConfigParser;
 import com.clementscode.mmi.res.Session;
 import com.clementscode.mmi.res.SessionConfig;
 import com.clementscode.mmi.util.Shuffler;
@@ -69,7 +68,7 @@ public class Gui implements ActionListener {
 	private static final String BROWSE_SESSION_DATA_FILE = "BROWSE_SESSION_DATA_FILE";
 	private static final String SESSION_DIRECTORY = "SESSION_DIRECTORY";
 	private static final String ADVT_URL = "http://clementscode.com/avdt";
-	private ImageIcon imgIconCenter;
+	// private ImageIcon imgIconCenter;
 	private JButton centerButton;
 	private Queue<CategoryItem> itemQueue = null;
 	private Session session = null;
@@ -117,6 +116,11 @@ public class Gui implements ActionListener {
 	private ActionRecorder toggleButtonsAction;
 	private boolean buttonsVisible;
 
+	// GLOBALS EVERYWHERE!
+	private CategoryItem currentItem;
+
+	private ConfigParser parser = null;
+
 	public Gui() {
 		loggingFrame = new LoggingFrame();
 		jnlpSetup();
@@ -145,7 +149,6 @@ public class Gui implements ActionListener {
 			}
 		});
 	}
-
 
 	private void jnlpSetup() {
 		try {
@@ -224,7 +227,6 @@ public class Gui implements ActionListener {
 		/*
 		 * menuItem = new JMenuItem(crudAction); menu.add(menuItem);
 		 */
-
 
 		menuItem = new JMenuItem(showLoggingFrameAction);
 		menu.add(menuItem);
@@ -386,11 +388,12 @@ public class Gui implements ActionListener {
 		if (null != timer) {
 			timer.stop(); // fix for issue #4
 		}
-		// FIXME this assumes same prompt file length for every item
-		int answerDelay = session.getTimeDelayAnswer()
-				+ getPromptLen(session.getPrompt());
+		SessionConfig config = session.getConfig();
+		// DON'T LET THE NAME CHANGES FOOL YOU!
+		int answerDelay = config.getTimeDelayAudioPrompt()
+				+ getPromptLen(currentItem.getAudioPrompt());
 		timer = new Timer(answerDelay * 1000, timerAction);
-		timer.setInitialDelay(session.getTimeDelayPrompt() * 1000);
+		timer.setInitialDelay(config.getTimeDelayAudioSD() * 1000);
 		timer.setRepeats(true);
 		timer.start();
 	}
@@ -404,7 +407,8 @@ public class Gui implements ActionListener {
 			// just in case
 			betweenTimer.stop();
 		}
-		betweenTimer = new Timer(session.getTimeDelayBetweenItems() * 1000,
+		SessionConfig config = session.getConfig();
+		betweenTimer = new Timer(config.getTimeDelayInterTrial() * 1000,
 				timerBetweenAction);
 		betweenTimer.setRepeats(false);
 
@@ -480,11 +484,10 @@ public class Gui implements ActionListener {
 		noAnswerAction = new ActionRecorder(
 				Messages.getString("Gui.NoAnswer"), null, //$NON-NLS-1$
 				Messages.getString("Gui.NoAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("4"), Mediator.NO_ANSWER,
-				mediator);
+				KeyStroke.getKeyStroke("4"), Mediator.NO_ANSWER, mediator);
 
-		toggleButtonsAction = new ActionRecorder(Messages
-				.getString("Gui.ToggleButtons"), null, //$NON-NLS-1$
+		toggleButtonsAction = new ActionRecorder(
+				Messages.getString("Gui.ToggleButtons"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ToggleButtons.Description"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
 				KeyStroke.getKeyStroke("B"), Mediator.TOGGLE_BUTTONS, mediator);
 
@@ -565,9 +568,11 @@ public class Gui implements ActionListener {
 	 * it in again using an icon. I suspect that it will work better if you use
 	 * the image that ImageIO already read into memory.
 	 */
-	public void switchImage(BufferedImage img) {
-		ImageIcon ii = new ImageIcon(img);
+	public void switchItem(CategoryItem item) {
+		currentItem = item;
+		ImageIcon ii = new ImageIcon(item.getImg());
 		switchImage(ii);
+		setupTimer();
 	}
 
 	private void setFrameTitle() {
@@ -583,12 +588,10 @@ public class Gui implements ActionListener {
 		this.session = session;
 	}
 
-	public Timer getTimer() {
-		return timer;
-	}
-
-	public void setTimer(Timer timer) {
-		this.timer = timer;
+	public void stopTimer() {
+		if (timer != null) {
+			timer.stop();
+		}
 	}
 
 	public JCheckBox getAttending() {
@@ -612,8 +615,7 @@ public class Gui implements ActionListener {
 		String sessionDir = (String) preferences.get(SESSION_DIRECTORY);
 		sessionDir = null == sessionDir ? System.getProperty("user.home")
 				: sessionDir;
-		JFileChooser chooser = new JFileChooser(new File(
-sessionDir));
+		JFileChooser chooser = new JFileChooser(new File(sessionDir));
 		int returnVal = chooser.showOpenDialog(frame);
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			file = chooser.getSelectedFile();
@@ -680,15 +682,14 @@ sessionDir));
 		return prefsFile;
 	}
 
-
-
 	private void createPreferencesDirectory(String advtSettingsDirectory) {
 		File dir = new File(advtSettingsDirectory);
 		dir.mkdirs();
 		try {
 			PrintWriter out = new PrintWriter(advtSettingsDirectory
 					+ "/README.txt");
-			out.println("This directory contains settings for the program AVDT.");
+			out
+					.println("This directory contains settings for the program AVDT.");
 			out.println("For more information, please visit " + ADVT_URL);
 			out.println("This directory was initially created at "
 					+ new java.util.Date());
@@ -716,7 +717,8 @@ sessionDir));
 
 			CategoryItem[] copy = Arrays.copyOf(session.getItems(), session
 					.getItems().length);
-			for (int i = 0; i < session.getShuffleCount(); ++i) {
+			SessionConfig config = session.getConfig();
+			for (int i = 0; i < config.getShuffleCount(); ++i) {
 				Shuffler.shuffle(copy);
 			}
 			itemQueue = new ConcurrentLinkedQueue<CategoryItem>();
@@ -731,7 +733,8 @@ sessionDir));
 			setFrameTitle();
 
 			refreshGui();
-			setupTimer();
+			// setupTimer is now done on a per-item basis
+			// setupTimer();
 			setupBetweenTimer();
 			enableButtons();
 			mediator.execute(Mediator.BETWEEN_TIMER);
@@ -744,27 +747,27 @@ sessionDir));
 
 	private void readSessionFile(File file, String newItemBase)
 			throws Exception {
-		Properties props = new Properties();
-		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
-		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader().getResourceAsStream(
-				MainGui.propFile);
-		props.load(new InputStreamReader(in));
-		String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
+		if (this.parser == null) {
+			// SHOULDN'T ALL OF THIS BE HAPPENING DURING STARTUP?
+			Properties props = new Properties();
+			// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
+			// Do it this way and no relative path huha is needed.
+			InputStream in = this.getClass().getClassLoader()
+					.getResourceAsStream(MainGui.propFile);
+			props.load(new InputStreamReader(in));
+			String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
+			LegacyConfigParser legacy = new LegacyConfigParser(sndExts);
+			this.parser = new ConfigParser(legacy);
+			this.parser.registerVersionParser(new ConfigParser100());
+		}
 
-		ObjectMapper mapper = new ObjectMapper();
-		AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
-		mapper.getDeserializationConfig().withAnnotationIntrospector(
-				introspector);
-		mapper.getSerializationConfig()
-				.withAnnotationIntrospector(introspector);
-		SessionConfig config = mapper.readValue(new FileInputStream(file),
-				SessionConfig.class);
+		SessionConfig config = this.parser.parse(file);
 		if (null != newItemBase) {
 			config.setItemBase(newItemBase);
-			config.setPrompt(newItemBase + "/prompt.wav");
+			// prompts are relative to base in new configs
+			// config.setPrompt(newItemBase + "/prompt.wav");
 		}
-		session = new Session(config, sndExts);
+		session = new Session(config);
 	}
 
 	void refreshGui() {
@@ -911,6 +914,5 @@ sessionDir));
 		loggingFrame.setVisible(true);
 
 	}
-
 
 }

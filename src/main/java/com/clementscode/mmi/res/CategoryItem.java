@@ -19,7 +19,9 @@ public class CategoryItem {
 
 	protected BufferedImage img;
 
-	protected File audio;
+	protected File audioSD;
+
+	protected File audioPrompt;
 
 	protected Log log = LogFactory.getLog(this.getClass());
 
@@ -40,26 +42,18 @@ public class CategoryItem {
 	 * @param audio
 	 * @throws IOException
 	 */
-	public CategoryItem(File imgFile, File audio) throws IOException {
+	public CategoryItem(File imgFile, File audioSD, File audioPrompt)
+			throws IOException {
 		super();
 		idObject();
-		this.audio = audio;
+		this.audioSD = audioSD;
+		this.audioPrompt = audioPrompt;
 		this.imgFile = imgFile;
 		this.img = readImage(imgFile);
 	}
 
 	private void idObject() {
 		itemNumber = itemSerialNumber++;
-	}
-
-	public CategoryItem(File imgFile, BufferedImage img, File audio)
-			throws IOException {
-		// for unit tests
-		super();
-		idObject();
-		this.audio = audio;
-		this.imgFile = imgFile;
-		this.img = img;
 	}
 
 	protected BufferedImage readImage(File f) throws IOException {
@@ -87,7 +81,9 @@ public class CategoryItem {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((audio == null) ? 0 : audio.hashCode());
+		result = prime * result
+				+ ((audioPrompt == null) ? 0 : audioPrompt.hashCode());
+		result = prime * result + ((audioSD == null) ? 0 : audioSD.hashCode());
 		result = prime * result + ((imgFile == null) ? 0 : imgFile.hashCode());
 		return result;
 	}
@@ -106,10 +102,15 @@ public class CategoryItem {
 		if (getClass() != obj.getClass())
 			return false;
 		CategoryItem other = (CategoryItem) obj;
-		if (audio == null) {
-			if (other.audio != null)
+		if (audioPrompt == null) {
+			if (other.audioPrompt != null)
 				return false;
-		} else if (!audio.equals(other.audio))
+		} else if (!audioPrompt.equals(other.audioPrompt))
+			return false;
+		if (audioSD == null) {
+			if (other.audioSD != null)
+				return false;
+		} else if (!audioSD.equals(other.audioSD))
 			return false;
 		if (imgFile == null) {
 			if (other.imgFile != null)
@@ -135,18 +136,33 @@ public class CategoryItem {
 	}
 
 	/**
-	 * @return the audio
+	 * @return the audioSD
 	 */
-	public File getAudio() {
-		return audio;
+	public File getAudioSD() {
+		return audioSD;
 	}
 
 	/**
-	 * @param audio
-	 *            the audio to set
+	 * @param audioSD
+	 *            the audioSD to set
 	 */
-	public void setAudio(File audio) {
-		this.audio = audio;
+	public void setAudioSD(File audioSD) {
+		this.audioSD = audioSD;
+	}
+
+	/**
+	 * @return the audioPrompt
+	 */
+	public File getAudioPrompt() {
+		return audioPrompt;
+	}
+
+	/**
+	 * @param audioPrompt
+	 *            the audioPrompt to set
+	 */
+	public void setAudioPrompt(File audioPrompt) {
+		this.audioPrompt = audioPrompt;
 	}
 
 	/**

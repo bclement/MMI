@@ -160,7 +160,8 @@ public class GuiForCategoryItem extends JPanel implements ActionListener {
 
 	public void populate(CategoryItem categoryItem) {
 		try {
-			tfAudioFileName.setText(categoryItem.getAudio().getCanonicalPath());
+			tfAudioFileName.setText(categoryItem.getAudioPrompt()
+					.getCanonicalPath());
 			tfImageFileName.setText(categoryItem.getImgFile()
 					.getCanonicalPath());
 			imageIcon.setImage(getScaledImage(categoryItem.getImg(), 32, 32));

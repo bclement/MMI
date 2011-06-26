@@ -5,8 +5,6 @@ package com.clementscode.mmi.res;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,47 +21,6 @@ public class CategoryItemScanner {
 	protected String[] imgExtentions;
 
 	protected Log log = LogFactory.getLog(this.getClass());
-
-	/**
-	 * @param sndExtentions
-	 * @param imgExtentions
-	 */
-	public CategoryItemScanner(String[] sndExtentions, String[] imgExtentions) {
-		super();
-		this.sndExtentions = sndExtentions;
-		this.imgExtentions = imgExtentions;
-	}
-
-	public CategoryItem[] scanDirectory(String category, File dir)
-			throws Exception {
-		File[] snds = getAudioFiles(dir);
-		File[] imgs = getImgFiles(dir);
-		if (snds.length < 1 || imgs.length < 1) {
-			throw new Exception("Unable to find images and sound in directory "
-					+ dir);
-		}
-		return processDirectory(dir.getName(), imgs, snds[0]);
-	}
-
-	protected CategoryItem[] processDirectory(String dir, File[] images,
-			File audio) throws IOException {
-		ArrayList<CategoryItem> rval = new ArrayList<CategoryItem>(
-				images.length);
-		for (int i = 0; i < images.length; ++i) {
-			File f = images[i];
-			try {
-				rval.add(new CategoryItem(f, audio));
-			} catch (IOException e) {
-				log.error("Unable to read image: " + f.getName(), e);
-			}
-		}
-		if (rval.isEmpty()) {
-			String line1 = "Unable to read any images in directory: " + dir;
-			String line2 = "\nCheck previous log entries for details";
-			throw new IOException(line1 + line2);
-		}
-		return rval.toArray(new CategoryItem[rval.size()]);
-	}
 
 	public File[] getImgFiles(File dir) {
 		return getFileType(dir, imgExtentions);

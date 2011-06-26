@@ -3,6 +3,10 @@
  */
 package com.clementscode.mmi.data;
 
+import java.util.EnumMap;
+
+import com.clementscode.mmi.data.SessionDataCollector.RespType;
+
 /**
  * @author bclement
  * 
@@ -11,13 +15,10 @@ public class Stats {
 
 	protected String name;
 
+	protected EnumMap<RespType, Double> respMap = new EnumMap<RespType, Double>(
+			RespType.class);
+
 	protected double percentAttending;
-
-	protected double percentIndep;
-
-	protected double percentVerbal;
-
-	protected double percentModel;
 
 	/**
 	 * 
@@ -32,14 +33,21 @@ public class Stats {
 	 * @param percentVerbal
 	 * @param percentModel
 	 */
-	public Stats(String name, double percentAttending, double percentIndep,
-			double percentVerbal, double percentModel) {
+	public Stats(String name) {
 		super();
 		this.name = name;
-		this.percentAttending = percentAttending;
-		this.percentIndep = percentIndep;
-		this.percentVerbal = percentVerbal;
-		this.percentModel = percentModel;
+	}
+
+	public void addStat(RespType r, double percentage) {
+		respMap.put(r, percentage);
+	}
+
+	public double getStat(RespType r) {
+		Double rval = respMap.get(r);
+		if (rval == null) {
+			return 0;
+		}
+		return rval;
 	}
 
 	/**
@@ -70,51 +78,6 @@ public class Stats {
 	 */
 	public void setPercentAttending(double percentAttending) {
 		this.percentAttending = percentAttending;
-	}
-
-	/**
-	 * @return the percentIndep
-	 */
-	public double getPercentIndep() {
-		return percentIndep;
-	}
-
-	/**
-	 * @param percentIndep
-	 *            the percentIndep to set
-	 */
-	public void setPercentIndep(double percentIndep) {
-		this.percentIndep = percentIndep;
-	}
-
-	/**
-	 * @return the percentVerbal
-	 */
-	public double getPercentVerbal() {
-		return percentVerbal;
-	}
-
-	/**
-	 * @param percentVerbal
-	 *            the percentVerbal to set
-	 */
-	public void setPercentVerbal(double percentVerbal) {
-		this.percentVerbal = percentVerbal;
-	}
-
-	/**
-	 * @return the percentModel
-	 */
-	public double getPercentModel() {
-		return percentModel;
-	}
-
-	/**
-	 * @param percentModel
-	 *            the percentModel to set
-	 */
-	public void setPercentModel(double percentModel) {
-		this.percentModel = percentModel;
 	}
 
 }
