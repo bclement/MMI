@@ -163,6 +163,7 @@ public class Mediator implements MediatorListener {
 				File csvFile = null;
 				try {
 					csvFile = gui.getSession().getSessionDataFile();
+
 					boolean writeHeader = !csvFile.exists();
 					CSVWriter csvWriter = new CSVWriter(new FileWriter(csvFile,
 							true)); // true -- I want to append.
