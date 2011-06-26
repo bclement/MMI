@@ -1,4 +1,4 @@
-package com.clementscode.mmi.swing.crud;
+package com.clementscode.mmi.swing.crud.broken;
 
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragSourceDragEvent;
@@ -67,8 +67,7 @@ public class DragAndDropTransferHandler extends TransferHandler implements
 	@Override()
 	public int getSourceActions(JComponent c) {
 
-		System.out
-				.println("Step 2 of 7: Returning the acceptable TransferHandler action. Our RandomDragAndDropPanel accepts Copy only.");
+		log.info("Step 2 of 7: Returning the acceptable TransferHandler action. Our RandomDragAndDropPanel accepts Copy only.");
 
 		if (c instanceof ImageDragAndDropPanel) {
 			return TransferHandler.COPY;

@@ -1,4 +1,4 @@
-package com.clementscode.mmi.swing.crud;
+package com.clementscode.mmi.swing.crud.broken;
 
 import java.awt.GridLayout;
 import java.awt.datatransfer.DataFlavor;
@@ -75,7 +75,8 @@ public class ImageFilePanel extends JPanel {
 		Utils.visitAllFiles(new File("/Users/mgpayne/resources/"), vector);
 		vector = justSix(vector);
 		for (ImageIcon ii : vector) {
-			ImageDragAndDropPanel iddp = new ImageDragAndDropPanel(ii);
+			ImageDragAndDropPanel iddp = new ImageDragAndDropPanel();
+			iddp.setImageIcon(ii);
 			imageDragAndDropPanels.add(iddp);
 			add(iddp);
 		}
@@ -105,7 +106,7 @@ public class ImageFilePanel extends JPanel {
 		if (dragAndDropPanelDataFlavor == null) {
 			dragAndDropPanelDataFlavor = new DataFlavor(
 					DataFlavor.javaJVMLocalObjectMimeType
-							+ ";class=com.clementscode.mmi.swing.crud.ImageDragAndDropPanel");
+						+ ";class=com.clementscode.mmi.swing.crud.ImageDragAndDropPanel");
 		}
 
 		return dragAndDropPanelDataFlavor;

@@ -1,4 +1,4 @@
-package com.clementscode.mmi.swing.crud;
+package com.clementscode.mmi.swing.crud.broken;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -12,12 +12,10 @@ import org.apache.log4j.Logger;
 
 public class ImageDragAndDropPanel extends JPanel implements Transferable {
 	private Logger log = Logger.getLogger(this.getClass().getName());
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	public ImageDragAndDropPanel(ImageIcon ii) {
+
+	public ImageDragAndDropPanel() {
 		super();
 		// Add the listener which will export this panel for dragging
 		this.addMouseListener(new DraggableMouseListener());
@@ -25,8 +23,11 @@ public class ImageDragAndDropPanel extends JPanel implements Transferable {
 		// Add the handler, which negotiates between drop target and this
 		// draggable panel
 		this.setTransferHandler(new DragAndDropTransferHandler());
+	}
 
+	public void setImageIcon(ImageIcon ii) {
 		add(new JLabel(ii));
+
 	}
 
 	/**
@@ -88,7 +89,7 @@ public class ImageDragAndDropPanel extends JPanel implements Transferable {
 
 		DataFlavor[] flavors = { null };
 
-		// log.info("Step 4 of 7: Querying for acceptable DataFlavors to determine what is available. Our example only supports our custom ImageDragAndDropPanel DataFlavor.");
+		log.info("Step 4 of 7: Querying for acceptable DataFlavors to determine what is available. Our example only supports our custom ImageDragAndDropPanel DataFlavor.");
 
 		try {
 			flavors[0] = ImageFilePanel.getDragAndDropPanelDataFlavor();
@@ -97,7 +98,7 @@ public class ImageDragAndDropPanel extends JPanel implements Transferable {
 			ex.printStackTrace(System.err);
 			return null;
 		}
-
+		log.info("flavors[0]=" + flavors[0]);
 		return flavors;
 	}
 
@@ -134,5 +135,6 @@ public class ImageDragAndDropPanel extends JPanel implements Transferable {
 
         return false;
 	}
+
 
 }
