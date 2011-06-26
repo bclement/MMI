@@ -5,15 +5,10 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import javax.swing.Action;
 import javax.swing.JComponent;
@@ -30,18 +25,16 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.ObjectWriter;
-import org.codehaus.jackson.util.DefaultPrettyPrinter;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
 import org.lemoine.MemoryMonitorBar;
 
-import com.clementscode.mmi.MainGui;
 import com.clementscode.mmi.res.CategoryItem;
+import com.clementscode.mmi.res.ConfigParser;
+import com.clementscode.mmi.res.ConfigParser100;
+import com.clementscode.mmi.res.LegacyConfigParser;
 import com.clementscode.mmi.res.Session;
 import com.clementscode.mmi.res.SessionConfig;
+import com.clementscode.mmi.res.VersionConfigParser;
 
 public class CrudFrame extends JFrame {
 
@@ -59,27 +52,23 @@ public class CrudFrame extends JFrame {
 	private JScrollPane scrollPane;
 	private GuiForCategoryItem firstCategoryItem;
 	private List<GuiForCategoryItem> lstGuiForCategoryItems;
-
-	protected ObjectMapper mapper;
+	private ConfigParser parser;
 
 	public static void main(String[] args) {
 		try {
-			new CrudFrame();
+			VersionConfigParser legacyParser = new LegacyConfigParser(
+					new String[] { "wav" });
+			ConfigParser parser = new ConfigParser(legacyParser);
+			parser.registerVersionParser(new ConfigParser100());
+			new CrudFrame(parser);
 		} catch (Exception bland) {
 			bland.printStackTrace();
 		}
 	}
 
-	public CrudFrame() {
+	public CrudFrame(ConfigParser parser) {
 		super("Cread Read Update Delete utility....");
-
-		mapper = new ObjectMapper();
-		AnnotationIntrospector introspector = new JaxbAnnotationIntrospector();
-		mapper.getDeserializationConfig().withAnnotationIntrospector(
-				introspector);
-		mapper.getSerializationConfig()
-				.withAnnotationIntrospector(introspector);
-
+		this.parser = parser;
 		lstGuiForCategoryItems = new ArrayList<GuiForCategoryItem>();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainPanel = new JPanel();
@@ -237,9 +226,10 @@ public class CrudFrame extends JFrame {
 			// config.setDescription(tfDescription.getText());
 			config.setName(tfName.getText());
 			config.setShuffleCount(Integer.parseInt(tfShuffleCount.getText()));
-			config.setTimeDelayAnswer(Integer.parseInt(tfDelayForAnswer
+			// FIXME the names have changed, this needs to be reworked or tossed
+			config.setTimeDelayAudioPrompt(Integer.parseInt(tfDelayForAnswer
 					.getText()));
-			config.setTimeDelayPrompt(Integer.parseInt(tfDelayForPrompt
+			config.setTimeDelayAudioSD(Integer.parseInt(tfDelayForPrompt
 					.getText()));
 			int numComponents = diyTable.getComponentCount();
 			String[] items = new String[numComponents];
@@ -249,9 +239,10 @@ public class CrudFrame extends JFrame {
 				items[n] = comp.getImageFileName();
 			}
 
-			config.setItems(items);
+			// FIXME redo or toss
+			// config.setItems(items);
 			try {
-				writeSessionConfig(config, file);
+				parser.Serialize(new FileOutputStream(file), config);
 			} catch (JsonGenerationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -266,40 +257,32 @@ public class CrudFrame extends JFrame {
 	}
 
 	private void readSessionFile(File file) throws Exception {
-		Properties props = new Properties();
+		// Properties props = new Properties();
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader().getResourceAsStream(
-				MainGui.propFile);
 
-		props.load(new InputStreamReader(in));
-		String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
-
-		SessionConfig config = mapper.readValue(new FileInputStream(file),
-				SessionConfig.class);
-		Session session = new Session(config, sndExts);
+		// FIXME sound exts need to be put in the legacy parser of the config
+		// parser
+		// InputStream in =
+		// this.getClass().getClassLoader().getResourceAsStream(
+		// MainGui.propFile);
+		//
+		// props.load(new InputStreamReader(in));
+		// String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
+		SessionConfig config = parser.parse(file);
+		Session session = new Session(config);
 		String sessionPath = file.getParent();
 		populateGui(session, sessionPath);
-	}
-
-	protected void writeSessionConfig(SessionConfig config, File file)
-			throws JsonGenerationException, JsonMappingException, IOException {
-		writeSessionConfig(config, new FileOutputStream(file));
-	}
-
-	protected void writeSessionConfig(SessionConfig config, OutputStream out)
-			throws JsonGenerationException, JsonMappingException, IOException {
-		ObjectWriter writer = mapper
-				.prettyPrintingWriter(new DefaultPrettyPrinter());
-		writer.writeValue(out, config);
 	}
 
 	private void populateGui(Session session, String sessionPath) {
 		tfName.setText(session.getConfigName());
 		// no more description
 		// tfDescription.setText(session.getDescription());
-		tfDelayForAnswer.setText("" + session.getTimeDelayAnswer());
-		tfDelayForPrompt.setText("" + session.getTimeDelayPrompt());
+		SessionConfig config = session.getConfig();
+		// FIXME names have changed redo or toss
+		tfDelayForAnswer.setText("" + config.getTimeDelayAudioPrompt());
+		tfDelayForPrompt.setText("" + config.getTimeDelayAudioSD());
 		CategoryItem[] items = session.getItems();
 		for (CategoryItem categoryItem : items) {
 			// System.out.println("sessionPath=" + sessionPath);

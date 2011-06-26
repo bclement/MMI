@@ -17,12 +17,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class SessionConfig {
 
 	@XmlElement
-	protected String name;
+	protected String version;
 
 	@XmlElement
-	@Deprecated
-	// only here for backward compatibility in configs - not used by programs
-	protected String description;
+	protected String name;
 
 	@XmlElement
 	protected int shuffleCount;
@@ -31,19 +29,53 @@ public class SessionConfig {
 	protected String itemBase;
 
 	@XmlElement
-	protected String[] items;
+	protected ItemConfig[] items;
 
 	@XmlElement
-	protected String prompt;
+	/** time between start and "what is it" **/
+	protected int timeDelayAudioSD;
 
 	@XmlElement
-	protected int timeDelayPrompt;
+	/** time between "what is it" and "it's a _____" **/
+	protected int timeDelayAudioPrompt;
 
 	@XmlElement
-	protected int timeDelayAnswer;
+	/** time between "it's a _____" and the InterTrial interval. -1 means never auto advance**/
+	protected int timeDelayAutoAdvance = -1;
 
 	@XmlElement
-	protected int timeDelayBetweenItems = 3;
+	/** time between end of previous item and start of the next **/
+	protected int timeDelayInterTrial = 3;
+
+	/**
+	 * 
+	 */
+	public SessionConfig() {
+	}
+
+	/**
+	 * @param name
+	 * @param shuffleCount
+	 * @param itemBase
+	 * @param items
+	 * @param timeDelayAudioSD
+	 * @param timeDelayAudioPrompt
+	 * @param timeDelayAutoAdvance
+	 * @param timeDelayInterTrial
+	 */
+	public SessionConfig(String name, int shuffleCount, String itemBase,
+			ItemConfig[] items, int timeDelayAudioSD, int timeDelayAudioPrompt,
+			int timeDelayAutoAdvance, int timeDelayInterTrial) {
+		super();
+		this.name = name;
+		this.shuffleCount = shuffleCount;
+		this.itemBase = itemBase;
+		this.items = items;
+		this.timeDelayAudioSD = timeDelayAudioSD;
+		this.timeDelayAudioPrompt = timeDelayAudioPrompt;
+		this.timeDelayAutoAdvance = timeDelayAutoAdvance;
+		this.timeDelayInterTrial = timeDelayInterTrial;
+	}
 
 	/**
 	 * @return the name
@@ -93,7 +125,7 @@ public class SessionConfig {
 	/**
 	 * @return the items
 	 */
-	public String[] getItems() {
+	public ItemConfig[] getItems() {
 		return items;
 	}
 
@@ -101,85 +133,83 @@ public class SessionConfig {
 	 * @param items
 	 *            the items to set
 	 */
-	public void setItems(String[] items) {
+	public void setItems(ItemConfig[] items) {
 		this.items = items;
 	}
 
 	/**
-	 * @return the prompt
+	 * @return the timeDelayAudioSD
 	 */
-	public String getPrompt() {
-		return prompt;
+	public int getTimeDelayAudioSD() {
+		return timeDelayAudioSD;
 	}
 
 	/**
-	 * @param prompt
-	 *            the prompt to set
+	 * @param timeDelayAudioSD
+	 *            the timeDelayAudioSD to set
 	 */
-	public void setPrompt(String prompt) {
-		this.prompt = prompt;
+	public void setTimeDelayAudioSD(int timeDelayAudioSD) {
+		this.timeDelayAudioSD = timeDelayAudioSD;
 	}
 
 	/**
-	 * @return the timeDelayPrompt
+	 * @return the timeDelayAudioPrompt
 	 */
-	public int getTimeDelayPrompt() {
-		return timeDelayPrompt;
+	public int getTimeDelayAudioPrompt() {
+		return timeDelayAudioPrompt;
 	}
 
 	/**
-	 * @param timeDelayPrompt
-	 *            the timeDelayPrompt to set
+	 * @param timeDelayAudioPrompt
+	 *            the timeDelayAudioPrompt to set
 	 */
-	public void setTimeDelayPrompt(int timeDelayPrompt) {
-		this.timeDelayPrompt = timeDelayPrompt;
+	public void setTimeDelayAudioPrompt(int timeDelayAudioPrompt) {
+		this.timeDelayAudioPrompt = timeDelayAudioPrompt;
 	}
 
 	/**
-	 * @return the timeDelayAnswer
+	 * @return the timeDelayAutoAdvance
 	 */
-	public int getTimeDelayAnswer() {
-		return timeDelayAnswer;
+	public int getTimeDelayAutoAdvance() {
+		return timeDelayAutoAdvance;
 	}
 
 	/**
-	 * @param timeDelayAnswer
-	 *            the timeDelayAnswer to set
+	 * @param timeDelayAutoAdvance
+	 *            the timeDelayAutoAdvance to set
 	 */
-	public void setTimeDelayAnswer(int timeDelayAnswer) {
-		this.timeDelayAnswer = timeDelayAnswer;
+	public void setTimeDelayAutoAdvance(int timeDelayAutoAdvance) {
+		this.timeDelayAutoAdvance = timeDelayAutoAdvance;
 	}
 
 	/**
-	 * @return the timeDelayBetweenItem
+	 * @return the timeDelayInterTrial
 	 */
-	public int getTimeDelayBetweenItems() {
-		return timeDelayBetweenItems;
+	public int getTimeDelayInterTrial() {
+		return timeDelayInterTrial;
 	}
 
 	/**
-	 * @param timeDelayBetweenItem
-	 *            the timeDelayBetweenItem to set
+	 * @param timeDelayInterTrial
+	 *            the timeDelayInterTrial to set
 	 */
-	public void setTimeDelayBetweenItems(int timeDelayBetweenItem) {
-		this.timeDelayBetweenItems = timeDelayBetweenItem;
+	public void setTimeDelayInterTrial(int timeDelayInterTrial) {
+		this.timeDelayInterTrial = timeDelayInterTrial;
 	}
 
 	/**
-	 * @return the description
+	 * @return the version
 	 */
-	@Deprecated
-	public String getDescription() {
-		return description;
+	public String getVersion() {
+		return version;
 	}
 
 	/**
-	 * @param description
-	 *            the description to set
+	 * @param version
+	 *            the version to set
 	 */
-	@Deprecated
-	public void setDescription(String description) {
-		this.description = description;
+	public void setVersion(String version) {
+		this.version = version;
 	}
 
 }

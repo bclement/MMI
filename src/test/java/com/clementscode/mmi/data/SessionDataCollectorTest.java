@@ -53,9 +53,9 @@ public class SessionDataCollectorTest {
 		SessionData data = collector.getData();
 		assertNotNull(data);
 		Stats overall = data.getOverall();
-		assertEquals(25, overall.getPercentIndep(), 0);
-		assertEquals(25, overall.getPercentVerbal(), 0);
-		assertEquals(25, overall.getPercentModel(), 0);
+		assertEquals(25, overall.getStat(RespType.INDEPENDENT), 0);
+		assertEquals(25, overall.getStat(RespType.VERBAL), 0);
+		assertEquals(25, overall.getStat(RespType.MODEL), 0);
 		assertEquals(session, overall.getName());
 	}
 }

@@ -10,6 +10,7 @@ import java.util.List;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
+import com.clementscode.mmi.data.SessionDataCollector.RespType;
 import com.clementscode.mmi.data.SessionDataCollector.Response;
 
 /**
@@ -43,7 +44,8 @@ public class SessionData {
 
 	public void writeSummaryHeader(CSVWriter writer) {
 		String[] header = { "Date", "Session", "Therapist", "Condition",
-				"targets", "% independent", "% verbal", "% model", "% attend" };
+				"targets", "% independent", "% verbal", "% model", "% error",
+				"% attend" };
 		writer.writeNext(header);
 	}
 
@@ -56,12 +58,13 @@ public class SessionData {
 		String therapist = "";
 		String condition = "";
 		String targets = getUniqueTargets(perItem);
-		String ind = Double.toString(overall.getPercentIndep());
-		String verb = Double.toString(overall.percentVerbal);
-		String model = Double.toString(overall.percentModel);
+		String ind = Double.toString(overall.getStat(RespType.INDEPENDENT));
+		String verb = Double.toString(overall.getStat(RespType.VERBAL));
+		String model = Double.toString(overall.getStat(RespType.MODEL));
+		String error = Double.toString(overall.getStat(RespType.ERROR));
 		String attend = Double.toString(overall.percentAttending);
 		String[] rval = { date, session, therapist, condition, targets, ind,
-				verb, model, attend };
+				verb, model, error, attend };
 		writer.writeNext(rval);
 	}
 
@@ -90,15 +93,21 @@ public class SessionData {
 	 */
 	private void writeItemStats(Stats s, CSVWriter writer) {
 		String[] name = { "name", s.getName() };
-		String[] ind = { "% independant", Double.toString(s.getPercentIndep()) };
-		String[] verb = { "% verbal", Double.toString(s.getPercentVerbal()) };
-		String[] model = { "% model", Double.toString(s.getPercentModel()) };
+		String[] ind = { "% independant",
+				Double.toString(s.getStat(RespType.INDEPENDENT)) };
+		String[] verb = { "% verbal",
+				Double.toString(s.getStat(RespType.VERBAL)) };
+		String[] model = { "% model",
+				Double.toString(s.getStat(RespType.MODEL)) };
+		String[] error = { "% error",
+				Double.toString(s.getStat(RespType.ERROR)) };
 		String[] attend = { "% attending",
 				Double.toString(s.getPercentAttending()) };
 		writer.writeNext(name);
 		writer.writeNext(ind);
 		writer.writeNext(verb);
 		writer.writeNext(model);
+		writer.writeNext(error);
 		writer.writeNext(attend);
 	}
 

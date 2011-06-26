@@ -139,7 +139,7 @@ public class Mediator implements MediatorListener {
 			break;
 		}
 		if (hit) {
-			gui.getTimer().stop(); // hope this is a fix to issue #4
+			gui.stopTimer(); // hope this is a fix to issue #4
 			stopSound();
 			playPrompt = true;
 			if (gui.getItemQueue().size() == 0) {
@@ -179,16 +179,14 @@ public class Mediator implements MediatorListener {
 
 				// System.exit(0);
 				gui.backToStartScreen();
-				gui.getTimer().stop();
+				gui.stopTimer();
 			} else {
 
 				if (justWaited) {
 					item = gui.getItemQueue().remove();
 					log.info(String.format("About to switch image to %s (#%d)",
 							item.getImgFile(), item.getItemNumber()));
-					gui.switchImage(item.getImg());
-					// TODO: There may be different times between sessions....
-					gui.getTimer().start();
+					gui.switchItem(item);
 					justWaited = false;
 				} else {
 					gui.clearImage();
@@ -203,12 +201,13 @@ public class Mediator implements MediatorListener {
 	private void timer() {
 		if (playPrompt) {
 			playPrompt = false;
-			startSound(gui.getSession().getPrompt(), -1);
+			// NAME CHANGE!
+			startSound(item.getAudioSD(), -1);
 		} else {
 			playPrompt = true;
-
-			startSound(item.getAudio(), item.getItemNumber());
-			gui.getTimer().stop();
+			// it's all so confusing when we don't update all the names at once
+			startSound(item.getAudioPrompt(), item.getItemNumber());
+			gui.stopTimer();
 		}
 	}
 
