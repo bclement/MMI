@@ -2,7 +2,7 @@
 	"name":"name",
 	"description":"description",
 	"shuffleCount":1,
-	"itemBase":"/Users/mgpayne/MMI/src/test/resources/bc/",
+	"itemBase":"src/test/resources/bc/",
 	"items":
 		[
 			"animals/fooduck/fooduck.gif",
