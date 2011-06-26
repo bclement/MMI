@@ -34,7 +34,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -75,7 +74,7 @@ public class Gui implements ActionListener {
 	private Timer timer;
 	private Timer betweenTimer;
 	protected Log log = LogFactory.getLog(this.getClass());
-	private JCheckBox attending;
+
 	private JFrame frame;
 	private String frameTitle = Messages.getString("Gui.FrameTitle"); //$NON-NLS-1$
 	private ActionRecorder attendingAction;
@@ -120,6 +119,7 @@ public class Gui implements ActionListener {
 	private CategoryItem currentItem;
 
 	private ConfigParser parser = null;
+	private ActionRecorder wrongAnswerAction;
 
 	public Gui() {
 		loggingFrame = new LoggingFrame();
@@ -247,6 +247,9 @@ public class Gui implements ActionListener {
 		buttonMenu.add(menuItem);
 		menuItem = new JMenuItem(noAnswerAction);
 		buttonMenu.add(menuItem);
+		menuItem = new JMenuItem(wrongAnswerAction);
+		buttonMenu.add(menuItem);
+
 		menuItem = new JMenuItem(toggleButtonsAction);
 		buttonMenu.add(menuItem);
 
@@ -264,14 +267,15 @@ public class Gui implements ActionListener {
 
 		JPanel southPanel = new JPanel();
 
-		attending = new JCheckBox(attendingAction);
-		southPanel.add(attending);
+
 		lstButtons = new ArrayList<JComponent>();
-		lstButtons.add(attending);
+		addButton(southPanel, attendingAction);
 		addButton(southPanel, independentAction);
 		addButton(southPanel, verbalAction);
 		addButton(southPanel, modelingAction);
 		addButton(southPanel, noAnswerAction);
+		addButton(southPanel, wrongAnswerAction);
+
 		JPanel belowSouthPanel = new JPanel();
 		belowSouthPanel.setLayout(new GridLayout(0, 1));
 		tfSessionName = new JTextField(40);
@@ -398,9 +402,7 @@ public class Gui implements ActionListener {
 		timer.start();
 	}
 
-	/**
-	 * 
-	 */
+
 	private void setupBetweenTimer() {
 
 		if (betweenTimer != null) {
@@ -419,6 +421,7 @@ public class Gui implements ActionListener {
 	}
 
 	private int getPromptLen(File sndFile) {
+		// TODO: Look through the code for things like this FIXME.
 		// FIXME I'm a horrible hack
 		if (sndFile == null) {
 			return 0;
@@ -464,29 +467,60 @@ public class Gui implements ActionListener {
 		// TODO: Make hot keys come from a properties file. Hopefully ask JNLP
 		// Utils where this program was loaded from and do a http get to there
 		// for the properties file.
+
+		Properties hotkeys = null;
+		String fileName = "hotkeys.ini";
+		try {
+			hotkeys = readPropertiesFromClassPath(fileName);
+		} catch (IOException e) {
+			hotkeys = new Properties();
+			hotkeys.put("HotKey.Gui.Attending", "A"); // small a doesn't work
+			hotkeys.put("HotKey.Gui.Independent", "1");
+			hotkeys.put("HotKey.Gui.Verbal", "2");
+			hotkeys.put("HotKey.Gui.Modeling", "3");
+			hotkeys.put("HotKey.Gui.NoAnswer", "4");
+			hotkeys.put("HotKey.Gui.WrongAnswer", "5");
+
+			log.warn(
+					String.format(
+							"Could not read %s from classpath.  Assuming stupid default values=%s",
+							fileName, hotkeys), e);
+		}
+		// TODO: Consider a method to http get the hotkeys.ini from
+		// somewhere....
+		String hk = (String) hotkeys.get("HotKey.Gui.Attending");
 		attendingAction = new ActionRecorder(Messages
 				.getString("Gui.Attending"), null, //$NON-NLS-1$
 				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F1), KeyStroke.getKeyStroke("A"),
+						KeyEvent.VK_F1), KeyStroke.getKeyStroke(hk),
 				Mediator.ATTENDING, mediator);
+		hk = (String) hotkeys.get("HotKey.Gui.Independent");
 		independentAction = new ActionRecorder(Messages
 				.getString("Gui.Independent"), null, //$NON-NLS-1$
 				Messages.getString("Gui.IndependentDescription"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_F2), KeyStroke.getKeyStroke("1"),
 				Mediator.INDEPENDENT, mediator);
+		hk = (String) hotkeys.get("HotKey.Gui.Verbal");
 		verbalAction = new ActionRecorder(
 				Messages.getString("Gui.Verbal"), null, //$NON-NLS-1$
 				Messages.getString("Gui.VerbalDescription"), //$NON-NLS-1$
 				new Integer(KeyEvent.VK_F3), KeyStroke.getKeyStroke("2"),
 				Mediator.VERBAL, mediator);
+		hk = (String) hotkeys.get("HotKey.Gui.Modeling");
 		modelingAction = new ActionRecorder(
 				Messages.getString("Gui.Modeling"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ModelingDescriptin"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_F4), KeyStroke.getKeyStroke("3"),
 				Mediator.MODELING, mediator);
+		hk = (String) hotkeys.get("HotKey.Gui.NoAnswer");
 		noAnswerAction = new ActionRecorder(
 				Messages.getString("Gui.NoAnswer"), null, //$NON-NLS-1$
 				Messages.getString("Gui.NoAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
+				KeyStroke.getKeyStroke("4"), Mediator.NO_ANSWER, mediator);
+		hk = (String) hotkeys.get("HotKey.Gui.WrongAnswer");
+		wrongAnswerAction = new ActionRecorder(
+				Messages.getString("Gui.WrongAnswer"), null, //$NON-NLS-1$
+				Messages.getString("Gui.WrongAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
 				KeyStroke.getKeyStroke("4"), Mediator.NO_ANSWER, mediator);
 
 		toggleButtonsAction = new ActionRecorder(
@@ -597,13 +631,7 @@ public class Gui implements ActionListener {
 		}
 	}
 
-	public JCheckBox getAttending() {
-		return attending;
-	}
 
-	public void setAttending(JCheckBox attending) {
-		this.attending = attending;
-	}
 
 	public void setVisble(boolean b) {
 		frame.setVisible(b);
@@ -751,13 +779,9 @@ public class Gui implements ActionListener {
 	private void readSessionFile(File file, String newItemBase)
 			throws Exception {
 		if (this.parser == null) {
+			// TODO: Answer this question someone asked:
 			// SHOULDN'T ALL OF THIS BE HAPPENING DURING STARTUP?
-			Properties props = new Properties();
-			// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
-			// Do it this way and no relative path huha is needed.
-			InputStream in = this.getClass().getClassLoader()
-					.getResourceAsStream(MainGui.propFile);
-			props.load(new InputStreamReader(in));
+			Properties props = readPropertiesFromClassPath(MainGui.propFile);
 			String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
 			LegacyConfigParser legacy = new LegacyConfigParser(sndExts);
 			this.parser = new ConfigParser(legacy);
@@ -771,6 +795,17 @@ public class Gui implements ActionListener {
 			// config.setPrompt(newItemBase + "/prompt.wav");
 		}
 		session = new Session(config);
+	}
+
+	private Properties readPropertiesFromClassPath(String fileName)
+			throws IOException {
+		Properties props = new Properties();
+		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
+		// Do it this way and no relative path huha is needed.
+		InputStream in = this.getClass().getClassLoader()
+				.getResourceAsStream(fileName);
+		props.load(new InputStreamReader(in));
+		return props;
 	}
 
 	void refreshGui() {

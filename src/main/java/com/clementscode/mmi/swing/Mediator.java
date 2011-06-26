@@ -58,6 +58,7 @@ public class Mediator implements MediatorListener {
 	private boolean waiting = false;
 
 	private boolean justWaited = false;
+	private boolean bAttending = false;
 
 	public Mediator(Gui gui) {
 		this.gui = gui;
@@ -80,34 +81,39 @@ public class Mediator implements MediatorListener {
 		boolean hit = false;
 		switch (action) {
 		case ATTENDING:
+			bAttending = !bAttending;
 			break;
 		case INDEPENDENT:
 			if (!waiting) {
-				collector.addResponse(item, gui.getAttending().isSelected(),
+				collector.addResponse(item, bAttending,
 						RespType.INDEPENDENT);
 				hit = true;
 			}
+			bAttending = false;
 			break;
 		case VERBAL:
 			if (!waiting) {
-				collector.addResponse(item, gui.getAttending().isSelected(),
+				collector.addResponse(item, bAttending,
 						RespType.VERBAL);
 				hit = true;
 			}
+			bAttending = false;
 			break;
 		case MODELING:
 			if (!waiting) {
-				collector.addResponse(item, gui.getAttending().isSelected(),
+				collector.addResponse(item, bAttending,
 						RespType.MODEL);
 				hit = true;
 			}
+			bAttending = false;
 			break;
 		case NO_ANSWER:
 			if (!waiting) {
-				collector.addResponse(item, gui.getAttending().isSelected(),
+				collector.addResponse(item, bAttending,
 						RespType.NONE);
 				hit = true;
 			}
+			bAttending = false;
 			break;
 		case TOGGLE_BUTTONS:
 			gui.toggleButtons();
