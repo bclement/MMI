@@ -96,7 +96,7 @@ public class LegacyConfigParser implements VersionConfigParser {
 		if (audioFile != null) {
 			String absPath = audioFile.getAbsolutePath();
 			if (base != null) {
-				rval = absPath.substring(base.length());
+				rval = absPath.substring(absPath.indexOf(base) + base.length());
 			}
 		}
 		return rval;
