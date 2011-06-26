@@ -34,7 +34,6 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -76,7 +75,7 @@ public class Gui implements ActionListener {
 	private Timer timer;
 	private Timer betweenTimer;
 	protected Log log = LogFactory.getLog(this.getClass());
-	private JCheckBox attending;
+
 	private JFrame frame;
 	private String frameTitle = Messages.getString("Gui.FrameTitle"); //$NON-NLS-1$
 	private ActionRecorder attendingAction;
@@ -266,10 +265,10 @@ public class Gui implements ActionListener {
 
 		JPanel southPanel = new JPanel();
 
-		attending = new JCheckBox(attendingAction);
-		southPanel.add(attending);
+
 		lstButtons = new ArrayList<JComponent>();
-		lstButtons.add(attending);
+
+		addButton(southPanel, attendingAction);
 		addButton(southPanel, independentAction);
 		addButton(southPanel, verbalAction);
 		addButton(southPanel, modelingAction);
@@ -601,17 +600,8 @@ public class Gui implements ActionListener {
 		}
 	}
 
-	public JCheckBox getAttending() {
-		return attending;
-	}
-
-	public void setAttending(JCheckBox attending) {
-		this.attending = attending;
-	}
-
 	public void setVisble(boolean b) {
 		frame.setVisible(b);
-
 	}
 
 	public void openSession() {
@@ -757,7 +747,8 @@ public class Gui implements ActionListener {
 	private void readSessionFile(File file, String newItemBase)
 			throws Exception {
 		if (this.parser == null) {
-			// SHOULDN'T ALL OF THIS BE HAPPENING DURING STARTUP?
+			// SHOULDN'T ALL OF THIS BE HAPPENING DURING STARTUP? No, the open
+			// menu allows reading new sessions.
 			Properties props = new Properties();
 			// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 			// Do it this way and no relative path huha is needed.
