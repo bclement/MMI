@@ -50,8 +50,14 @@ public class Session {
 		String base = config.getItemBase();
 		for (int i = 0; i < rval.length; ++i) {
 			File imgFile = new File(base, confItems[i].visualSD);
-			File audioSD = new File(base, confItems[i].audioSD);
-			File audioPrompt = new File(base, confItems[i].audioPrompt);
+			File audioSD = null;
+			if (confItems[i].audioSD != null) {
+				audioSD = new File(base, confItems[i].audioSD);
+			}
+			File audioPrompt = null;
+			if (confItems[i].audioPrompt != null) {
+				audioPrompt = new File(base, confItems[i].audioPrompt);
+			}
 			rval[i] = new CategoryItem(imgFile, audioSD, audioPrompt);
 		}
 		return rval;
