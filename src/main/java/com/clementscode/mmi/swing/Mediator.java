@@ -116,10 +116,6 @@ public class Mediator implements MediatorListener {
 			// TODO: Ask them if they want to save the file anyway....
 			System.exit(0);
 			break;
-		// case CRUD:
-		// new CrudFrame(this);
-		// gui.setVisble(false);
-		// break;
 		case TIMER:
 			timer();
 			break;
