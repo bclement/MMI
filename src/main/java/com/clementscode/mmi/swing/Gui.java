@@ -482,42 +482,66 @@ public class Gui implements ActionListener {
 		// for the properties file.
 
 		Properties hotKeysProperties = null;
+		String fileName = "hotkeys.ini";
 		try {
-			hotKeysProperties = readPropertiesFromClassPath("hotkeys.ini");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			hotKeysProperties = readPropertiesFromClassPath(fileName);
+		} catch (Exception e) {
+			hotKeysProperties = new Properties();
+			hotKeysProperties.put("Hotkey.Gui.Attending","A");
+					hotKeysProperties.put("Hotkey.Gui.Independent","1");
+							hotKeysProperties.put("Hotkey.Gui.Verbal","2");
+									hotKeysProperties.put("Hotkey.Gui.Modeling","3");
+											hotKeysProperties.put("Hotkey.Gui.NoAnswer","4");
+													hotKeysProperties.put("Hotkey.Gui.WrongAnswer","5");
+			log.warn(String.format(
+					"Problem reading %s.  Defaulting hotkeysPropteries=%s",
+					fileName, hotKeysProperties), e);
 		}
+
+		String hk = (String) hotKeysProperties.get("Hotkey.Gui.Attending");
 
 		attendingAction = new ActionRecorder(Messages
 				.getString("Gui.Attending"), null, //$NON-NLS-1$
 				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F1), KeyStroke.getKeyStroke("A"),
+						KeyEvent.VK_F1), KeyStroke.getKeyStroke(hk),
 				Mediator.ATTENDING, mediator);
+
+		hk = (String) hotKeysProperties.get("Hotkey.Gui.Independent");
+
 		independentAction = new ActionRecorder(Messages
 				.getString("Gui.Independent"), null, //$NON-NLS-1$
 				Messages.getString("Gui.IndependentDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F2), KeyStroke.getKeyStroke("1"),
+						KeyEvent.VK_F2), KeyStroke.getKeyStroke(hk),
 				Mediator.INDEPENDENT, mediator);
+
+		hk = (String) hotKeysProperties.get("Hotkey.Gui.Verbal");
+
 		verbalAction = new ActionRecorder(
 				Messages.getString("Gui.Verbal"), null, //$NON-NLS-1$
 				Messages.getString("Gui.VerbalDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_F3), KeyStroke.getKeyStroke("2"),
+				new Integer(KeyEvent.VK_F3), KeyStroke.getKeyStroke(hk),
 				Mediator.VERBAL, mediator);
+
+		hk = (String) hotKeysProperties.get("Hotkey.Gui.Modeling");
+
 		modelingAction = new ActionRecorder(
 				Messages.getString("Gui.Modeling"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ModelingDescriptin"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F4), KeyStroke.getKeyStroke("3"),
+						KeyEvent.VK_F4), KeyStroke.getKeyStroke(hk),
 				Mediator.MODELING, mediator);
+
+		hk = (String) hotKeysProperties.get("Hotkey.Gui.NoAnswer");
+
 		noAnswerAction = new ActionRecorder(
 				Messages.getString("Gui.NoAnswer"), null, //$NON-NLS-1$
 				Messages.getString("Gui.NoAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("4"), Mediator.NO_ANSWER, mediator);
+				KeyStroke.getKeyStroke(hk), Mediator.NO_ANSWER, mediator);
 
+		hk = (String) hotKeysProperties.get("Hotkey.Gui.WrongAnswer");
 		wrongAnswerAction = new ActionRecorder(
 				Messages.getString("Gui.WrongAnswer"), null, //$NON-NLS-1$
 				Messages.getString("Gui.WrongAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("5"), Mediator.WRONG_ANSWER, mediator);
+				KeyStroke.getKeyStroke(hk), Mediator.WRONG_ANSWER, mediator);
 
 		toggleButtonsAction = new ActionRecorder(
 				Messages.getString("Gui.ToggleButtons"), null, //$NON-NLS-1$
