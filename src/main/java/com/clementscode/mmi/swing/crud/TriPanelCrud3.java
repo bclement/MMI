@@ -20,6 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.TransferHandler;
 import javax.swing.border.TitledBorder;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.clementscode.mmi.swing.GuiForCategoryItem;
@@ -36,6 +37,7 @@ public class TriPanelCrud3 extends JFrame implements ExportDoneCallback {
 	private JPanel mainPanel;
 	private Vector vector;
 	private ArrayList<JPanel> lstTriPanels;
+	private ArrayList<DragableJLabelWithImage> lstImageSources;
 
 	/**
 	 * @param args
@@ -62,7 +64,9 @@ public class TriPanelCrud3 extends JFrame implements ExportDoneCallback {
 		mainPanel.add(new JScrollPane(soundFilePanel()), BorderLayout.WEST);
 		mainPanel.add(new JScrollPane(tripleStimulusPanel()),
 				BorderLayout.CENTER);
+
 		mainPanel.add(new JScrollPane(imageFilePanel()), BorderLayout.EAST);
+
 		pack();
 		setVisible(true);
 	}
@@ -75,11 +79,22 @@ public class TriPanelCrud3 extends JFrame implements ExportDoneCallback {
 
 		visitAllFiles(new File(dirName));
 		int row = 0;
+		lstImageSources = new ArrayList<DragableJLabelWithImage>();
+		int n=0;
 		for (Object obj : vector) {
 			ImageIcon ii = (ImageIcon) obj;
-			DragableJLabelWithImage lbl = new DragableJLabelWithImage(this);
+			// ExportDoneCallbackImageFilePanel cb = new
+			// ExportDoneCallbackImageFilePanel(
+			// lstTriPanels.get(n++));
+			ExportDoneCallbackImageFilePanel cb = new ExportDoneCallbackImageFilePanel(
+					null);
+			DragableJLabelWithImage lbl = new DragableJLabelWithImage(
+					cb);
 			lbl.setIcon(ii);
+			cb.setSource(row);
 			lbl.setName(String.format("row=%d;%s", row++, ii.getDescription()));
+			lstImageSources.add(lbl);
+
 			panel.add(lbl);
 		}
 
@@ -119,6 +134,7 @@ public class TriPanelCrud3 extends JFrame implements ExportDoneCallback {
 		JPanel panel = new JPanel();
 
 		lstTriPanels = new ArrayList<JPanel>();
+
 		panel.setLayout(new GridLayout(0, 1));
 		for (int i = 0; i < 10; ++i) {
 			JPanel triPanel = new JPanel();
@@ -127,12 +143,17 @@ public class TriPanelCrud3 extends JFrame implements ExportDoneCallback {
 			triPanel.setBorder(title);
 			// triPanel.add(new LabelAndFieldWithIcon("Image: ",
 			// new JTextField(20), this));
+//			DragableJLabelWithImage lbl = new DragableJLabelWithImage(
+//					new ExportDoneCallbackPanel(triPanel,
+//							lstImageSources.get(i)));
+			
 			DragableJLabelWithImage lbl = new DragableJLabelWithImage(
-					new ExportDoneCallbackPanel(triPanel));
+					new ExportDoneCallbackPanel(triPanel, null));
 			triPanel.add(lbl);
 			String fn = "/Users/mgpayne/resources/people/plumber/Plumber3.jpg";
 			ImageIcon smallIi = smallImageIcon(fn, 128, 128);
 			lbl.setIcon(smallIi);
+			lbl.setText("" + i);
 			triPanel.add(new LabelAndField("Prompt: ", new JTextField(20)));
 			triPanel.add(new LabelAndField("Answer: ", new JTextField(20)));
 			panel.add(triPanel);
@@ -181,14 +202,27 @@ public class TriPanelCrud3 extends JFrame implements ExportDoneCallback {
 		this.pack();
 	}
 
-	public void execute(JComponent source) {
+	public void exportDone(String overWrittenComponent, JComponent source) {
 		int n = 0;
-		JPanel p = lstTriPanels.get(n);
+		// TODO: Parse source to get the row and do the correct stuff...
+
 		String str = source.getName();
+		String[] lst = StringUtils.split(str, ";");
+		String rowStr = lst[0];
+		rowStr = rowStr.substring("row=".length());
+
+		// rowStr = overWrittenComponent;
+		n = Integer.parseInt(rowStr);
+		// TODO: Fix bad logic! Need to get row of the drop site!
+		JPanel p = lstTriPanels.get(n);
 		TitledBorder title = BorderFactory.createTitledBorder(str);
 		p.setBorder(title);
-		// refreshGui();
+
 	}
 
+	public void importData(JComponent comp) {
+		// TODO Auto-generated method stub
+
+	}
 
 }

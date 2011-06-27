@@ -3,12 +3,14 @@ package com.clementscode.mmi.swing.crud;
 import java.awt.datatransfer.Transferable;
 
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.TransferHandler;
 
 public class MattsTransferHandler extends TransferHandler {
 
 	private static final long serialVersionUID = 1L;
 	private ExportDoneCallback edc;
+	private String overWrittenComponent;
 
 	public MattsTransferHandler(String propertyName, ExportDoneCallback edc) {
 		super(propertyName);
@@ -29,13 +31,17 @@ public class MattsTransferHandler extends TransferHandler {
 	protected void exportDone(JComponent source, Transferable data, int action) {
 		System.out.println("exportDone source=" + source);
 		super.exportDone(source, data, action);
-		edc.execute(source);
+
+		edc.exportDone(overWrittenComponent, source);
 	}
 
 	// Causes a transfer to a component from a clipboard or a DND drop
 	// operation.
 	public boolean importData(JComponent comp, Transferable t) {
 		System.out.println(String.format("importData(comp=%s,t=%s)", comp, t));
+		edc.importData(comp);
+		JLabel label = (JLabel) comp;
+		this.overWrittenComponent = label.getText();
 		return super.importData(comp, t);
 	}
 
