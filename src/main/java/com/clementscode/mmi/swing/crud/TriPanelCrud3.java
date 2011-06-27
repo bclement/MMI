@@ -6,6 +6,7 @@ import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -24,16 +25,17 @@ import org.apache.log4j.Logger;
 import com.clementscode.mmi.swing.GuiForCategoryItem;
 import com.clementscode.mmi.swing.LabelAndField;
 import com.clementscode.mmi.swing.LoggingFrame;
-import com.clementscode.mmi.swing.crud.old.DragableJLabelWithImage;
 
 
-public class TriPanelCrud3 extends JFrame {
+
+public class TriPanelCrud3 extends JFrame implements ExportDoneCallback {
 
 	private static final long serialVersionUID = 1L;
 	private Logger log = Logger.getLogger(this.getClass().getName());
 	private LoggingFrame loggingFrame;
 	private JPanel mainPanel;
 	private Vector vector;
+	private ArrayList<JPanel> lstTriPanels;
 
 	/**
 	 * @param args
@@ -44,7 +46,6 @@ public class TriPanelCrud3 extends JFrame {
 		} catch (Exception bland) {
 			bland.printStackTrace();
 		}
-
 	}
 
 	public TriPanelCrud3() {
@@ -73,12 +74,12 @@ public class TriPanelCrud3 extends JFrame {
 		String dirName = "/Users/mgpayne/resources/";
 
 		visitAllFiles(new File(dirName));
-
+		int row = 0;
 		for (Object obj : vector) {
 			ImageIcon ii = (ImageIcon) obj;
-			DragableJLabelWithImage lbl = new DragableJLabelWithImage();
+			DragableJLabelWithImage lbl = new DragableJLabelWithImage(this);
 			lbl.setIcon(ii);
-			lbl.setName(ii.getDescription());
+			lbl.setName(String.format("row=%d;%s", row++, ii.getDescription()));
 			panel.add(lbl);
 		}
 
@@ -117,14 +118,17 @@ public class TriPanelCrud3 extends JFrame {
 	private JPanel tripleStimulusPanel() {
 		JPanel panel = new JPanel();
 
+		lstTriPanels = new ArrayList<JPanel>();
 		panel.setLayout(new GridLayout(0, 1));
 		for (int i = 0; i < 10; ++i) {
 			JPanel triPanel = new JPanel();
+			lstTriPanels.add(triPanel);
 			TitledBorder title = BorderFactory.createTitledBorder("title");
 			triPanel.setBorder(title);
 			// triPanel.add(new LabelAndFieldWithIcon("Image: ",
 			// new JTextField(20), this));
-			DragableJLabelWithImage lbl = new DragableJLabelWithImage();
+			DragableJLabelWithImage lbl = new DragableJLabelWithImage(
+					new ExportDoneCallbackPanel(triPanel));
 			triPanel.add(lbl);
 			String fn = "/Users/mgpayne/resources/people/plumber/Plumber3.jpg";
 			ImageIcon smallIi = smallImageIcon(fn, 128, 128);
@@ -176,5 +180,15 @@ public class TriPanelCrud3 extends JFrame {
 		mainPanel.revalidate();
 		this.pack();
 	}
+
+	public void execute(JComponent source) {
+		int n = 0;
+		JPanel p = lstTriPanels.get(n);
+		String str = source.getName();
+		TitledBorder title = BorderFactory.createTitledBorder(str);
+		p.setBorder(title);
+		// refreshGui();
+	}
+
 
 }
