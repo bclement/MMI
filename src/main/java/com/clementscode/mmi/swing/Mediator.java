@@ -155,6 +155,7 @@ public class Mediator implements MediatorListener {
 			 */
 			collector.addResponse(item, bAttending, RespType.NO_RESPONSE);
 			hit = true;
+			log.info("Saw CHANGE_DELAY_TIMER");
 			break;
 
 		case SHOW_LOGGING_FRAME:

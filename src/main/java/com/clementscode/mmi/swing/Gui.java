@@ -432,6 +432,10 @@ public class Gui implements ActionListener {
 		Timer xxx = new Timer(timeDelayAutoAdvance * 1000,
 				timerTimeDelayAutoAdvance);
 		xxx.setRepeats(false);
+		xxx.start();
+		log.info(String.format(
+				"Started timerTimeDelayAutoAdvance timer for %d seconds.",
+				timeDelayAutoAdvance));
 	}
 
 	int getPromptLen(File sndFile) {
@@ -566,7 +570,7 @@ public class Gui implements ActionListener {
 
 		timerTimeDelayAutoAdvance = new ActionRecorder(
 				Messages.getString("Gui.TimeDelayAutoAdvance"), null, //$NON-NLS-1$
-				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
+				"xxxxxxxxxxxxxx", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
 				KeyStroke.getKeyStroke("control F2"),
 				Mediator.CHANGE_DELAY_TIMER, mediator);
 
