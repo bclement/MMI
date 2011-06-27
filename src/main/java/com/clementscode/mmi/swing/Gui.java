@@ -224,8 +224,8 @@ public class Gui implements ActionListener {
 		JMenuItem menuItem = new JMenuItem(openAction);
 		menu.add(menuItem);
 
-		menuItem = new JMenuItem(openHttpAction);
-		menu.add(menuItem);
+		// menuItem = new JMenuItem(openHttpAction);
+		// menu.add(menuItem);
 
 		/*
 		 * menuItem = new JMenuItem(crudAction); menu.add(menuItem);
