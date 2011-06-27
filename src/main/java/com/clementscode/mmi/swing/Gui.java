@@ -480,6 +480,15 @@ public class Gui implements ActionListener {
 		// TODO: Make hot keys come from a properties file. Hopefully ask JNLP
 		// Utils where this program was loaded from and do a http get to there
 		// for the properties file.
+
+		Properties hotKeysProperties = null;
+		try {
+			hotKeysProperties = readPropertiesFromClassPath("hotkeys.ini");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		attendingAction = new ActionRecorder(Messages
 				.getString("Gui.Attending"), null, //$NON-NLS-1$
 				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
@@ -773,12 +782,7 @@ public class Gui implements ActionListener {
 		if (this.parser == null) {
 			// SHOULDN'T ALL OF THIS BE HAPPENING DURING STARTUP? No, the open
 			// menu allows reading new sessions.
-			Properties props = new Properties();
-			// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
-			// Do it this way and no relative path huha is needed.
-			InputStream in = this.getClass().getClassLoader()
-					.getResourceAsStream(MainGui.propFile);
-			props.load(new InputStreamReader(in));
+			Properties props = readPropertiesFromClassPath(MainGui.propFile);
 			String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
 			LegacyConfigParser legacy = new LegacyConfigParser(sndExts);
 			this.parser = new ConfigParser(legacy);
@@ -792,6 +796,17 @@ public class Gui implements ActionListener {
 			// config.setPrompt(newItemBase + "/prompt.wav");
 		}
 		session = new Session(config);
+	}
+
+	private Properties readPropertiesFromClassPath(String fileName)
+			throws IOException {
+		Properties props = new Properties();
+		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
+		// Do it this way and no relative path huha is needed.
+		InputStream in = this.getClass().getClassLoader()
+				.getResourceAsStream(fileName);
+		props.load(new InputStreamReader(in));
+		return props;
 	}
 
 	void refreshGui() {
