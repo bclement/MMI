@@ -1,0 +1,39 @@
+{
+  "name" : "Test Config",
+  "version" : "1.0.0",
+  "shuffleCount" : 1,
+  "itemBase" : "src/test/resources/bc",
+  "items" : [ {
+    "visualSD" : "/animals/fooduck/dog.jpeg",
+    "audioSD" : "prompt.wav",
+    "audioPrompt" : "/animals/fooduck/answer.wav"
+  }, {
+    "visualSD" : "/animals/fooduck/fooduck.gif",
+    "audioSD" : "prompt.wav",
+    "audioPrompt" : "/animals/fooduck/answer.wav"
+  }, {
+    "visualSD" : "/animals/fooduck/fooduck.jpg",
+    "audioSD" : "prompt.wav",
+    "audioPrompt" : "/animals/fooduck/answer.wav"
+  }, {
+    "visualSD" : "/animals/fooduck/fooduck.png",
+    "audioSD" : "prompt.wav",
+    "audioPrompt" : "/animals/fooduck/answer.wav"
+  }, {
+    "visualSD" : "/food/foobar/bluebar.jpg",
+    "audioSD" : "prompt.wav",
+    "audioPrompt" : "/food/foobar/answer.wav"
+  }, {
+    "visualSD" : "/food/foobar/greenbar.jpg",
+    "audioSD" : "prompt.wav",
+    "audioPrompt" : "/food/foobar/answer.wav"
+  }, {
+    "visualSD" : "/food/foobar/redbar.jpg",
+    "audioSD" : "prompt.wav",
+    "audioPrompt" : "/food/foobar/answer.wav"
+  } ],
+  "timeDelayAudioSD" : 5,
+  "timeDelayAudioPrompt" : 5,
+  "timeDelayAutoAdvance" : 3,
+  "timeDelayInterTrial" : 3
+}
