@@ -164,9 +164,7 @@ public class Mediator implements MediatorListener {
 		case OPEN:
 			gui.openSession();
 			break;
-		case OPEN_HTTP:
-			gui.openHttpSession();
-			break;
+
 		}
 		if (hit) {
 			gui.stopTimer(); // hope this is a fix to issue #4

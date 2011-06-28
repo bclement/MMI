@@ -46,8 +46,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 
-import junk.ExtractFileSubDirectories;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
@@ -843,26 +841,7 @@ public class Gui implements ActionListener {
 		frame.pack();
 	}
 
-	public void openHttpSession() {
-		bDebounce = false;
-		// Started with clues from
-		// http://download.oracle.com/javase/tutorial/uiswing/components/dialog.html
 
-		// Messages.getString("Gui.Verbal")
-		String[] possibilities = { "http://MattPayne.org/mmi/demo1.zip",
-				"http://MattPayne.org/mmi/mp.zip",
-				"http://MattPayne.org/mmi/bc.zip", "more to come later..." };
-		if (null != codeBaseUrl) {
-			possibilities = readPossiblitiesFromUrl(codeBaseUrl, "sessions.txt");
-		}
-		String s = (String) JOptionPane.showInputDialog(frame,
-				"Complete the sentence:\n" + "\"Green eggs and...\"",
-				"Customized Dialog", JOptionPane.PLAIN_MESSAGE, null,
-				possibilities, "ham");
-		System.out.println("s=" + s);
-		unpackToTempDirectory(s);
-
-	}
 
 	private String[] readPossiblitiesFromUrl(URL codeBaseUrl2, String fileName) {
 		String[] possiblities = null;
@@ -886,26 +865,7 @@ public class Gui implements ActionListener {
 		return possiblities;
 	}
 
-	private void unpackToTempDirectory(String strUrl) {
 
-		try {
-			File tempZipFile = fetchViaHttp(strUrl);
-			File tmp = File.createTempFile("mmi", "", tmpDir);
-			String zipPath = tmp.getAbsolutePath() + ".dir";
-			tmp.delete();
-			lstTempDirectories.add(zipPath);
-			ExtractFileSubDirectories.unzip(zipPath, tempZipFile
-					.getAbsolutePath());
-			tempZipFile.delete();
-			readSessionFile(new File(zipPath + "/session.txt"), zipPath);
-
-			displayClickToBegin();
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 
 	private void displayClickToBegin() {
 		centerButton.setEnabled(true);
