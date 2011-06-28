@@ -1,10 +1,13 @@
 package com.clementscode.mmi.swing.crud;
 
 import java.awt.BorderLayout;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -23,7 +26,6 @@ import javax.swing.border.TitledBorder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.clementscode.mmi.swing.GuiForCategoryItem;
 import com.clementscode.mmi.swing.LabelAndField;
 import com.clementscode.mmi.swing.LoggingFrame;
 
@@ -123,13 +125,37 @@ public class TriPanelCrud3 extends JFrame implements ExportDoneCallback {
 
 	static ImageIcon smallImageIcon(String fn, int i, int j) {
 		ImageIcon ii = new ImageIcon(fn);
-		Image smallImg = GuiForCategoryItem.getScaledImage(ii.getImage(), 128,
+		Image smallImg = getScaledImage(ii.getImage(), 128,
 				128);
 		ImageIcon smallIi = new ImageIcon(smallImg);
 		smallIi.setDescription(fn);
 		return smallIi;
 	}
 
+	/**
+	 * Resizes an image using a Graphics2D object backed by a BufferedImage.
+	 * 
+	 * @param srcImg
+	 *            - source image to scale
+	 * @param w
+	 *            - desired width
+	 * @param h
+	 *            - desired height
+	 * @return - the new resized image
+	 */
+	public static Image getScaledImage(Image srcImg, int w, int h) {
+		// from:
+		// http://download.oracle.com/javase/tutorial/uiswing/examples/components/IconDemoProject/src/components/IconDemoApp.java
+
+		BufferedImage resizedImg = new BufferedImage(w, h,
+				BufferedImage.TYPE_INT_RGB);
+		Graphics2D g2 = resizedImg.createGraphics();
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g2.drawImage(srcImg, 0, 0, w, h, null);
+		g2.dispose();
+		return resizedImg;
+	}
 	private JPanel tripleStimulusPanel() {
 		JPanel panel = new JPanel();
 
