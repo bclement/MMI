@@ -10,13 +10,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.LineNumberReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
@@ -87,7 +84,7 @@ public class Gui implements ActionListener {
 	private ActionRecorder openAction;
 	private JPanel mainPanel;
 	private Mediator mediator;
-	private ActionRecorder openHttpAction;
+
 	private File tmpDir;
 	private ArrayList<JComponent> lstButtons;
 	private ImageIcon iiSmilingFace, iiSmilingFaceClickToBegin;
@@ -577,12 +574,7 @@ public class Gui implements ActionListener {
 				new Integer(KeyEvent.VK_L),
 				KeyStroke.getKeyStroke("control O"), Mediator.OPEN, mediator);
 
-		openHttpAction = new ActionRecorder(
-				Messages.getString("Gui.Open.Http"), null, //$NON-NLS-1$
-				Messages.getString("Gui.OpenHttpDescription"), //$NON-NLS-1$
-				new Integer(KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control H"), Mediator.OPEN_HTTP,
-				mediator);
+
 
 		showLoggingFrameAction = new ActionRecorder(
 				Messages.getString("Gui.Open.ShowLoggingFrame"), null, //$NON-NLS-1$
@@ -597,19 +589,7 @@ public class Gui implements ActionListener {
 
 	}
 
-	//
-	// public void playSound(File file) {
-	// try {
-	// SoundUtility.playSound(file);
-	// // "src/test/resources/bc/animals/fooduck/answer.wav"));
-	// } catch (UnsupportedAudioFileException e) {
-	// log.error("Problem with playSound: " + file, e);
-	// e.printStackTrace();
-	// } catch (IOException e) {
-	// log.error("Problem with playSound: " + file, e);
-	// e.printStackTrace();
-	// }
-	// }
+
 
 	public Queue<CategoryItem> getItemQueue() {
 		return itemQueue;
@@ -766,6 +746,7 @@ public class Gui implements ActionListener {
 			return;
 		}
 		bDebounce = true;
+		shownItemCount = 0;// fix for issue #32
 		centerButton.removeActionListener(this);
 
 		clickToStartButton.setEnabled(false);
@@ -843,28 +824,6 @@ public class Gui implements ActionListener {
 
 
 
-	private String[] readPossiblitiesFromUrl(URL codeBaseUrl2, String fileName) {
-		String[] possiblities = null;
-		String line;
-		List<String> lst = new ArrayList<String>();
-		try {
-			URL url = new URL(codeBaseUrl2.toString() + fileName);
-			InputStream is = url.openStream();
-			LineNumberReader in = new LineNumberReader(
-					new InputStreamReader(is));
-			while (null != (line = in.readLine())) {
-				lst.add(line);
-			}
-			in.close();
-			possiblities = (String[]) lst.toArray(new String[lst.size()]);
-		} catch (Exception e) {
-			logger.error(String.format("Problem reading %s/%s", codeBaseUrl2,
-					fileName), e);
-			e.printStackTrace();
-		}
-		return possiblities;
-	}
-
 
 
 	private void displayClickToBegin() {
@@ -878,27 +837,7 @@ public class Gui implements ActionListener {
 		refreshGui();
 	}
 
-	private File fetchViaHttp(String strUrl) throws IOException {
 
-		// Since Mac's OS X make f-ed up temp directories like this:
-		// Extracting
-		// /var/folders/IL/ILL0adgsGq89FHBGBZvCF++++TI/-Tmp-/mmi7319452195262685629.dir/food/foobar/redbar.jpg
-		// We're going to specify the temp directory
-
-		File tempZipFile = File.createTempFile("mmiSession", "zip", tmpDir);
-
-		URL url = new URL(strUrl);
-		InputStream in = url.openStream();
-		byte[] chunk = new byte[8 * 1024];
-		OutputStream out = new FileOutputStream(tempZipFile);
-		int numBytesRead = 0;
-		while (-1 != (numBytesRead = in.read(chunk))) {
-			out.write(chunk, 0, numBytesRead);
-		}
-		out.close();
-		in.close();
-		return tempZipFile;
-	}
 
 	public void actionPerformed(ActionEvent e) {
 		if ((clickToStartButton == e.getSource())
