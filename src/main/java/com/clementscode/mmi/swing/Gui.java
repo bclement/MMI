@@ -57,7 +57,7 @@ import com.clementscode.mmi.res.SessionConfig;
 import com.clementscode.mmi.util.Shuffler;
 import com.clementscode.mmi.util.Utils;
 
-public class Gui implements ActionListener {
+public class Gui implements ActionListener, MediatorListenerCustomer {
 	private Logger logger = Logger.getLogger(this.getClass().getName());
 	private static final String BROWSE_SESSION_DATA_FILE = "BROWSE_SESSION_DATA_FILE";
 	private static final String SESSION_DIRECTORY = "SESSION_DIRECTORY";
@@ -503,7 +503,7 @@ public class Gui implements ActionListener {
 				.getString("Gui.Attending"), null, //$NON-NLS-1$
 				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_F1), KeyStroke.getKeyStroke(hk),
-				Mediator.ATTENDING, mediator);
+				Action.ATTENDING, mediator);
 
 		hk = (String) hotKeysProperties.get("Hotkey.Gui.Independent");
 
@@ -511,7 +511,7 @@ public class Gui implements ActionListener {
 				.getString("Gui.Independent"), null, //$NON-NLS-1$
 				Messages.getString("Gui.IndependentDescription"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_F2), KeyStroke.getKeyStroke(hk),
-				Mediator.INDEPENDENT, mediator);
+				Action.INDEPENDENT, mediator);
 
 		hk = (String) hotKeysProperties.get("Hotkey.Gui.Verbal");
 
@@ -519,7 +519,7 @@ public class Gui implements ActionListener {
 				Messages.getString("Gui.Verbal"), null, //$NON-NLS-1$
 				Messages.getString("Gui.VerbalDescription"), //$NON-NLS-1$
 				new Integer(KeyEvent.VK_F3), KeyStroke.getKeyStroke(hk),
-				Mediator.VERBAL, mediator);
+				Action.VERBAL, mediator);
 
 		hk = (String) hotKeysProperties.get("Hotkey.Gui.Modeling");
 
@@ -527,52 +527,52 @@ public class Gui implements ActionListener {
 				Messages.getString("Gui.Modeling"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ModelingDescriptin"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_F4), KeyStroke.getKeyStroke(hk),
-				Mediator.MODELING, mediator);
+				Action.MODELING, mediator);
 
 		hk = (String) hotKeysProperties.get("Hotkey.Gui.NoAnswer");
 
 		noAnswerAction = new ActionRecorder(
 				Messages.getString("Gui.NoAnswer"), null, //$NON-NLS-1$
 				Messages.getString("Gui.NoAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
-				KeyStroke.getKeyStroke(hk), Mediator.NO_ANSWER, mediator);
+				KeyStroke.getKeyStroke(hk), Action.NO_ANSWER, mediator);
 
 		hk = (String) hotKeysProperties.get("Hotkey.Gui.WrongAnswer");
 		wrongAnswerAction = new ActionRecorder(
 				Messages.getString("Gui.WrongAnswer"), null, //$NON-NLS-1$
 				Messages.getString("Gui.WrongAnswerDescription"), new Integer(KeyEvent.VK_F5), //$NON-NLS-1$
-				KeyStroke.getKeyStroke(hk), Mediator.WRONG_ANSWER, mediator);
+				KeyStroke.getKeyStroke(hk), Action.WRONG_ANSWER, mediator);
 
 		toggleButtonsAction = new ActionRecorder(
 				Messages.getString("Gui.ToggleButtons"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ToggleButtons.Description"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("B"), Mediator.TOGGLE_BUTTONS, mediator);
+				KeyStroke.getKeyStroke("B"), Action.TOGGLE_BUTTONS, mediator);
 
 		quitAction = new ActionRecorder(
 				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
 				Messages.getString("Gui.QuitDescriptino"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("control Q"), Mediator.QUIT, mediator);
+				KeyStroke.getKeyStroke("control Q"), Action.QUIT, mediator);
 
 		timerAction = new ActionRecorder(
 				Messages.getString("Gui.TimerSwing"), null, //$NON-NLS-1$
 				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("control F2"), Mediator.TIMER, mediator);
+				KeyStroke.getKeyStroke("control F2"), Action.TIMER, mediator);
 
 		timerBetweenAction = new ActionRecorder(Messages
 				.getString("Gui.TimerBetweenSwing"), null, //$NON-NLS-1$
 				"Quit (Exit) the program", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("control F2"), Mediator.BETWEEN_TIMER,
+				KeyStroke.getKeyStroke("control F2"), Action.BETWEEN_TIMER,
 				mediator);
 
 		timerTimeDelayAutoAdvance = new ActionRecorder(
 				Messages.getString("Gui.TimeDelayAutoAdvance"), null, //$NON-NLS-1$
 				"xxxxxxxxxxxxxx", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
 				KeyStroke.getKeyStroke("control F2"),
-				Mediator.CHANGE_DELAY_TIMER, mediator);
+				Action.CHANGE_DELAY_TIMER, mediator);
 
 		openAction = new ActionRecorder(Messages.getString("Gui.Open"), null, //$NON-NLS-1$
 				Messages.getString("Gui.OpenDescription"), //$NON-NLS-1$
 				new Integer(KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control O"), Mediator.OPEN, mediator);
+				KeyStroke.getKeyStroke("control O"), Action.OPEN, mediator);
 
 
 
@@ -581,7 +581,8 @@ public class Gui implements ActionListener {
 				Messages.getString("Gui.ShowLoggingFrameDescription"), //$NON-NLS-1$
 				new Integer(KeyEvent.VK_L),
 				KeyStroke.getKeyStroke("control D"),
-				Mediator.SHOW_LOGGING_FRAME, mediator);
+ Action.SHOW_LOGGING_FRAME,
+				mediator);
 
 	}
 
@@ -776,7 +777,7 @@ public class Gui implements ActionListener {
 			// setupTimer();
 			setupBetweenTimer();
 			enableButtons();
-			mediator.execute(Mediator.BETWEEN_TIMER);
+			mediator.execute(Action.BETWEEN_TIMER);
 		}
 	}
 

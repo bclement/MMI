@@ -1,7 +1,7 @@
 package com.clementscode.mmi.swing;
 
-public interface MediatorListener {
+public interface MediatorListener extends MediatorListenerCustomer {
 
-	public void execute(int action);
+	public void execute(Action action);
 
 }

@@ -17,11 +17,13 @@ public class ActionRecorder extends AbstractAction {
 	private static final long serialVersionUID = 8924752985309017175L;
 	private String text;
 	private MediatorListener mediator;
-	private int action;
+	private com.clementscode.mmi.swing.MediatorListenerCustomer.Action action;
 	protected Log log = LogFactory.getLog(this.getClass());
 
 	public ActionRecorder(String text, ImageIcon icon, String desc,
-			Integer mnemonic, KeyStroke keyStroke, int action,
+			Integer mnemonic,
+			KeyStroke keyStroke,
+			com.clementscode.mmi.swing.MediatorListenerCustomer.Action attending,
 			MediatorListener mediator) {
 		super(text, icon);
 		putValue(SHORT_DESCRIPTION, desc);
@@ -30,7 +32,7 @@ public class ActionRecorder extends AbstractAction {
 		// Set an accelerator key; this value is used by menu items
 		putValue(Action.ACCELERATOR_KEY, keyStroke);
 
-		this.action = action;
+		this.action = attending;
 		this.text = text;
 		setMediator(mediator);
 	}

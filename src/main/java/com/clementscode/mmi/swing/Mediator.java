@@ -33,23 +33,23 @@ import com.clementscode.mmi.sound.SoundRunner;
 
  */
 public class Mediator implements MediatorListener {
-	public static final int ATTENDING = 0;
-	public static final int INDEPENDENT = 1;
-	public static final int VERBAL = 2;
-	public static final int MODELING = 3;
-	public static final int NO_ANSWER = 4;
-	public static final int QUIT = 5;
-	public static final int TIMER = 6;
-	public static final int OPEN = 7;
-	public static final int CRUD = 8;
-	public static final int SAVE_AS = 9;
-	public static final int SAVE = 10;
-	public static final int OPEN_HTTP = 11;
-	public static final int SHOW_LOGGING_FRAME = 12;
-	public static final int BETWEEN_TIMER = 13;
-	public static final int TOGGLE_BUTTONS = 14;
-	public static final int WRONG_ANSWER = 15;
-	public static final int CHANGE_DELAY_TIMER = 16;
+	// public static final int ATTENDING = 0;
+	// public static final int INDEPENDENT = 1;
+	// public static final int VERBAL = 2;
+	// public static final int MODELING = 3;
+	// public static final int NO_ANSWER = 4;
+	// public static final int QUIT = 5;
+	// public static final int TIMER = 6;
+	// public static final int OPEN = 7;
+	// public static final int CRUD = 8;
+	// public static final int SAVE_AS = 9;
+	// public static final int SAVE = 10;
+	// public static final int OPEN_HTTP = 11;
+	// public static final int SHOW_LOGGING_FRAME = 12;
+	// public static final int BETWEEN_TIMER = 13;
+	// public static final int TOGGLE_BUTTONS = 14;
+	// public static final int WRONG_ANSWER = 15;
+	// public static final int CHANGE_DELAY_TIMER = 16;
 	protected Log log = LogFactory.getLog(this.getClass());
 	private Gui gui;
 	private boolean playPrompt = true;
@@ -81,7 +81,7 @@ public class Mediator implements MediatorListener {
 	 * 
 	 * @see com.clementscode.mmi.swing.MediatorListener#execute(int)
 	 */
-	public void execute(int action) {
+	public void execute(Action action) {
 		boolean hit = false;
 		switch (action) {
 		case ATTENDING:
