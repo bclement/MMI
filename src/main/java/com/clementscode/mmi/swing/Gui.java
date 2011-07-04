@@ -24,8 +24,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.imageio.ImageIO;
-import javax.jnlp.BasicService;
-import javax.jnlp.UnavailableServiceException;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -97,7 +95,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 
 	private ActionRecorder showLoggingFrameAction;
 
-	private URL codeBaseUrl = null;
+	// private URL codeBaseUrl = null;
 
 	private int shownItemCount = 0;
 
@@ -120,7 +118,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 
 	public Gui() {
 		loggingFrame = new LoggingFrame();
-		jnlpSetup();
+		// TODO: Trim the extra! jnlpSetup();
 		loadPreferences();
 		String tmpDirStr = "/tmp/mmi";
 		tmpDir = new File(tmpDirStr);
@@ -148,26 +146,26 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		});
 	}
 
-	private void jnlpSetup() {
-		try {
-			String[] sn = javax.jnlp.ServiceManager.getServiceNames();
-			for (String string : sn) {
-				logger.info("A service name is: " + string);
-			}
-
-			Object obj = javax.jnlp.ServiceManager
-					.lookup("javax.jnlp.BasicService");
-			BasicService bs = (BasicService) obj;
-			codeBaseUrl = bs.getCodeBase();
-		} catch (UnavailableServiceException e) {
-			logger.error("Could not look up BasicService.", e);
-			e.printStackTrace();
-		} catch (Exception bland) {
-			logger
-					.error("Some odd JNLP related problem: bland=" + bland,
-							bland);
-		}
-	}
+	// private void jnlpSetup() {
+	// try {
+	// String[] sn = javax.jnlp.ServiceManager.getServiceNames();
+	// for (String string : sn) {
+	// logger.info("A service name is: " + string);
+	// }
+	//
+	// Object obj = javax.jnlp.ServiceManager
+	// .lookup("javax.jnlp.BasicService");
+	// BasicService bs = (BasicService) obj;
+	// codeBaseUrl = bs.getCodeBase();
+	// } catch (UnavailableServiceException e) {
+	// logger.error("Could not look up BasicService.", e);
+	// e.printStackTrace();
+	// } catch (Exception bland) {
+	// logger
+	// .error("Some odd JNLP related problem: bland=" + bland,
+	// bland);
+	// }
+	// }
 
 	private void disableButtons() {
 		for (JComponent jc : lstButtons) {

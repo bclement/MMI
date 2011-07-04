@@ -17,18 +17,18 @@ public class MattsTransferHandler extends TransferHandler {
 
 	private static final long serialVersionUID = 1L;
 	private static int mthNumberSeq = 0;
-	private String overWrittenComponent;
+	// private String overWrittenComponent;
 	private static List<MattsTransferHandler> lstMth = null;
-	private static int importNumber = -1, exportNumber = -1;
+	private static int importNumber = -1;// , exportNumber = -1;
 
-	private DragableJLabelWithImage lblSource;
+	// private DragableJLabelWithImage lblSource;
 	private DragableJLabelWithImage lblDestination;
 
 
 
 	private int row;
 	private JPanel parent;
-	private int number;
+	// private int number;
 	private int mthNumber;
 
 	public MattsTransferHandler(String propertyName) {
@@ -54,7 +54,7 @@ public class MattsTransferHandler extends TransferHandler {
 	// Invoked after data has been exported.
 	protected void exportDone(JComponent source, Transferable data, int action) {
 		System.out.println("exportDone source=" + source);
-		exportNumber = mthNumber;
+		// exportNumber = mthNumber;
 		super.exportDone(source, data, action);
 		// edc.exportDone(overWrittenComponent, source);
 		DragableJLabelWithImage sourceLbl = (DragableJLabelWithImage) source;
@@ -101,9 +101,8 @@ public class MattsTransferHandler extends TransferHandler {
 		lblDestination = (DragableJLabelWithImage) comp;
 		try {
 			parent = (JPanel) lblDestination.getParent();
-		System.out.println("Parent name: "
- + parent.getName());
-			number = 42;
+			System.out.println("Parent name: " + parent.getName());
+			// number = 42;
 		} catch (Exception bland) {
 			bland.printStackTrace();
 		}
@@ -146,11 +145,11 @@ public class MattsTransferHandler extends TransferHandler {
 	 * =LEADING,horizontalTextPosition=TRAILING,iconTextGap=4,
 	 * labelFor=,text=,verticalAlignment=CENTER,verticalTextPosition=CENTER]
 	 */
-
-	public void setSource(DragableJLabelWithImage lblSource) {
-
-		this.lblSource = lblSource;
-	}
+	//
+	// public void setSource(DragableJLabelWithImage lblSource) {
+	//
+	// this.lblSource = lblSource;
+	// }
 
 	public void setDestination(DragableJLabelWithImage lblDestination) {
 		this.lblDestination = lblDestination;

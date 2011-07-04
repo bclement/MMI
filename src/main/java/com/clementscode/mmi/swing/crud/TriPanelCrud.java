@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -51,8 +50,8 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	private LoggingFrame loggingFrame;
 	private JPanel mainPanel;
 	private Vector<ImageIcon> vector;
-	private ArrayList<JPanel> lstTriPanels;
-	private ArrayList<DragableJLabelWithImage> lstImageSources;
+	// private ArrayList<JPanel> lstTriPanels;
+	// private ArrayList<DragableJLabelWithImage> lstImageSources;
 	private SessionConfig sessionConfig = null;
 	private ActionRecorder openAction;
 	private MediatorListener crudMediator;
@@ -74,7 +73,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 
 	public TriPanelCrud() {
 		super("TriPanelCrud4 -- a new approach!");
-		crudMediator = new CrudMediator();
+		crudMediator = new CrudMediator(this);
 		vector = new Vector<ImageIcon>();
 		loggingFrame = new LoggingFrame();
 		loggingFrame.setVisible(true);
@@ -155,7 +154,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 
 	}
 
-	private void writeSessionConfig() throws JsonGenerationException,
+	void writeSessionConfig() throws JsonGenerationException,
 			JsonMappingException, FileNotFoundException, IOException {
 		
 		ConfigParser parser = new ConfigParser(new LegacyConfigParser(
@@ -194,8 +193,8 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 			tripleStimulusPanel.add(triPanel);
 			lblDestination.setParentPanel(triPanel);
 			lblSource.setParentPanel(triPanel);
-			lblDestination.setDestination(lblSource);
-			lblSource.setDestination(lblDestination);
+			// lblDestination.setDestination(lblSource);
+			// lblSource.setDestination(lblDestination);
 			row++;
 		}
 	}
@@ -278,7 +277,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 			public void mousePressed(MouseEvent evt) {
 				JComponent comp = (JComponent) evt.getSource();
 				TransferHandler th = comp.getTransferHandler();
-
+				log.info("Starting drag operation...");
 				// Start the drag operation
 				th.exportAsDrag(comp, evt, TransferHandler.COPY);
 			}

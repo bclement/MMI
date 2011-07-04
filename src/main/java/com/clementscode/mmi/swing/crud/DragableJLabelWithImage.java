@@ -11,8 +11,8 @@ import javax.swing.TransferHandler;
 public class DragableJLabelWithImage extends JLabel {
 	private static final long serialVersionUID = 1L;
 	private MattsTransferHandler mattsTransferHandler;
-	private DragableJLabelWithImage lblSource;
-	private DragableJLabelWithImage lblDestination;
+	// private DragableJLabelWithImage lblSource;
+	// private DragableJLabelWithImage lblDestination;
 	private JPanel parentPanel;
 
 	public DragableJLabelWithImage() {
@@ -37,17 +37,17 @@ public class DragableJLabelWithImage extends JLabel {
 		});
 	}
 
-	public void setSource(DragableJLabelWithImage lblSource) {
-		this.lblSource = lblSource;
-
-		mattsTransferHandler.setSource(lblSource);
-
-	}
-
-	public void setDestination(DragableJLabelWithImage lblDestination) {
-		this.lblDestination = lblDestination;
-		mattsTransferHandler.setDestination(lblDestination);
-	}
+	// public void setSource(DragableJLabelWithImage lblSource) {
+	// this.lblSource = lblSource;
+	//
+	// mattsTransferHandler.setSource(lblSource);
+	//
+	// }
+	//
+	// public void setDestination(DragableJLabelWithImage lblDestination) {
+	// this.lblDestination = lblDestination;
+	// mattsTransferHandler.setDestination(lblDestination);
+	// }
 
 	public void setParentPanel(JPanel triPanel) {
 		parentPanel = triPanel;
