@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
@@ -62,6 +64,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	private ActionRecorder quitAction;
 	private List<String> lstSoundFileNames;
 	private List<TriJPanel> lstTriPanel;
+	private Map<Integer, String> mapPictureNumberToPictureFileName = null;
 
 	/**
 	 * @param args
@@ -76,6 +79,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 
 	public TriPanelCrud() {
 		super("TriPanelCrud4 -- a new approach!");
+		mapPictureNumberToPictureFileName = new TreeMap<Integer, String>();
 		sessionConfig = new SessionConfig();
 		lstSoundFileNames = new ArrayList<String>();
 		crudMediator = new CrudMediator(this);
@@ -155,7 +159,11 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		for (TriJPanel tp : lstTriPanel) {
 			String audioPrompt = tp.getPrompt();
 			String audioSD = tp.getAnswer();
-			String visualSD = tp.getPictureFileName();
+			int row = tp.getPictureNumber();
+			if (-1 == row) {
+				break;
+			}
+			String visualSD = mapPictureNumberToPictureFileName.get(row);
 			ItemConfig itemConfig = new ItemConfig(visualSD, audioSD,
 					audioPrompt);
 			lstItemConfig.add(itemConfig);
@@ -191,6 +199,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		int row = 0;
 		for (Object obj : vector) {
 			ImageIcon ii = (ImageIcon) obj;
+			mapPictureNumberToPictureFileName.put(row, ii.getDescription());
 			DragableJLabelWithImage lblSource = new DragableJLabelWithImage();
 			lblSource.setIcon(ii);
 			lblSource.setName(String.format("row=%d;%s", row,

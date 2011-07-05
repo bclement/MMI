@@ -13,9 +13,7 @@ public class TriJPanel extends JPanel {
 	private DragableJLabelWithImage lblDestination;
 	private JTextField tfPrompt;
 	private JTextField tfAnswer;
-
-
-	private int row;
+	private int row = -1;
 
 	public void setImage(DragableJLabelWithImage lblDestination) {
 		this.lblDestination = lblDestination;
@@ -40,19 +38,18 @@ public class TriJPanel extends JPanel {
 		return tfAnswer.getText();
 	}
 
-	public String getPictureFileName() {
-		String pictureFileName = null;
 
-		pictureFileName = lblDestination.getText();
-		pictureFileName += row;
-		return pictureFileName;
-	}
 
 	public void setBorder(int row) {
 		this.row = row;
 		String strBorder = "row=" + row;
 		TitledBorder border = BorderFactory.createTitledBorder(strBorder);
 		this.setBorder(border);
+	}
+
+	public int getPictureNumber() {
+
+		return row;
 	}
 
 }
