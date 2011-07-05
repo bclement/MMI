@@ -30,6 +30,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 import javax.swing.border.TitledBorder;
@@ -43,6 +44,7 @@ import com.clementscode.mmi.res.ItemConfig;
 import com.clementscode.mmi.res.LegacyConfigParser;
 import com.clementscode.mmi.res.SessionConfig;
 import com.clementscode.mmi.swing.ActionRecorder;
+import com.clementscode.mmi.swing.LabelAndField;
 import com.clementscode.mmi.swing.LoggingFrame;
 import com.clementscode.mmi.swing.MediatorListener;
 import com.clementscode.mmi.swing.MediatorListenerCustomer;
@@ -65,6 +67,12 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	private List<String> lstSoundFileNames;
 	private List<TriJPanel> lstTriPanel;
 	private Map<Integer, String> mapPictureNumberToPictureFileName = null;
+	private JTextField tfName;
+	private JTextField tfItemBase;
+	private JTextField tfTimeDelayAudioSD;
+	private JTextField tfTimeDelayAudioPrompt;
+	private JTextField tfTimeDelayAutoAdvance;
+	private JTextField tfTimeDelayInterTrial;
 
 	/**
 	 * @param args
@@ -93,7 +101,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		mainPanel = new JPanel();
 		getContentPane().add(mainPanel);
 		mainPanel.setLayout(new BorderLayout());
-
+		mainPanel.add(staticCrap(), BorderLayout.NORTH);
 
 		mainPanel.add(new JScrollPane(soundFilePanel()), BorderLayout.WEST);
 
@@ -108,6 +116,28 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		setupMenus();
 		pack();
 		setVisible(true);
+	}
+
+	// TODO: Better name for this panel.
+	private JPanel staticCrap() {
+		JPanel panel = new JPanel();
+		tfName = new JTextField("No Name Session");
+		tfItemBase = new JTextField("/resources");
+		tfTimeDelayAudioSD = new JTextField("30");
+		tfTimeDelayAudioPrompt = new JTextField("30");
+		tfTimeDelayAutoAdvance = new JTextField("30");
+		tfTimeDelayInterTrial = new JTextField("30");
+		panel.add(new LabelAndField("Name: ", tfName));
+		panel.add(new LabelAndField("Item Base: ", tfItemBase));
+		panel.add(new LabelAndField("Time Delay Audio SD: ", tfTimeDelayAudioSD));
+		panel.add(new LabelAndField("Time Delay Audio Prompt: ",
+				tfTimeDelayAudioPrompt));
+		panel.add(new LabelAndField("Time Delay Auto Advance: ",
+				tfTimeDelayAutoAdvance));
+		panel.add(new LabelAndField("Time Delay Inter Trial: ",
+				tfTimeDelayInterTrial));
+
+		return panel;
 	}
 
 	private void setupMenus() {
@@ -171,6 +201,25 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		ItemConfig[] array = (ItemConfig[]) lstItemConfig
 				.toArray(new ItemConfig[lstItemConfig.size()]);
 		sessionConfig.setItems(array);
+		sessionConfig.setName(tfName.getText());
+		sessionConfig.setItemBase(tfItemBase.getText());
+		sessionConfig.setTimeDelayAudioSD(atoi(tfTimeDelayAudioSD.getText()));
+		sessionConfig.setTimeDelayAudioPrompt(atoi(tfTimeDelayAudioPrompt.getText()));
+		sessionConfig.setTimeDelayAutoAdvance(atoi(tfTimeDelayAutoAdvance.getText()));
+		sessionConfig.setTimeDelayInterTrial(atoi(tfTimeDelayInterTrial
+				.getText()));
+		
+
+	}
+
+	private int atoi(String text) {
+		int n = 0;
+		try {
+			n = Integer.parseInt(text);
+		} catch (Exception bland) {
+			log.warn(String.format("Problem parsing '%s'", text), bland);
+		}
+		return n;
 	}
 
 	void writeSessionConfig() throws JsonGenerationException,
