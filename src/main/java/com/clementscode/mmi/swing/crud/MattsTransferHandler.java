@@ -4,17 +4,16 @@ import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
-import javax.swing.border.TitledBorder;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 public class MattsTransferHandler extends TransferHandler {
-
+	private Logger log = Logger.getLogger(this.getClass().getName());
 	private static final long serialVersionUID = 1L;
 	private static int mthNumberSeq = 0;
 	// private String overWrittenComponent;
@@ -53,7 +52,7 @@ public class MattsTransferHandler extends TransferHandler {
 
 	// Invoked after data has been exported.
 	protected void exportDone(JComponent source, Transferable data, int action) {
-		System.out.println("exportDone source=" + source);
+		log.info("exportDone source=" + source);
 		// exportNumber = mthNumber;
 		super.exportDone(source, data, action);
 		// edc.exportDone(overWrittenComponent, source);
@@ -67,7 +66,7 @@ public class MattsTransferHandler extends TransferHandler {
 		MattsTransferHandler mthImport = lstMth.get(importNumber);
 		parent = mthImport.parent;
 		System.out.println("parent.getName()=" + parent.getName());
-		final JPanel triPanelDestination = parent;
+		final TriJPanel triPanelDestination = (TriJPanel) parent;
 		System.out.println("mthNumber=" + mthNumber);
 		System.out.println("PanelRow destination="
 				+ triPanelDestination.getName());
@@ -77,9 +76,8 @@ public class MattsTransferHandler extends TransferHandler {
 		Runnable doWorkRunnable = new Runnable() {
 			public void run() {
 
-				TitledBorder border = BorderFactory.createTitledBorder("row="
-						+ row);
-				triPanelDestination.setBorder(border);
+				triPanelDestination.setBorder(row);
+
 				triPanelDestination.invalidate();
 				triPanelDestination.revalidate();
 
@@ -102,7 +100,6 @@ public class MattsTransferHandler extends TransferHandler {
 		try {
 			parent = (JPanel) lblDestination.getParent();
 			System.out.println("Parent name: " + parent.getName());
-			// number = 42;
 		} catch (Exception bland) {
 			bland.printStackTrace();
 		}
@@ -115,41 +112,6 @@ public class MattsTransferHandler extends TransferHandler {
 				+ support);
 		return super.importData(support);
 	}
-
-	/*
-	 * TransferHandler.TransferSupport support
-	 * support=javax.swing.TransferHandler$TransferSupport@247de4f1
-	 * importData(comp
-	 * =com.clementscode.mmi.swing.crud4.DragableJLabelWithImage[,
-	 * 11,27,140x128,alignmentX
-	 * =0.0,alignmentY=0.0,border=,flags=8388608,maximumSize
-	 * =,minimumSize=,preferredSize
-	 * =,defaultIcon=/Users/mgpayne/resources/people/
-	 * plumber/Plumber3.jpg,disabledIcon
-	 * =,horizontalAlignment=LEADING,horizontalTextPosition
-	 * =TRAILING,iconTextGap=
-	 * 4,labelFor=,text=0,verticalAlignment=CENTER,verticalTextPosition
-	 * =CENTER],t=java.awt.dnd.DropTargetContext$TransferableProxy@2862c542)
-	 */
-
-	/*
-	 * exportDone
-	 * source=com.clementscode.mmi.swing.crud4.DragableJLabelWithImage
-	 * [row=4;/Users
-	 * /mgpayne/resources/animals/ape/Ape5.jpg,0,512,128x128,alignmentX
-	 * =0.0,alignmentY
-	 * =0.0,border=,flags=41943040,maximumSize=,minimumSize=,preferredSize
-	 * =,defaultIcon
-	 * =/Users/mgpayne/resources/animals/ape/Ape5.jpg,disabledIcon=,
-	 * horizontalAlignment
-	 * =LEADING,horizontalTextPosition=TRAILING,iconTextGap=4,
-	 * labelFor=,text=,verticalAlignment=CENTER,verticalTextPosition=CENTER]
-	 */
-	//
-	// public void setSource(DragableJLabelWithImage lblSource) {
-	//
-	// this.lblSource = lblSource;
-	// }
 
 	public void setDestination(DragableJLabelWithImage lblDestination) {
 		this.lblDestination = lblDestination;

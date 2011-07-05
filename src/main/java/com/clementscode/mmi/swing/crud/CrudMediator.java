@@ -25,6 +25,7 @@ public class CrudMediator implements MediatorListener {
 			break;
 		case SAVE:
 			try {
+				triPanelCrud.collectSessionConfigData();
 				triPanelCrud.writeSessionConfig();
 			} catch (JsonGenerationException e) {
 				// TODO Auto-generated catch block

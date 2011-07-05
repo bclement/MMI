@@ -28,7 +28,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.TransferHandler;
 import javax.swing.border.TitledBorder;
@@ -38,10 +37,10 @@ import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 
 import com.clementscode.mmi.res.ConfigParser;
+import com.clementscode.mmi.res.ItemConfig;
 import com.clementscode.mmi.res.LegacyConfigParser;
 import com.clementscode.mmi.res.SessionConfig;
 import com.clementscode.mmi.swing.ActionRecorder;
-import com.clementscode.mmi.swing.LabelAndField;
 import com.clementscode.mmi.swing.LoggingFrame;
 import com.clementscode.mmi.swing.MediatorListener;
 import com.clementscode.mmi.swing.MediatorListenerCustomer;
@@ -62,6 +61,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	private ActionRecorder debugAction;
 	private ActionRecorder quitAction;
 	private List<String> lstSoundFileNames;
+	private List<TriJPanel> lstTriPanel;
 
 	/**
 	 * @param args
@@ -76,6 +76,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 
 	public TriPanelCrud() {
 		super("TriPanelCrud4 -- a new approach!");
+		sessionConfig = new SessionConfig();
 		lstSoundFileNames = new ArrayList<String>();
 		crudMediator = new CrudMediator(this);
 		vector = new Vector<ImageIcon>();
@@ -149,12 +150,27 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 
 	}
 
+	void collectSessionConfigData() {
+		List<ItemConfig> lstItemConfig = new ArrayList<ItemConfig>();
+		for (TriJPanel tp : lstTriPanel) {
+			String audioPrompt = tp.getPrompt();
+			String audioSD = tp.getAnswer();
+			String visualSD = tp.getPictureFileName();
+			ItemConfig itemConfig = new ItemConfig(visualSD, audioSD,
+					audioPrompt);
+			lstItemConfig.add(itemConfig);
+		}
+		ItemConfig[] array = (ItemConfig[]) lstItemConfig
+				.toArray(new ItemConfig[lstItemConfig.size()]);
+		sessionConfig.setItems(array);
+	}
+
 	void writeSessionConfig() throws JsonGenerationException,
 			JsonMappingException, FileNotFoundException, IOException {
 		
 		ConfigParser parser = new ConfigParser(new LegacyConfigParser(
 				new String[0]));
-		parser.Serialize(new FileOutputStream(new File("xxx")),
+		parser.Serialize(new FileOutputStream(new File("xxx.txt")),
 		sessionConfig);
 	}
 
@@ -171,7 +187,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 			JPanel tripleStimulusPanel) {
 		tripleStimulusPanel.setLayout(new GridLayout(0, 1));
 		imageFilePanel.setLayout(new GridLayout(0, 1));
-
+		lstTriPanel = new ArrayList<TriJPanel>();
 		int row = 0;
 		for (Object obj : vector) {
 			ImageIcon ii = (ImageIcon) obj;
@@ -181,7 +197,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 					ii.getDescription()));
 			imageFilePanel.add(lblSource);
 
-			JPanel triPanel = new JPanel();
+			TriJPanel triPanel = new TriJPanel();
 			triPanel.setName("PanelRow=" + row);
 			TitledBorder title = BorderFactory.createTitledBorder("title");
 			triPanel.setBorder(title);
@@ -197,12 +213,12 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 			ImageIcon smallIi = smallImageIcon(imageData, 128, 128);
 			lblDestination.setIcon(smallIi);
 			// lblDestination.setText("" + i);
-			triPanel.add(lblDestination);
-			triPanel.add(new LabelAndField("Prompt: ", new JTextField(20)));
-			triPanel.add(new LabelAndField("Answer: ", new JTextField(20)));
+			triPanel.setImage(lblDestination);
+			triPanel.createPromptAndAnswer();
 			tripleStimulusPanel.add(triPanel);
 			lblDestination.setParentPanel(triPanel);
 			lblSource.setParentPanel(triPanel);
+			lstTriPanel.add(triPanel);
 			// lblDestination.setDestination(lblSource);
 			// lblSource.setDestination(lblDestination);
 			row++;
