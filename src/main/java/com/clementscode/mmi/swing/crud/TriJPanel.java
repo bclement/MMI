@@ -3,7 +3,6 @@ package com.clementscode.mmi.swing.crud;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import com.clementscode.mmi.swing.LabelAndField;
@@ -14,7 +13,7 @@ public class TriJPanel extends JPanel {
 	private DragableJLabelWithImage lblDestination;
 	private JTextField tfPrompt;
 	private JTextField tfAnswer;
-	private Border border;
+
 
 	private int row;
 
@@ -31,10 +30,7 @@ public class TriJPanel extends JPanel {
 		this.add(new LabelAndField("Answer: ", tfAnswer));
 	}
 
-	public void setBorder(Border border) {
-		this.border = border;
-		super.setBorder(border);
-	}
+
 
 	public String getPrompt() {
 		return tfPrompt.getText();
