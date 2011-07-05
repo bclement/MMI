@@ -3,6 +3,7 @@ package com.clementscode.mmi.swing.crud;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 
@@ -10,7 +11,7 @@ import com.clementscode.mmi.swing.MediatorListener;
 
 public class CrudMediator implements MediatorListener {
 
-
+	private Logger log = Logger.getLogger(this.getClass().getName());
 	private TriPanelCrud triPanelCrud;
 
 	public CrudMediator(TriPanelCrud triPanelCrud) {
@@ -38,6 +39,14 @@ public class CrudMediator implements MediatorListener {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} // TODO: Fix!
+			break;
+		case SAVE_AS:
+			break;
+		case DEBUG:
+			break;
+		case QUIT:
+			log.info("User asked to quit...");
+			System.exit(0);
 			break;
 		}
 

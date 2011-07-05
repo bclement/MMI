@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -13,8 +12,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -42,7 +45,6 @@ import com.clementscode.mmi.swing.LabelAndField;
 import com.clementscode.mmi.swing.LoggingFrame;
 import com.clementscode.mmi.swing.MediatorListener;
 import com.clementscode.mmi.swing.MediatorListenerCustomer;
-import com.clementscode.mmi.swing.Messages;
 
 public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	private static final long serialVersionUID = 1L;
@@ -59,6 +61,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	private ActionRecorder saveAsAction;
 	private ActionRecorder debugAction;
 	private ActionRecorder quitAction;
+	private List<String> lstSoundFileNames;
 
 	/**
 	 * @param args
@@ -73,10 +76,13 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 
 	public TriPanelCrud() {
 		super("TriPanelCrud4 -- a new approach!");
+		lstSoundFileNames = new ArrayList<String>();
 		crudMediator = new CrudMediator(this);
 		vector = new Vector<ImageIcon>();
 		loggingFrame = new LoggingFrame();
 		loggingFrame.setVisible(true);
+		String dirName = "/Users/mgpayne/resources/";
+		visitAllFiles(new File(dirName));
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainPanel = new JPanel();
@@ -102,31 +108,20 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	private void setupMenus() {
 		String hk = "control S"; // (String)
 									// hotKeysProperties.get("Hotkey.Gui.Attending");
-		openAction = new ActionRecorder(
-				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
-				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F1), KeyStroke.getKeyStroke(hk),
-				Action.OPEN, crudMediator);
-		saveAction = new ActionRecorder(
-				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
-				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F1), KeyStroke.getKeyStroke(hk),
-				Action.SAVE, crudMediator);
-		saveAsAction = new ActionRecorder(
-				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
-				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F1), KeyStroke.getKeyStroke(hk),
-				Action.SAVE_AS, crudMediator);
-		debugAction = new ActionRecorder(
-				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
-				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F1), KeyStroke.getKeyStroke(hk),
+		openAction = new ActionRecorder("Open...", null,
+				"Open a file to work with...", null,
+				KeyStroke.getKeyStroke(hk), Action.OPEN, crudMediator);
+		saveAction = new ActionRecorder("Save", null,
+				"Save the file you're working with", null,
+				KeyStroke.getKeyStroke(hk), Action.SAVE, crudMediator);
+		saveAsAction = new ActionRecorder("Save As...", null,
+				"Save the file you're working with using a different name...",
+				null, KeyStroke.getKeyStroke(hk), Action.SAVE_AS, crudMediator);
+		debugAction = new ActionRecorder("Debug", null,
+				"Open the debug window.", null, KeyStroke.getKeyStroke(hk),
 				Action.DEBUG, crudMediator);
-		quitAction = new ActionRecorder(
-				Messages.getString("Gui.Attending"), null, //$NON-NLS-1$
-				Messages.getString("Gui.AttendingDescription"), new Integer( //$NON-NLS-1$
-						KeyEvent.VK_F1), KeyStroke.getKeyStroke(hk),
-				Action.QUIT, crudMediator);
+		quitAction = new ActionRecorder("Quit", null, "Quit the program.",
+				null, KeyStroke.getKeyStroke(hk), Action.QUIT, crudMediator);
 
 		// http://download.oracle.com/javase/tutorial/uiswing/components/menu.html
 		// http://download.oracle.com/javase/tutorial/uiswing/misc/action.html
@@ -163,13 +158,21 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		sessionConfig);
 	}
 
+	private BufferedImage readImageDataFromClasspath(String fileName)
+			throws IOException {
+
+		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
+		// Do it this way and no relative path huha is needed.
+		InputStream in = this.getClass().getClassLoader()
+				.getResourceAsStream(fileName);
+		return ImageIO.read(in);
+	}
 	private void weaveDragAndDrop(JPanel imageFilePanel,
 			JPanel tripleStimulusPanel) {
 		tripleStimulusPanel.setLayout(new GridLayout(0, 1));
 		imageFilePanel.setLayout(new GridLayout(0, 1));
-		String dirName = "/Users/mgpayne/resources/";
-		visitAllFiles(new File(dirName));
-		int i = 0, row = 0;
+
+		int row = 0;
 		for (Object obj : vector) {
 			ImageIcon ii = (ImageIcon) obj;
 			DragableJLabelWithImage lblSource = new DragableJLabelWithImage();
@@ -183,10 +186,17 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 			TitledBorder title = BorderFactory.createTitledBorder("title");
 			triPanel.setBorder(title);
 			DragableJLabelWithImage lblDestination = new DragableJLabelWithImage();
-			String fn = "/Users/mgpayne/resources/people/plumber/Plumber3.jpg";
-			ImageIcon smallIi = smallImageIcon(fn, 128, 128);
+			String fn = "images/question_mark.jpg";
+			BufferedImage imageData = null;
+			try {
+				imageData = readImageDataFromClasspath(fn);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			ImageIcon smallIi = smallImageIcon(imageData, 128, 128);
 			lblDestination.setIcon(smallIi);
-			lblDestination.setText("" + i);
+			// lblDestination.setText("" + i);
 			triPanel.add(lblDestination);
 			triPanel.add(new LabelAndField("Prompt: ", new JTextField(20)));
 			triPanel.add(new LabelAndField("Answer: ", new JTextField(20)));
@@ -199,6 +209,22 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		}
 	}
 
+	ImageIcon smallImageIcon(BufferedImage imageData, int i, int j) {
+		ImageIcon ii = new ImageIcon(imageData);
+		return smallImageIcon(ii, i, j);
+	}
+
+	ImageIcon smallImageIcon(String fn, int i, int j) {
+		ImageIcon ii = new ImageIcon(fn);
+		return smallImageIcon(ii, i, j);
+	}
+
+	ImageIcon smallImageIcon(ImageIcon ii, int i, int j) {
+		Image smallImg = getScaledImage(ii.getImage(), 128, 128);
+		ImageIcon smallIi = new ImageIcon(smallImg);
+		// smallIi.setDescription(fn);
+		return smallIi;
+	}
 	// Process only files under dir
 	// Started with
 	// from http://www.exampledepot.com/egs/java.io/TraverseTree.html
@@ -214,17 +240,13 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 				ImageIcon smallIi = smallImageIcon(fn, 128, 128);
 				vector.add(smallIi);
 				smallIi.setDescription(fn);
+			} else if (fn.indexOf("wav") > 0) {
+				lstSoundFileNames.add(fn);
 			}
 		}
 	}
 
-	static ImageIcon smallImageIcon(String fn, int i, int j) {
-		ImageIcon ii = new ImageIcon(fn);
-		Image smallImg = getScaledImage(ii.getImage(), 128, 128);
-		ImageIcon smallIi = new ImageIcon(smallImg);
-		smallIi.setDescription(fn);
-		return smallIi;
-	}
+
 
 	/**
 	 * Resizes an image using a Graphics2D object backed by a BufferedImage.
@@ -254,11 +276,10 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	private JPanel soundFilePanel() {
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(0, 1));
-		for (int i = 0; i < 10; ++i) {
-			// TODO: Make this a function or a class....
-			JLabel label1 = new JLabel("sound file " + i);
-			makeDragable(label1);
 
+		for (String soundFileName : lstSoundFileNames) {
+			JLabel label1 = new JLabel(soundFileName);
+			makeDragable(label1);
 			panel.add(label1);
 		}
 		return panel;
