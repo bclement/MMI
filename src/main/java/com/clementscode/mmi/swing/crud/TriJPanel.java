@@ -9,6 +9,7 @@ import javax.swing.border.TitledBorder;
 
 import org.apache.log4j.Logger;
 
+import com.clementscode.mmi.res.ItemConfig;
 import com.clementscode.mmi.swing.LabelAndField;
 
 public class TriJPanel extends JPanel {
@@ -71,6 +72,12 @@ public class TriJPanel extends JPanel {
 	public int getPictureNumber() {
 
 		return row;
+	}
+
+	public void setItemConfig(ItemConfig itemConfig) {
+		tfAnswer.setText(itemConfig.getAudioSD());
+		tfPrompt.setText(itemConfig.getAudioPrompt());
+		// TODO: Find picture number....
 	}
 
 }

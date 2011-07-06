@@ -82,6 +82,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	private JTextField tfTimeDelayInterTrial;
 	private boolean bDebuggingFrameVisible = false;
 	private File sessionConfigFile;
+	private JTextField tfShuffleCount;
 
 	/**
 	 * @param args
@@ -169,6 +170,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		tfTimeDelayAudioPrompt = new JTextField("30");
 		tfTimeDelayAutoAdvance = new JTextField("30");
 		tfTimeDelayInterTrial = new JTextField("30");
+		tfShuffleCount = new JTextField("7");
 		panel.add(new LabelAndField("Name: ", tfName));
 		panel.add(new LabelAndField("Item Base: ", tfItemBase));
 		panel.add(new LabelAndField("Time Delay Audio SD: ", tfTimeDelayAudioSD));
@@ -178,6 +180,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 				tfTimeDelayAutoAdvance));
 		panel.add(new LabelAndField("Time Delay Inter Trial: ",
 				tfTimeDelayInterTrial));
+		panel.add(new LabelAndField("Shuffle Count: ", tfShuffleCount));
 
 		return panel;
 	}
@@ -460,6 +463,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 				sessionConfig = parser.parse(sessionConfigFile);
 				Gui.preferences.put(Gui.SESSION_CONFIG_FILENAME,
 						sessionConfigFile.getAbsolutePath());
+				populateGuiFromSessionConfig(sessionConfig);
 			}
 		} catch (Exception bland) {
 			sessionConfigFile = null;
@@ -468,6 +472,21 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	}
 
 
+
+	private void populateGuiFromSessionConfig(SessionConfig sc) {
+		tfShuffleCount.setText("" + sc.getShuffleCount());
+		tfItemBase.setText(sc.getItemBase());
+		tfName.setText(sc.getName());
+		tfTimeDelayAudioPrompt.setText(sc.getTimeDelayAudioPrompt() + "");
+		tfTimeDelayAudioSD.setText(sc.getTimeDelayAudioSD() + "");
+		tfTimeDelayAutoAdvance.setText(sc.getTimeDelayAutoAdvance() + "");
+		tfTimeDelayInterTrial.setText(sc.getTimeDelayInterTrial() + "");
+		ItemConfig[] items = sc.getItems();
+		int i = 0;
+		for (ItemConfig itemConfig : items) {
+			lstTriPanel.get(i++).setItemConfig(itemConfig);
+		}
+	}
 
 	public void showDebugFrame() {
 		loggingFrame.setVisible(bDebuggingFrameVisible);
