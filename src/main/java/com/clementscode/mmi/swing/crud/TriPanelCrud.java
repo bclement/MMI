@@ -239,13 +239,13 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 			String audioPrompt = tp.getPrompt();
 			String audioSD = tp.getAnswer();
 			int row = tp.getPictureNumber();
-			if (-1 == row) {
-				break;
+			if (-1 != row) {
+				// skip ones that are -1
+				String visualSD = mapPictureNumberToPictureFileName.get(row);
+				ItemConfig itemConfig = new ItemConfig(visualSD, audioSD,
+						audioPrompt);
+				lstItemConfig.add(itemConfig);
 			}
-			String visualSD = mapPictureNumberToPictureFileName.get(row);
-			ItemConfig itemConfig = new ItemConfig(visualSD, audioSD,
-					audioPrompt);
-			lstItemConfig.add(itemConfig);
 		}
 		ItemConfig[] array = (ItemConfig[]) lstItemConfig
 				.toArray(new ItemConfig[lstItemConfig.size()]);
