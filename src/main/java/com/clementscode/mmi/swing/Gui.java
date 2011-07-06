@@ -57,17 +57,18 @@ import com.clementscode.mmi.util.Utils;
 
 public class Gui implements ActionListener, MediatorListenerCustomer {
 	private Logger logger = Logger.getLogger(this.getClass().getName());
-	private static final String BROWSE_SESSION_DATA_FILE = "BROWSE_SESSION_DATA_FILE";
-	private static final String SESSION_DIRECTORY = "SESSION_DIRECTORY";
-	private static final String ADVT_URL = "http://clementscode.com/avdt";
-	private static final Object OUTPUT_CSV_FILE_LOCATION = "OUTPUT_CSV_FILE_LOCATION";
+	public static final String BROWSE_SESSION_DATA_FILE = "BROWSE_SESSION_DATA_FILE";
+	public static final String SESSION_DIRECTORY = "SESSION_DIRECTORY";
+	public static final String ADVT_URL = "http://clementscode.com/avdt";
+	public static final Object OUTPUT_CSV_FILE_LOCATION = "OUTPUT_CSV_FILE_LOCATION";
+	public static final Object SESSION_CONFIG_FILENAME = "SESSION_CONFIG_FILENAME";
 	// private ImageIcon imgIconCenter;
 	private JButton centerButton;
 	private Queue<CategoryItem> itemQueue = null;
 	private Session session = null;
 	private Timer timer;
 	private Timer betweenTimer;
-	protected Log log = LogFactory.getLog(this.getClass());
+	protected static Log log = LogFactory.getLog(Gui.class);
 
 	private JFrame frame;
 	private String frameTitle = Messages.getString("Gui.FrameTitle"); //$NON-NLS-1$
@@ -87,7 +88,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	private ArrayList<JComponent> lstButtons;
 	private ImageIcon iiSmilingFace, iiSmilingFaceClickToBegin;
 	private JTextField tfSessionName;
-	private JTextField tfSessionDataFile;
+	private static JTextField tfSessionDataFile;
 	private JButton clickToStartButton;
 	private List<String> lstTempDirectories;
 
@@ -105,7 +106,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 
 	private BufferedImage clearImage;
 
-	private Properties preferences;
+	public static Properties preferences;
 	private ActionRecorder toggleButtonsAction;
 	private boolean buttonsVisible;
 
@@ -119,7 +120,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	public Gui() {
 		loggingFrame = new LoggingFrame();
 		// TODO: Trim the extra! jnlpSetup();
-		loadPreferences();
+		preferences = loadPreferences();
 		String tmpDirStr = "/tmp/mmi";
 		tmpDir = new File(tmpDirStr);
 		tmpDir.mkdirs();
@@ -645,7 +646,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	public void openSession() {
 		bDebounce = false;
 		File file;
-		// TODO: Remove hard coded directory.
+
 		// TODO: Get application to remember the last place we opened this...
 		String sessionDir = (String) preferences.get(SESSION_DIRECTORY);
 		sessionDir = null == sessionDir ? System.getProperty("user.home")
@@ -676,8 +677,11 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		return dirStr;
 	}
 
-	private void savePreferences() {
-		preferences.put(OUTPUT_CSV_FILE_LOCATION, tfSessionDataFile.getText());
+	public static void savePreferences() {
+		if (null != tfSessionDataFile) {
+			String sessionDataFile = tfSessionDataFile.getText();
+			preferences.put(OUTPUT_CSV_FILE_LOCATION, sessionDataFile);
+		}
 		File preferencesFile = getPreferencesFile();
 		PrintWriter out;
 		try {
@@ -692,22 +696,22 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 
 	}
 
-	private void loadPreferences() {
+	public static Properties loadPreferences() {
 		File preferencesFile = getPreferencesFile();
-		preferences = new Properties();
+		Properties prefs = new Properties();
 		FileReader in;
 		try {
 			in = new FileReader(preferencesFile);
-			preferences.load(in);
+			prefs.load(in);
 			in.close();
 		} catch (Exception e) {
 			log.error("Problem loading preferences from " + preferencesFile, e);
 			e.printStackTrace();
 		}
-
+		return prefs;
 	}
 
-	private File getPreferencesFile() {
+	private static File getPreferencesFile() {
 		String home = System.getProperty("user.home");
 		//
 		String advtSettingsDirectory = home + "/AVDT_Settings";
@@ -719,7 +723,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		return prefsFile;
 	}
 
-	private void createPreferencesDirectory(String advtSettingsDirectory) {
+	private static void createPreferencesDirectory(String advtSettingsDirectory) {
 		File dir = new File(advtSettingsDirectory);
 		dir.mkdirs();
 		try {
@@ -804,12 +808,12 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		session = new Session(config);
 	}
 
-	private Properties readPropertiesFromClassPath(String fileName)
+	public static Properties readPropertiesFromClassPath(String fileName)
 			throws IOException {
 		Properties props = new Properties();
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
-		InputStream in = this.getClass().getClassLoader()
+		InputStream in = Gui.class.getClassLoader()
 				.getResourceAsStream(fileName);
 		props.load(new InputStreamReader(in));
 		return props;

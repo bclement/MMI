@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeMap;
 import java.util.Vector;
 
@@ -23,6 +24,7 @@ import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -39,11 +41,14 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 
+import com.clementscode.mmi.MainGui;
 import com.clementscode.mmi.res.ConfigParser;
+import com.clementscode.mmi.res.ConfigParser100;
 import com.clementscode.mmi.res.ItemConfig;
 import com.clementscode.mmi.res.LegacyConfigParser;
 import com.clementscode.mmi.res.SessionConfig;
 import com.clementscode.mmi.swing.ActionRecorder;
+import com.clementscode.mmi.swing.Gui;
 import com.clementscode.mmi.swing.LabelAndField;
 import com.clementscode.mmi.swing.LoggingFrame;
 import com.clementscode.mmi.swing.MediatorListener;
@@ -61,7 +66,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	private ActionRecorder openAction;
 	private MediatorListener crudMediator;
 	private ActionRecorder saveAction;
-	private ActionRecorder saveAsAction;
+	private SaveFileAction saveAsAction;
 	private ActionRecorder debugAction;
 	private ActionRecorder quitAction;
 	private List<String> lstSoundFileNames;
@@ -73,6 +78,8 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	private JTextField tfTimeDelayAudioPrompt;
 	private JTextField tfTimeDelayAutoAdvance;
 	private JTextField tfTimeDelayInterTrial;
+	private boolean bDebuggingFrameVisible = false;
+	private File sessionConfigFile;
 
 	/**
 	 * @param args
@@ -87,13 +94,19 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 
 	public TriPanelCrud() {
 		super("TriPanelCrud4 -- a new approach!");
+		Gui.preferences = Gui.loadPreferences();
+		String fn = (String) Gui.preferences.get(Gui.SESSION_CONFIG_FILENAME);
+		if (null != fn) {
+			sessionConfigFile = new File(fn);
+		}
 		mapPictureNumberToPictureFileName = new TreeMap<Integer, String>();
 		sessionConfig = new SessionConfig();
 		lstSoundFileNames = new ArrayList<String>();
 		crudMediator = new CrudMediator(this);
 		vector = new Vector<ImageIcon>();
 		loggingFrame = new LoggingFrame();
-		loggingFrame.setVisible(true);
+		loggingFrame.setVisible(bDebuggingFrameVisible);
+		// TODO: Fix this problem of hard coding to Matt's MacBook
 		String dirName = "/Users/mgpayne/resources/";
 		visitAllFiles(new File(dirName));
 
@@ -110,12 +123,19 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		weaveDragAndDrop(imageFilePanel, tripleStimulusPanel);
 
 		mainPanel
-				.add(new JScrollPane(tripleStimulusPanel),
-				BorderLayout.CENTER);
+				.add(new JScrollPane(tripleStimulusPanel), BorderLayout.CENTER);
 		mainPanel.add(new JScrollPane(imageFilePanel), BorderLayout.EAST);
 		setupMenus();
 		pack();
 		setVisible(true);
+		// Register a shutdown thread
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			// This method is called during shutdown
+			public void run() {
+				// Do shutdown work ...
+				Gui.savePreferences();
+			}
+		});
 	}
 
 	// TODO: Better name for this panel.
@@ -149,9 +169,16 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		saveAction = new ActionRecorder("Save", null,
 				"Save the file you're working with", null,
 				KeyStroke.getKeyStroke(hk), Action.SAVE, crudMediator);
-		saveAsAction = new ActionRecorder("Save As...", null,
+		// saveAsAction = new ActionRecorder("Save As...", null,
+		// "Save the file you're working with using a different name...",
+		// null, KeyStroke.getKeyStroke(hk), Action.SAVE_AS, crudMediator);
+
+		JFileChooser fc = new JFileChooser();
+		saveAsAction = new SaveFileAction("Save As...",
 				"Save the file you're working with using a different name...",
-				null, KeyStroke.getKeyStroke(hk), Action.SAVE_AS, crudMediator);
+				KeyStroke.getKeyStroke(hk), this, fc, sessionConfigFile,
+				(SaveCallback) crudMediator);
+
 		debugAction = new ActionRecorder("Debug", null,
 				"Open the debug window.", null, KeyStroke.getKeyStroke(hk),
 				Action.DEBUG, crudMediator);
@@ -185,6 +212,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	}
 
 	void collectSessionConfigData() {
+		sessionConfig.setVersion("1.0.0");
 		List<ItemConfig> lstItemConfig = new ArrayList<ItemConfig>();
 		for (TriJPanel tp : lstTriPanel) {
 			String audioPrompt = tp.getPrompt();
@@ -204,12 +232,12 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		sessionConfig.setName(tfName.getText());
 		sessionConfig.setItemBase(tfItemBase.getText());
 		sessionConfig.setTimeDelayAudioSD(atoi(tfTimeDelayAudioSD.getText()));
-		sessionConfig.setTimeDelayAudioPrompt(atoi(tfTimeDelayAudioPrompt.getText()));
-		sessionConfig.setTimeDelayAutoAdvance(atoi(tfTimeDelayAutoAdvance.getText()));
+		sessionConfig.setTimeDelayAudioPrompt(atoi(tfTimeDelayAudioPrompt
+				.getText()));
+		sessionConfig.setTimeDelayAutoAdvance(atoi(tfTimeDelayAutoAdvance
+				.getText()));
 		sessionConfig.setTimeDelayInterTrial(atoi(tfTimeDelayInterTrial
 				.getText()));
-		
-
 	}
 
 	private int atoi(String text) {
@@ -224,11 +252,13 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 
 	void writeSessionConfig() throws JsonGenerationException,
 			JsonMappingException, FileNotFoundException, IOException {
-		
+
 		ConfigParser parser = new ConfigParser(new LegacyConfigParser(
 				new String[0]));
-		parser.Serialize(new FileOutputStream(new File("xxx.txt")),
-		sessionConfig);
+		sessionConfigFile = saveAsAction.getFile();
+		parser.Serialize(new FileOutputStream(sessionConfigFile),
+				sessionConfig);
+		log.info(String.format("Done saving to file '%s'", sessionConfigFile));
 	}
 
 	private BufferedImage readImageDataFromClasspath(String fileName)
@@ -240,6 +270,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 				.getResourceAsStream(fileName);
 		return ImageIO.read(in);
 	}
+
 	private void weaveDragAndDrop(JPanel imageFilePanel,
 			JPanel tripleStimulusPanel) {
 		tripleStimulusPanel.setLayout(new GridLayout(0, 1));
@@ -299,9 +330,11 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		// smallIi.setDescription(fn);
 		return smallIi;
 	}
-	// Process only files under dir
-	// Started with
-	// from http://www.exampledepot.com/egs/java.io/TraverseTree.html
+
+	/**
+	 * Process only files under dir Started with from
+	 * http://www.exampledepot.com/egs/java.io/TraverseTree.html
+	 */
 	public void visitAllFiles(File dir) {
 		if (dir.isDirectory()) {
 			String[] children = dir.list();
@@ -319,8 +352,6 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 			}
 		}
 	}
-
-
 
 	/**
 	 * Resizes an image using a Graphics2D object backed by a BufferedImage.
@@ -384,5 +415,41 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 
 		mainPanel.revalidate();
 		this.pack();
+	}
+
+	public void openSessionConfig() {
+		// TODO: Get application to remember the last place we opened this...
+		String sessionDir = (String) Gui.preferences.get(Gui.SESSION_DIRECTORY);
+
+		sessionDir = null == sessionDir ? System.getProperty("user.home")
+				: sessionDir;
+		try {
+			JFileChooser chooser = new JFileChooser(new File(sessionDir));
+			int returnVal = chooser.showOpenDialog(this);
+			if (returnVal == JFileChooser.APPROVE_OPTION) {
+				sessionConfigFile = chooser.getSelectedFile();
+
+				Properties props = Gui
+						.readPropertiesFromClassPath(MainGui.propFile);
+				String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
+				LegacyConfigParser legacy = new LegacyConfigParser(sndExts);
+				ConfigParser parser = new ConfigParser(legacy);
+				parser.registerVersionParser(new ConfigParser100());
+				sessionConfig = parser.parse(sessionConfigFile);
+				Gui.preferences.put(Gui.SESSION_CONFIG_FILENAME,
+						sessionConfigFile.getAbsolutePath());
+			}
+		} catch (Exception bland) {
+			sessionConfigFile = null;
+			log.warn(String.format("Problem opening session file! "), bland);
+		}
+	}
+
+
+
+	public void showDebugFrame() {
+		loggingFrame.setVisible(bDebuggingFrameVisible);
+		bDebuggingFrameVisible = !bDebuggingFrameVisible;
+
 	}
 }

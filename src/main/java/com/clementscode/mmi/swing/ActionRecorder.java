@@ -38,8 +38,7 @@ public class ActionRecorder extends AbstractAction {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		System.out
-				.println("Action for ActionRecorder " + this.text + " : " + e);
+		log.info("Action for ActionRecorder " + this.text + " : " + e);
 
 		mediator.execute(action);
 
