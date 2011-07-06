@@ -33,30 +33,6 @@ public class MainGui {
 	}
 
 	public void run() throws Exception {
-		// Properties props = new Properties();
-		// //
-		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
-		// // Do it this way and no relative path huha is needed.
-		// InputStream in = this.getClass().getClassLoader()
-		// .getResourceAsStream(MainGui.propFile);
-		// props.load(new InputStreamReader(in));
-		// String[] sndExts = props.getProperty(sndKey).split(",");
-		//
-		// ObjectMapper mapper = new ObjectMapper();
-		// AnnotationIntrospector introspector = new
-		// JaxbAnnotationIntrospector();
-		// mapper.getDeserializationConfig().withAnnotationIntrospector(
-		// introspector);
-		// mapper.getSerializationConfig()
-		// .withAnnotationIntrospector(introspector);
-		// SessionConfig config = mapper.readValue(new FileInputStream(new File(
-		// confFile)), SessionConfig.class);
-		// Session session = new Session(config, sndExts);
-		// new Gui().run(session);
-		//
-
-		// new Gui().openSession(); // Ask for a Session file right away...
-		new Gui(); // Don't ask for anything right away....
-		// new Gui().openHttpSession(); // Ask for a URL right away....
+		new Gui();
 	}
 }
