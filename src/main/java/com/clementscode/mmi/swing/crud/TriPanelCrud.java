@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -63,15 +64,16 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	// private ArrayList<JPanel> lstTriPanels;
 	// private ArrayList<DragableJLabelWithImage> lstImageSources;
 	private SessionConfig sessionConfig = null;
+	public static boolean bAutoMode = true;
 	private ActionRecorder openAction;
 	private MediatorListener crudMediator;
 	private ActionRecorder saveAction;
 	private SaveFileAction saveAsAction;
 	private ActionRecorder debugAction;
 	private ActionRecorder quitAction;
-	private List<String> lstSoundFileNames;
+	private static List<String> lstSoundFileNames;
 	private List<TriJPanel> lstTriPanel;
-	private Map<Integer, String> mapPictureNumberToPictureFileName = null;
+	public static Map<Integer, String> mapPictureNumberToPictureFileName = null;
 	private JTextField tfName;
 	private JTextField tfItemBase;
 	private JTextField tfTimeDelayAudioSD;
@@ -136,6 +138,24 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 				Gui.savePreferences();
 			}
 		});
+	}
+
+	public static String findSoundFile(String subString) {
+		String result = null;
+		for (String fn : lstSoundFileNames) {
+
+			String s1 = fn;
+			String s2 = subString;
+
+			s1 = s1.toLowerCase(Locale.US);
+			s2 = s2.toLowerCase(Locale.US);
+
+			if (s1.indexOf(s2) > 0) {
+				result = fn;
+				break;
+			}
+		}
+		return result;
 	}
 
 	// TODO: Better name for this panel.

@@ -75,12 +75,9 @@ public class MattsTransferHandler extends TransferHandler {
 		// Try some invoke later stuff here...
 		Runnable doWorkRunnable = new Runnable() {
 			public void run() {
-
 				triPanelDestination.setBorder(row);
-
 				triPanelDestination.invalidate();
 				triPanelDestination.revalidate();
-
 			}
 		};
 		SwingUtilities.invokeLater(doWorkRunnable);

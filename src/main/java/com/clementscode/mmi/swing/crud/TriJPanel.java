@@ -1,15 +1,20 @@
 package com.clementscode.mmi.swing.crud;
 
+import java.io.File;
+
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
+
+import org.apache.log4j.Logger;
 
 import com.clementscode.mmi.swing.LabelAndField;
 
 public class TriJPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	private Logger log = Logger.getLogger(this.getClass().getName());
 	private DragableJLabelWithImage lblDestination;
 	private JTextField tfPrompt;
 	private JTextField tfAnswer;
@@ -45,6 +50,22 @@ public class TriJPanel extends JPanel {
 		String strBorder = "row=" + row;
 		TitledBorder border = BorderFactory.createTitledBorder(strBorder);
 		this.setBorder(border);
+		if (TriPanelCrud.bAutoMode) {
+			String whatFn = TriPanelCrud.findSoundFile("What is");
+			tfPrompt.setText(whatFn);
+			log.info("Just set tfPrompt: " + whatFn);
+
+			String pictureFileName = TriPanelCrud.mapPictureNumberToPictureFileName
+					.get(row);
+			File pFile = new File(pictureFileName);
+			String n = pFile.getName();
+			int endIndex = n.length() - "X.jpg".length();
+			n = n.substring(0, endIndex);
+			whatFn = TriPanelCrud.findSoundFile(n);
+			tfAnswer.setText(whatFn);
+
+			log.info("Just set tfAnswer: " + whatFn);
+		}
 	}
 
 	public int getPictureNumber() {
