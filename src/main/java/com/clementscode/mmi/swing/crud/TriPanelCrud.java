@@ -117,7 +117,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		mainPanel = new JPanel();
 		getContentPane().add(mainPanel);
 		mainPanel.setLayout(new BorderLayout());
-		mainPanel.add(staticCrap(), BorderLayout.NORTH);
+		mainPanel.add(miscAttributes(), BorderLayout.NORTH);
 
 		mainPanel.add(new JScrollPane(soundFilePanel()), BorderLayout.WEST);
 
@@ -160,10 +160,11 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	}
 
 	// TODO: Better name for this panel.
-	private JPanel staticCrap() {
+	private JPanel miscAttributes() {
 		JPanel panel = new JPanel();
 		tfName = new JTextField("No Name Session");
-		tfItemBase = new JTextField("/resources");
+		tfItemBase = new JTextField(""); // The way things work, we don't need
+											// this.
 		tfTimeDelayAudioSD = new JTextField("30");
 		tfTimeDelayAudioPrompt = new JTextField("30");
 		tfTimeDelayAutoAdvance = new JTextField("30");
@@ -242,8 +243,8 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 			if (-1 != row) {
 				// skip ones that are -1
 				String visualSD = mapPictureNumberToPictureFileName.get(row);
-				ItemConfig itemConfig = new ItemConfig(visualSD, audioSD,
-						audioPrompt);
+				ItemConfig itemConfig = new ItemConfig(visualSD, audioPrompt,
+						audioSD);
 				lstItemConfig.add(itemConfig);
 			}
 		}
