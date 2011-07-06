@@ -62,6 +62,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	public static final String ADVT_URL = "http://clementscode.com/avdt";
 	public static final Object OUTPUT_CSV_FILE_LOCATION = "OUTPUT_CSV_FILE_LOCATION";
 	public static final Object SESSION_CONFIG_FILENAME = "SESSION_CONFIG_FILENAME";
+	public static final Object RESOURCES_DIRECTORY = "RESOURCES_DIRECTORY";
 	// private ImageIcon imgIconCenter;
 	private JButton centerButton;
 	private Queue<CategoryItem> itemQueue = null;

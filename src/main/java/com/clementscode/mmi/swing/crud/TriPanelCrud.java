@@ -109,7 +109,8 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		loggingFrame = new LoggingFrame();
 		loggingFrame.setVisible(bDebuggingFrameVisible);
 		// TODO: Fix this problem of hard coding to Matt's MacBook
-		String dirName = "/Users/mgpayne/resources/";
+		String dirName = (String) Gui.preferences.get(Gui.RESOURCES_DIRECTORY);
+
 		visitAllFiles(new File(dirName));
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
