@@ -23,6 +23,7 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -61,6 +62,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 	private LoggingFrame loggingFrame;
 	private JPanel mainPanel;
 	private Vector<ImageIcon> vector;
+	private Map<String, Integer> fileNameToRowMap;
 	// private ArrayList<JPanel> lstTriPanels;
 	// private ArrayList<DragableJLabelWithImage> lstImageSources;
 	private SessionConfig sessionConfig = null;
@@ -107,6 +109,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		lstSoundFileNames = new ArrayList<String>();
 		crudMediator = new CrudMediator(this);
 		vector = new Vector<ImageIcon>();
+		fileNameToRowMap = new TreeMap<String, Integer>();
 		loggingFrame = new LoggingFrame();
 		loggingFrame.setVisible(bDebuggingFrameVisible);
 		// TODO: Fix this problem of hard coding to Matt's MacBook
@@ -311,7 +314,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 					ii.getDescription()));
 			imageFilePanel.add(lblSource);
 
-			TriJPanel triPanel = new TriJPanel();
+			TriJPanel triPanel = new TriJPanel(this);
 			triPanel.setName("PanelRow=" + row);
 			TitledBorder title = BorderFactory.createTitledBorder("title");
 			triPanel.setBorder(title);
@@ -371,6 +374,7 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 			if (fn.indexOf("jpg") > 0) {
 				ImageIcon smallIi = smallImageIcon(fn, 128, 128);
 				vector.add(smallIi);
+				fileNameToRowMap.put(fn, vector.size());
 				smallIi.setDescription(fn);
 			} else if (fn.indexOf("wav") > 0) {
 				lstSoundFileNames.add(fn);
@@ -492,5 +496,13 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		loggingFrame.setVisible(bDebuggingFrameVisible);
 		bDebuggingFrameVisible = !bDebuggingFrameVisible;
 
+	}
+
+	public int findRowForPicture(String fn) {
+		return fileNameToRowMap.get(fn);
+	}
+
+	public Icon getIconNumber(int rn) {
+		return vector.get(rn);
 	}
 }

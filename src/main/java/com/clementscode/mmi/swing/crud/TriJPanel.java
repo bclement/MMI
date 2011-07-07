@@ -20,6 +20,11 @@ public class TriJPanel extends JPanel {
 	private JTextField tfPrompt;
 	private JTextField tfAnswer;
 	private int row = -1;
+	private TriPanelCrud triPanelCrud;
+
+	public TriJPanel(TriPanelCrud triPanelCrud) {
+		this.triPanelCrud = triPanelCrud;
+	}
 
 	public void setImage(DragableJLabelWithImage lblDestination) {
 		this.lblDestination = lblDestination;
@@ -75,9 +80,11 @@ public class TriJPanel extends JPanel {
 	}
 
 	public void setItemConfig(ItemConfig itemConfig) {
-		tfAnswer.setText(itemConfig.getAudioSD());
-		tfPrompt.setText(itemConfig.getAudioPrompt());
-		// TODO: Find picture number....
+		int rn = triPanelCrud.findRowForPicture(itemConfig.getVisualSD());
+		setBorder(rn);
+		lblDestination.setIcon(triPanelCrud.getIconNumber(rn));
+		tfPrompt.setText(itemConfig.getAudioSD());
+		tfAnswer.setText(itemConfig.getAudioPrompt());
 	}
 
 }
