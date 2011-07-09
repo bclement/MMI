@@ -4,7 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridLayout;
+import java.awt.HeadlessException;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Transparency;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -117,6 +125,8 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	private ConfigParser parser = null;
 	private ActionRecorder wrongAnswerAction;
 	private ActionRecorder timerTimeDelayAutoAdvance;
+	private int maxHeight;
+	private int maxWidth;
 
 	public Gui() {
 		loggingFrame = new LoggingFrame();
@@ -358,6 +368,8 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 			}
 		}
 
+		maxHeight = iiSmilingFace.getIconHeight();
+		maxWidth = iiSmilingFace.getIconWidth();
 		centerButton = new JButton(iiSmilingFace);
 		centerButton.addActionListener(this);
 		panel.add(centerButton, BorderLayout.CENTER);
@@ -586,9 +598,6 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 
 	}
 
-	public void run(Session session) {
-
-	}
 
 
 
@@ -616,9 +625,107 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	 */
 	public void switchItem(CategoryItem item) {
 		currentItem = item;
-		ImageIcon ii = new ImageIcon(item.getImg());
+		ImageIcon ii = new ImageIcon(imageOfMaxSize(item.getImg()));
 		switchImage(ii);
 		setupTimer();
+	}
+
+	private BufferedImage imageOfMaxSize(BufferedImage img) {
+		BufferedImage bi = img;
+		int w = img.getWidth();
+		int h = img.getHeight();
+		if ((w > maxWidth) || (h > maxHeight)) {
+			log.info(String.format("Resizing! since (%d,%d) > (%d,%d)", w, h,
+					maxWidth, maxHeight));
+			bi = toBufferedImage(getScaledImage(img, maxWidth, maxHeight));
+			w = bi.getWidth();
+			h = bi.getHeight();
+			log.info(String.format("Now bi size is (%d,%d)", w, h));
+		}
+
+		return bi;
+	}
+
+	/**
+	 * Resizes an image using a Graphics2D object backed by a BufferedImage.
+	 * 
+	 * @param srcImg
+	 *            - source image to scale
+	 * @param w
+	 *            - desired width
+	 * @param h
+	 *            - desired height
+	 * @return - the new resized image
+	 */
+	private Image getScaledImage(Image srcImg, int w, int h) {
+		// from:
+		// http://download.oracle.com/javase/tutorial/uiswing/examples/components/IconDemoProject/src/components/IconDemoApp.java
+
+		BufferedImage resizedImg = new BufferedImage(w, h,
+				BufferedImage.TYPE_INT_RGB);
+		Graphics2D g2 = resizedImg.createGraphics();
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g2.drawImage(srcImg, 0, 0, w, h, null);
+		g2.dispose();
+		return resizedImg;
+	}
+
+	/**
+	 * This method returns a buffered image with the contents of an image from
+	 * http://www.exampledepot.com/egs/java.awt.image/image2buf.html
+	 */
+	public static BufferedImage toBufferedImage(Image image) {
+		if (image instanceof BufferedImage) {
+			return (BufferedImage) image;
+		}
+
+		// This code ensures that all the pixels in the image are loaded
+		image = new ImageIcon(image).getImage();
+
+		// Determine if the image has transparent pixels; for this method's
+		// implementation, see Determining If an Image Has Transparent Pixels
+		boolean hasAlpha = false; // hasAlpha(image);
+
+		// Create a buffered image with a format that's compatible with the
+		// screen
+		BufferedImage bimage = null;
+		GraphicsEnvironment ge = GraphicsEnvironment
+				.getLocalGraphicsEnvironment();
+		try {
+			// Determine the type of transparency of the new buffered image
+			int transparency = Transparency.OPAQUE;
+			if (hasAlpha) {
+				transparency = Transparency.BITMASK;
+			}
+
+			// Create the buffered image
+			GraphicsDevice gs = ge.getDefaultScreenDevice();
+			GraphicsConfiguration gc = gs.getDefaultConfiguration();
+			bimage = gc.createCompatibleImage(image.getWidth(null),
+					image.getHeight(null), transparency);
+		} catch (HeadlessException e) {
+			// The system does not have a screen
+		}
+
+		if (bimage == null) {
+			// Create a buffered image using the default color model
+			int type = BufferedImage.TYPE_INT_RGB;
+			if (hasAlpha) {
+				type = BufferedImage.TYPE_INT_ARGB;
+			}
+			bimage = new BufferedImage(image.getWidth(null),
+					image.getHeight(null), type);
+		}
+
+		// Copy image to buffered image
+		Graphics g = bimage.createGraphics();
+
+		// Paint the image onto the buffered image
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+
+		return bimage;
 	}
 
 	private void setFrameTitle() {
