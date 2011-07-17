@@ -870,8 +870,11 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	private void readSessionFile(File file, String newItemBase)
 			throws Exception {
 		if (this.parser == null) {
-			// SHOULDN'T ALL OF THIS BE HAPPENING DURING STARTUP? No, the open
-			// menu allows reading new sessions.
+			// BC: SHOULDN'T ALL OF THIS BE HAPPENING DURING STARTUP?
+			// MP: No, the open menu allows reading new sessions.
+			// BC: but this never happens again after the first session is
+			// loaded because of the if statement. Having it here leaves the
+			// parser as null until the last minute
 			Properties props = readPropertiesFromClassPath(MainGui.propFile);
 			String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
 			LegacyConfigParser legacy = new LegacyConfigParser(sndExts);
