@@ -64,6 +64,10 @@ public class Mediator implements MediatorListener {
 	private boolean justWaited = false;
 	private boolean bAttending = false;
 
+	private int errorCount = 0;
+
+	private boolean nextOnError = false;
+
 	public Mediator(Gui gui) {
 		this.gui = gui;
 
@@ -89,41 +93,45 @@ public class Mediator implements MediatorListener {
 			break;
 		case INDEPENDENT:
 			if (!waiting) {
-				collector.addResponse(item, bAttending,
-						RespType.INDEPENDENT);
+				collector.addResponse(item, bAttending, RespType.INDEPENDENT,
+						errorCount);
 				hit = true;
 				bAttending = false;
 			}
 			break;
 		case VERBAL:
 			if (!waiting) {
-				collector.addResponse(item, bAttending,
-						RespType.VERBAL);
+				collector.addResponse(item, bAttending, RespType.VERBAL,
+						errorCount);
 				hit = true;
 				bAttending = false;
 			}
 			break;
 		case MODELING:
 			if (!waiting) {
-				collector.addResponse(item, bAttending,
-						RespType.MODEL);
+				collector.addResponse(item, bAttending, RespType.MODEL,
+						errorCount);
 				hit = true;
 				bAttending = false;
 			}
 			break;
 		case NO_ANSWER:
 			if (!waiting) {
-				collector.addResponse(item, bAttending,
-						RespType.NONE);
+				collector.addResponse(item, bAttending, RespType.NONE,
+						errorCount);
 				hit = true;
 				bAttending = false;
 			}
 			break;
 		case WRONG_ANSWER:
 			if (!waiting) {
-				collector.addResponse(item, bAttending, RespType.ERROR);
-				hit = true;
-				bAttending = false;
+				++errorCount;
+				if (nextOnError) {
+					collector.addResponse(item, bAttending,
+							RespType.NO_RESPONSE, errorCount);
+					hit = true;
+					bAttending = false;
+				}
 			}
 			break;
 		case TOGGLE_BUTTONS:
@@ -153,7 +161,8 @@ public class Mediator implements MediatorListener {
 			 * advancement to the next item should only happen on response
 			 * entry.
 			 */
-			collector.addResponse(item, bAttending, RespType.NO_RESPONSE);
+			collector.addResponse(item, bAttending, RespType.NO_RESPONSE,
+					errorCount);
 			hit = true;
 			log.info("Saw CHANGE_DELAY_TIMER");
 			break;
@@ -167,6 +176,7 @@ public class Mediator implements MediatorListener {
 
 		}
 		if (hit) {
+			errorCount = 0;
 			gui.stopTimer(); // hope this is a fix to issue #4
 			stopSound();
 			playPrompt = true;
@@ -254,7 +264,8 @@ public class Mediator implements MediatorListener {
 				if (timeDelayAutoAdvance > 0) {
 					gui.startTimerTimeDelayAutoAdvance(timeDelayAutoAdvance);
 				} else {
-					log.error("Arrgh!  This is auful!  audioPromptLen is larger than timeDelayAutoAdvance.");
+					log
+							.error("Arrgh!  This is auful!  audioPromptLen is larger than timeDelayAutoAdvance.");
 				}
 			}
 		}

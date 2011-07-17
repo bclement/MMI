@@ -275,15 +275,14 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 
 		JPanel southPanel = new JPanel();
 
-
 		lstButtons = new ArrayList<JComponent>();
 
+		addButton(southPanel, wrongAnswerAction);
 		addButton(southPanel, attendingAction);
 		addButton(southPanel, independentAction);
 		addButton(southPanel, verbalAction);
 		addButton(southPanel, modelingAction);
 		addButton(southPanel, noAnswerAction);
-		addButton(southPanel, wrongAnswerAction);
 
 		JPanel belowSouthPanel = new JPanel();
 		belowSouthPanel.setLayout(new GridLayout(0, 1));
@@ -498,12 +497,12 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 			hotKeysProperties = readPropertiesFromClassPath(fileName);
 		} catch (Exception e) {
 			hotKeysProperties = new Properties();
-			hotKeysProperties.put("Hotkey.Gui.Attending","A");
-					hotKeysProperties.put("Hotkey.Gui.Independent","1");
-							hotKeysProperties.put("Hotkey.Gui.Verbal","2");
-									hotKeysProperties.put("Hotkey.Gui.Modeling","3");
-											hotKeysProperties.put("Hotkey.Gui.NoAnswer","4");
-													hotKeysProperties.put("Hotkey.Gui.WrongAnswer","5");
+			hotKeysProperties.put("Hotkey.Gui.Attending", "A");
+			hotKeysProperties.put("Hotkey.Gui.Independent", "1");
+			hotKeysProperties.put("Hotkey.Gui.Verbal", "2");
+			hotKeysProperties.put("Hotkey.Gui.Modeling", "3");
+			hotKeysProperties.put("Hotkey.Gui.NoAnswer", "4");
+			hotKeysProperties.put("Hotkey.Gui.WrongAnswer", "5");
 			log.warn(String.format(
 					"Problem reading %s.  Defaulting hotkeysPropteries=%s",
 					fileName, hotKeysProperties), e);
@@ -575,8 +574,8 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 				KeyStroke.getKeyStroke("control F2"), Action.BETWEEN_TIMER,
 				mediator);
 
-		timerTimeDelayAutoAdvance = new ActionRecorder(
-				Messages.getString("Gui.TimeDelayAutoAdvance"), null, //$NON-NLS-1$
+		timerTimeDelayAutoAdvance = new ActionRecorder(Messages
+				.getString("Gui.TimeDelayAutoAdvance"), null, //$NON-NLS-1$
 				"xxxxxxxxxxxxxx", new Integer(KeyEvent.VK_L), //$NON-NLS-1$
 				KeyStroke.getKeyStroke("control F2"),
 				Action.CHANGE_DELAY_TIMER, mediator);
@@ -586,20 +585,14 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 				new Integer(KeyEvent.VK_L),
 				KeyStroke.getKeyStroke("control O"), Action.OPEN, mediator);
 
-
-
 		showLoggingFrameAction = new ActionRecorder(
 				Messages.getString("Gui.Open.ShowLoggingFrame"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ShowLoggingFrameDescription"), //$NON-NLS-1$
 				new Integer(KeyEvent.VK_L),
-				KeyStroke.getKeyStroke("control D"),
- Action.SHOW_LOGGING_FRAME,
+				KeyStroke.getKeyStroke("control D"), Action.SHOW_LOGGING_FRAME,
 				mediator);
 
 	}
-
-
-
 
 	public Queue<CategoryItem> getItemQueue() {
 		return itemQueue;
@@ -702,8 +695,8 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 			// Create the buffered image
 			GraphicsDevice gs = ge.getDefaultScreenDevice();
 			GraphicsConfiguration gc = gs.getDefaultConfiguration();
-			bimage = gc.createCompatibleImage(image.getWidth(null),
-					image.getHeight(null), transparency);
+			bimage = gc.createCompatibleImage(image.getWidth(null), image
+					.getHeight(null), transparency);
 		} catch (HeadlessException e) {
 			// The system does not have a screen
 		}
@@ -714,8 +707,8 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 			if (hasAlpha) {
 				type = BufferedImage.TYPE_INT_ARGB;
 			}
-			bimage = new BufferedImage(image.getWidth(null),
-					image.getHeight(null), type);
+			bimage = new BufferedImage(image.getWidth(null), image
+					.getHeight(null), type);
 		}
 
 		// Copy image to buffered image
@@ -921,8 +914,8 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		Properties props = new Properties();
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
-		InputStream in = Gui.class.getClassLoader()
-				.getResourceAsStream(fileName);
+		InputStream in = Gui.class.getClassLoader().getResourceAsStream(
+				fileName);
 		props.load(new InputStreamReader(in));
 		return props;
 	}
@@ -932,10 +925,6 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		mainPanel.revalidate();
 		frame.pack();
 	}
-
-
-
-
 
 	private void displayClickToBegin() {
 		centerButton.setEnabled(true);
@@ -947,8 +936,6 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		clickToStartButton.setForeground(Color.red);
 		refreshGui();
 	}
-
-
 
 	public void actionPerformed(ActionEvent e) {
 		if ((clickToStartButton == e.getSource())
@@ -991,6 +978,5 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		loggingFrame.setVisible(true);
 
 	}
-
 
 }

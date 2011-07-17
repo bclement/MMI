@@ -18,7 +18,7 @@ import com.clementscode.mmi.res.CategoryItem;
 public class SessionDataCollector {
 
 	public enum RespType {
-		INDEPENDENT, VERBAL, MODEL, NONE, ERROR, NO_RESPONSE
+		INDEPENDENT, VERBAL, MODEL, NONE, NO_RESPONSE
 	};
 
 	protected static class Counts {
@@ -26,18 +26,22 @@ public class SessionDataCollector {
 				RespType.class);
 		int attendings = 0;
 		int totalCount = 0;
+		int totalErrors = 0;
 	}
 
 	public static class Response {
 		CategoryItem item;
 		boolean attending;
+		int errors;
 		RespType type;
 
-		public Response(CategoryItem item, boolean attending, RespType type) {
+		public Response(CategoryItem item, boolean attending, RespType type,
+				int errors) {
 			super();
 			this.item = item;
 			this.attending = attending;
 			this.type = type;
+			this.errors = errors;
 		}
 
 	}
@@ -63,7 +67,7 @@ public class SessionDataCollector {
 	}
 
 	public void addResponse(CategoryItem item, boolean attending,
-			RespType response) {
+			RespType response, int errors) {
 
 		Counts itemCounts = perItemMap.get(item.toString());
 		if (itemCounts == null) {
@@ -77,7 +81,9 @@ public class SessionDataCollector {
 			++itemCounts.attendings;
 		}
 		++itemCounts.totalCount;
-		responses.add(new Response(item, attending, response));
+		itemCounts.totalErrors += errors;
+		overallCounts.totalErrors += errors;
+		responses.add(new Response(item, attending, response, errors));
 	}
 
 	/**
@@ -108,6 +114,7 @@ public class SessionDataCollector {
 			rval.addStat(r, getPercent(i, total));
 		}
 		rval.setPercentAttending(getPercent(counts.attendings, total));
+		rval.setErrors(counts.totalErrors);
 		return rval;
 	}
 

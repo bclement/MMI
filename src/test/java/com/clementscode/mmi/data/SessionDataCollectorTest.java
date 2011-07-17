@@ -46,10 +46,10 @@ public class SessionDataCollectorTest {
 	@Test
 	public void percentTest() {
 		SessionDataCollector collector = new SessionDataCollector(session, desc);
-		collector.addResponse(item1, true, RespType.INDEPENDENT);
-		collector.addResponse(item1, false, RespType.MODEL);
-		collector.addResponse(item2, true, RespType.VERBAL);
-		collector.addResponse(item2, false, RespType.NONE);
+		collector.addResponse(item1, true, RespType.INDEPENDENT, 0);
+		collector.addResponse(item1, false, RespType.MODEL, 0);
+		collector.addResponse(item2, true, RespType.VERBAL, 0);
+		collector.addResponse(item2, false, RespType.NONE, 0);
 		SessionData data = collector.getData();
 		assertNotNull(data);
 		Stats overall = data.getOverall();
