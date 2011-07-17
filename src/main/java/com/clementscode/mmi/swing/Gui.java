@@ -127,6 +127,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	private ActionRecorder timerTimeDelayAutoAdvance;
 	private int maxHeight;
 	private int maxWidth;
+	private ActionRecorder baselineModeAction;
 
 	public Gui() {
 		loggingFrame = new LoggingFrame();
@@ -226,6 +227,8 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		JMenu buttonMenu = new JMenu(Messages.getString("Gui.Buttons")); //$NON-NLS-1$
 		menuItem = new JMenuItem(attendingAction);
 		buttonMenu.add(menuItem);
+		menuItem = new JMenuItem(baselineModeAction);
+		buttonMenu.add(menuItem);
 		menuItem = new JMenuItem(independentAction);
 		buttonMenu.add(menuItem);
 		menuItem = new JMenuItem(verbalAction);
@@ -258,6 +261,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 
 		addButton(southPanel, wrongAnswerAction);
 		addButton(southPanel, attendingAction);
+		addButton(southPanel, baselineModeAction);
 		addButton(southPanel, independentAction);
 		addButton(southPanel, verbalAction);
 		addButton(southPanel, modelingAction);
@@ -471,11 +475,12 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		// for the properties file.
 
 		Properties hotKeysProperties = null;
-		String fileName = "hotkeys.ini";
+		String fileName = "hotkeys.properties";
 		try {
 			hotKeysProperties = readPropertiesFromClassPath(fileName);
 		} catch (Exception e) {
 			hotKeysProperties = new Properties();
+			hotKeysProperties.put("Hotkey.Gui.BaselineMode","B");
 			hotKeysProperties.put("Hotkey.Gui.Attending", "A");
 			hotKeysProperties.put("Hotkey.Gui.Independent", "1");
 			hotKeysProperties.put("Hotkey.Gui.Verbal", "2");
@@ -487,7 +492,18 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 					fileName, hotKeysProperties), e);
 		}
 
-		String hk = (String) hotKeysProperties.get("Hotkey.Gui.Attending");
+
+		String hk = (String) hotKeysProperties.get("Hotkey.Gui.BaselineMode");
+		
+		baselineModeAction= new ActionRecorder(Messages
+				.getString("Gui.BaselineMode"), null, //$NON-NLS-1$
+				Messages.getString("Gui.BaselineModeDescription"), new Integer( //$NON-NLS-1$
+						KeyEvent.VK_F1), KeyStroke.getKeyStroke(hk),
+				Action.BASELINE_MODE, mediator);
+
+		
+
+		hk = (String) hotKeysProperties.get("Hotkey.Gui.Attending");
 
 		attendingAction = new ActionRecorder(Messages
 				.getString("Gui.Attending"), null, //$NON-NLS-1$
@@ -535,7 +551,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		toggleButtonsAction = new ActionRecorder(
 				Messages.getString("Gui.ToggleButtons"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ToggleButtons.Description"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("B"), Action.TOGGLE_BUTTONS, mediator);
+				KeyStroke.getKeyStroke("T"), Action.TOGGLE_BUTTONS, mediator);
 
 		quitAction = new ActionRecorder(
 				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$

@@ -88,6 +88,15 @@ public class Mediator implements MediatorListener {
 	public void execute(Action action) {
 		boolean hit = false;
 		switch (action) {
+		case BASELINE_MODE:
+			/*
+			 * https://github.com/payne/MMI/issues/38 This option would make the
+			 * 'nextOnError' boolean in Moderator.java equal to true. This
+			 * should be a toggle so you can switch back to normal mode.
+			 */
+			nextOnError=true;
+			log.info("Per https://github.com/payne/MMI/issues/38 nextOnError is now true.");
+			break;
 		case ATTENDING:
 			bAttending = !bAttending;
 			break;
