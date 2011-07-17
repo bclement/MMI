@@ -77,7 +77,9 @@ public class Mediator implements MediatorListener {
 		// FIXME session.getSessionName is null here
 		collector = new SessionDataCollector(session.getConfigName(), session
 				.getSessionName());
-		item = gui.getItemQueue().remove();
+		// Commenting out this bug is the fix to https://github.com/payne/MMI/issues/35
+		// Since in hit & justWaited near line 236 there's a item = gui.getItemQueue().remove();
+		//	item = gui.getItemQueue().remove();
 	}
 
 	/*

@@ -446,15 +446,6 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	}
 
 	public void setupCenterButton() {
-		// // TODO: Call this when we get a new session file read in....
-		// CategoryItem first = itemQueue.remove();
-		// log.info(String.format("About to display image: %s from item=%d",
-		// first.getImgFile(), first.getItemNumber()));
-		// imgIconCenter = new ImageIcon(first.getImg());
-		//
-		// // centerButton = new JButton(imgIconCenter);
-		// centerButton.setIcon(imgIconCenter);
-
 		Dimension max = session.getMaxDimensions();
 		centerButton.setPreferredSize(max);
 		int width = (int) max.getWidth();
@@ -892,12 +883,14 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 				Shuffler.shuffle(copy);
 			}
 			itemQueue = new ConcurrentLinkedQueue<CategoryItem>();
+			totalItemCount=0;
 			for (CategoryItem item : copy) {
 				// TODO: Is there a collections add all I could use here?
 				itemQueue.add(item);
+				totalItemCount++;
 			}
-			itemQueue.add(copy[copy.length - 1]); // DISGUSTING!
-			totalItemCount = itemQueue.size() - 1; // DISGUSTING!
+//			itemQueue.add(copy[copy.length - 1]); // DISGUSTING!
+//			totalItemCount = itemQueue.size() - 1; // DISGUSTING!
 			mediator.setSession(session);
 			setupCenterButton();
 			setFrameTitle();
