@@ -158,27 +158,6 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		});
 	}
 
-	// private void jnlpSetup() {
-	// try {
-	// String[] sn = javax.jnlp.ServiceManager.getServiceNames();
-	// for (String string : sn) {
-	// logger.info("A service name is: " + string);
-	// }
-	//
-	// Object obj = javax.jnlp.ServiceManager
-	// .lookup("javax.jnlp.BasicService");
-	// BasicService bs = (BasicService) obj;
-	// codeBaseUrl = bs.getCodeBase();
-	// } catch (UnavailableServiceException e) {
-	// logger.error("Could not look up BasicService.", e);
-	// e.printStackTrace();
-	// } catch (Exception bland) {
-	// logger
-	// .error("Some odd JNLP related problem: bland=" + bland,
-	// bland);
-	// }
-	// }
-
 	private void disableButtons() {
 		for (JComponent jc : lstButtons) {
 			jc.setEnabled(false);
