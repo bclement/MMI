@@ -589,11 +589,11 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	}
 
 	/*
-	 * They use bmp images which don't display with the program right now. I
+	 * Brian says "They use bmp images which don't display with the program right now. I
 	 * looked at the code and noticed that you don't use the 'img' field of the
 	 * CategoryItem. You use the image file to get a path to the image and read
 	 * it in again using an icon. I suspect that it will work better if you use
-	 * the image that ImageIO already read into memory.
+	 * the image that ImageIO already read into memory."
 	 */
 	public void switchItem(CategoryItem item) {
 		currentItem = item;
@@ -629,10 +629,42 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	 *            - desired height
 	 * @return - the new resized image
 	 */
-	private Image getScaledImage(Image srcImg, int w, int h) {
+	private Image getScaledImage(BufferedImage srcImg, int w, int h) {
 		// from:
 		// http://download.oracle.com/javase/tutorial/uiswing/examples/components/IconDemoProject/src/components/IconDemoApp.java
+		// then tweaked it a bit...
+		
+		/******* HELP!!!  The logic below is not working.
+		 
+		 
+16:06:43 [EventQueue-0]  INFO      com.clementscode.mmi.swing.Mediator: About to switch image to /Users/mgpayne/resources/animals/shark/Shark1.jpg (#1)
+16:06:43 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Resizing! since (550,548) > (456,305)
+16:06:57 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Now bi size is (456,306)
 
+16:07:15 [EventQueue-0]  INFO      com.clementscode.mmi.swing.Mediator: About to switch image to /Users/mgpayne/resources/household/vacuum/vacuum-cleaner.jpg (#2)
+16:07:15 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Resizing! since (400,400) > (456,305)
+16:07:23 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Now bi size is (456,305)
+
+16:07:41 [EventQueue-0]  INFO      com.clementscode.mmi.swing.Mediator: About to switch image to /Users/mgpayne/resources/household/vacuum/vacuum-cleaner.jpg (#2)
+16:07:41 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Resizing! since (400,400) > (456,305)
+16:07:41 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Now bi size is (456,305)
+		  
+		  
+		 */
+		
+		int srcWidth = srcImg.getWidth();
+		int srcHeight = srcImg.getHeight();
+		int diffWidth = maxWidth-srcWidth;
+		int diffHeight = maxHeight-srcHeight;
+		if (diffWidth>diffHeight) {
+			w=maxWidth;
+			double hf = ((1.0*maxHeight)*((1.0*srcWidth)/(1.0*srcHeight)));
+			h=(int) Math.round(hf);
+		} else { 
+			double wf = ((1.0*maxWidth)*((1.0*srcHeight)/(1.0*srcWidth)));
+			w=(int) Math.round(wf);
+			h=maxHeight;
+		}
 		BufferedImage resizedImg = new BufferedImage(w, h,
 				BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2 = resizedImg.createGraphics();
