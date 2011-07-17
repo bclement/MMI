@@ -112,9 +112,14 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 		fileNameToRowMap = new TreeMap<String, Integer>();
 		loggingFrame = new LoggingFrame();
 		loggingFrame.setVisible(bDebuggingFrameVisible);
-		// TODO: Fix this problem of hard coding to Matt's MacBook
+		
 		String dirName = (String) Gui.preferences.get(Gui.RESOURCES_DIRECTORY);
-
+		if (null == dirName) {
+			dirName = askForLocationOfResourcesDirectory();
+		}
+		if (null == dirName) {
+			System.exit(2);
+		}
 		visitAllFiles(new File(dirName));
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -143,6 +148,28 @@ public class TriPanelCrud extends JFrame implements MediatorListenerCustomer {
 				Gui.savePreferences();
 			}
 		});
+	}
+
+	private String askForLocationOfResourcesDirectory() {
+		JFileChooser chooser = new JFileChooser();
+		String userHome = System.getProperty("user.home");
+
+		chooser.setCurrentDirectory(new java.io.File(userHome));
+		chooser.setDialogTitle("Please located the AVDT Resources Directory");
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		chooser.setAcceptAllFileFilterUsed(false);
+		int returnVal = chooser.showOpenDialog(this);
+		File dirFile = null;
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			dirFile = chooser.getSelectedFile();
+		}
+		String resourcesDirectory = null;
+		if (null != dirFile) {
+			resourcesDirectory = dirFile.getAbsolutePath();
+			Gui.preferences.put(Gui.RESOURCES_DIRECTORY, resourcesDirectory);
+			Gui.savePreferences();
+		}
+		return resourcesDirectory;
 	}
 
 	public static String findSoundFile(String subString) {

@@ -39,7 +39,7 @@ public class LoggingFrame extends JFrame {
 		// http://stackoverflow.com/questions/1464291/how-to-really-read-text-file-from-classpath-in-java
 		// Do it this way and no relative path huha is needed.
 		InputStream in = this.getClass().getClassLoader()
-				.getResourceAsStream("log4j.ini");
+				.getResourceAsStream("log4j.properties");
 		try {
 			logProperties.load(in);
 			PropertyConfigurator.configure(logProperties);

@@ -127,6 +127,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	private ActionRecorder timerTimeDelayAutoAdvance;
 	private int maxHeight;
 	private int maxWidth;
+	private ActionRecorder baselineModeAction;
 
 	public Gui() {
 		loggingFrame = new LoggingFrame();
@@ -157,27 +158,6 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 			}
 		});
 	}
-
-	// private void jnlpSetup() {
-	// try {
-	// String[] sn = javax.jnlp.ServiceManager.getServiceNames();
-	// for (String string : sn) {
-	// logger.info("A service name is: " + string);
-	// }
-	//
-	// Object obj = javax.jnlp.ServiceManager
-	// .lookup("javax.jnlp.BasicService");
-	// BasicService bs = (BasicService) obj;
-	// codeBaseUrl = bs.getCodeBase();
-	// } catch (UnavailableServiceException e) {
-	// logger.error("Could not look up BasicService.", e);
-	// e.printStackTrace();
-	// } catch (Exception bland) {
-	// logger
-	// .error("Some odd JNLP related problem: bland=" + bland,
-	// bland);
-	// }
-	// }
 
 	private void disableButtons() {
 		for (JComponent jc : lstButtons) {
@@ -247,6 +227,8 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		JMenu buttonMenu = new JMenu(Messages.getString("Gui.Buttons")); //$NON-NLS-1$
 		menuItem = new JMenuItem(attendingAction);
 		buttonMenu.add(menuItem);
+		menuItem = new JMenuItem(baselineModeAction);
+		buttonMenu.add(menuItem);
 		menuItem = new JMenuItem(independentAction);
 		buttonMenu.add(menuItem);
 		menuItem = new JMenuItem(verbalAction);
@@ -279,6 +261,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 
 		addButton(southPanel, wrongAnswerAction);
 		addButton(southPanel, attendingAction);
+		addButton(southPanel, baselineModeAction);
 		addButton(southPanel, independentAction);
 		addButton(southPanel, verbalAction);
 		addButton(southPanel, modelingAction);
@@ -492,11 +475,12 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		// for the properties file.
 
 		Properties hotKeysProperties = null;
-		String fileName = "hotkeys.ini";
+		String fileName = "hotkeys.properties";
 		try {
 			hotKeysProperties = readPropertiesFromClassPath(fileName);
 		} catch (Exception e) {
 			hotKeysProperties = new Properties();
+			hotKeysProperties.put("Hotkey.Gui.BaselineMode","B");
 			hotKeysProperties.put("Hotkey.Gui.Attending", "A");
 			hotKeysProperties.put("Hotkey.Gui.Independent", "1");
 			hotKeysProperties.put("Hotkey.Gui.Verbal", "2");
@@ -508,7 +492,18 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 					fileName, hotKeysProperties), e);
 		}
 
-		String hk = (String) hotKeysProperties.get("Hotkey.Gui.Attending");
+
+		String hk = (String) hotKeysProperties.get("Hotkey.Gui.BaselineMode");
+		
+		baselineModeAction= new ActionRecorder(Messages
+				.getString("Gui.BaselineMode"), null, //$NON-NLS-1$
+				Messages.getString("Gui.BaselineModeDescription"), new Integer( //$NON-NLS-1$
+						KeyEvent.VK_F1), KeyStroke.getKeyStroke(hk),
+				Action.BASELINE_MODE, mediator);
+
+		
+
+		hk = (String) hotKeysProperties.get("Hotkey.Gui.Attending");
 
 		attendingAction = new ActionRecorder(Messages
 				.getString("Gui.Attending"), null, //$NON-NLS-1$
@@ -556,7 +551,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		toggleButtonsAction = new ActionRecorder(
 				Messages.getString("Gui.ToggleButtons"), null, //$NON-NLS-1$
 				Messages.getString("Gui.ToggleButtons.Description"), new Integer(KeyEvent.VK_L), //$NON-NLS-1$
-				KeyStroke.getKeyStroke("B"), Action.TOGGLE_BUTTONS, mediator);
+				KeyStroke.getKeyStroke("T"), Action.TOGGLE_BUTTONS, mediator);
 
 		quitAction = new ActionRecorder(
 				Messages.getString("Gui.Quit"), null, //$NON-NLS-1$
@@ -610,11 +605,11 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	}
 
 	/*
-	 * They use bmp images which don't display with the program right now. I
+	 * Brian says "They use bmp images which don't display with the program right now. I
 	 * looked at the code and noticed that you don't use the 'img' field of the
 	 * CategoryItem. You use the image file to get a path to the image and read
 	 * it in again using an icon. I suspect that it will work better if you use
-	 * the image that ImageIO already read into memory.
+	 * the image that ImageIO already read into memory."
 	 */
 	public void switchItem(CategoryItem item) {
 		currentItem = item;
@@ -650,10 +645,42 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	 *            - desired height
 	 * @return - the new resized image
 	 */
-	private Image getScaledImage(Image srcImg, int w, int h) {
+	private Image getScaledImage(BufferedImage srcImg, int w, int h) {
 		// from:
 		// http://download.oracle.com/javase/tutorial/uiswing/examples/components/IconDemoProject/src/components/IconDemoApp.java
+		// then tweaked it a bit...
+		
+		/******* HELP!!!  The logic below is not working.
+		 
+		 
+16:06:43 [EventQueue-0]  INFO      com.clementscode.mmi.swing.Mediator: About to switch image to /Users/mgpayne/resources/animals/shark/Shark1.jpg (#1)
+16:06:43 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Resizing! since (550,548) > (456,305)
+16:06:57 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Now bi size is (456,306)
 
+16:07:15 [EventQueue-0]  INFO      com.clementscode.mmi.swing.Mediator: About to switch image to /Users/mgpayne/resources/household/vacuum/vacuum-cleaner.jpg (#2)
+16:07:15 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Resizing! since (400,400) > (456,305)
+16:07:23 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Now bi size is (456,305)
+
+16:07:41 [EventQueue-0]  INFO      com.clementscode.mmi.swing.Mediator: About to switch image to /Users/mgpayne/resources/household/vacuum/vacuum-cleaner.jpg (#2)
+16:07:41 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Resizing! since (400,400) > (456,305)
+16:07:41 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Now bi size is (456,305)
+		  
+		  
+		 */
+		
+		int srcWidth = srcImg.getWidth();
+		int srcHeight = srcImg.getHeight();
+		int diffWidth = maxWidth-srcWidth;
+		int diffHeight = maxHeight-srcHeight;
+		if (diffWidth>diffHeight) {
+			w=maxWidth;
+			double hf = ((1.0*maxHeight)*((1.0*srcWidth)/(1.0*srcHeight)));
+			h=(int) Math.round(hf);
+		} else { 
+			double wf = ((1.0*maxWidth)*((1.0*srcHeight)/(1.0*srcWidth)));
+			w=(int) Math.round(wf);
+			h=maxHeight;
+		}
 		BufferedImage resizedImg = new BufferedImage(w, h,
 				BufferedImage.TYPE_INT_RGB);
 		Graphics2D g2 = resizedImg.createGraphics();
