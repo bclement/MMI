@@ -44,8 +44,8 @@ public class SessionData {
 
 	public void writeSummaryHeader(CSVWriter writer) {
 		String[] header = { "Date", "Session", "Therapist", "Condition",
-				"targets", "% independent", "% verbal", "% model", "% error",
-				"% attend" };
+				"targets", "% independent", "% verbal", "% model",
+				"error count", "% attend" };
 		writer.writeNext(header);
 	}
 
@@ -61,7 +61,7 @@ public class SessionData {
 		String ind = Double.toString(overall.getStat(RespType.INDEPENDENT));
 		String verb = Double.toString(overall.getStat(RespType.VERBAL));
 		String model = Double.toString(overall.getStat(RespType.MODEL));
-		String error = Double.toString(overall.getStat(RespType.ERROR));
+		String error = Integer.toString(overall.getErrors());
 		String attend = Double.toString(overall.percentAttending);
 		String[] rval = { date, session, therapist, condition, targets, ind,
 				verb, model, error, attend };
@@ -99,8 +99,7 @@ public class SessionData {
 				Double.toString(s.getStat(RespType.VERBAL)) };
 		String[] model = { "% model",
 				Double.toString(s.getStat(RespType.MODEL)) };
-		String[] error = { "% error",
-				Double.toString(s.getStat(RespType.ERROR)) };
+		String[] error = { "error count", Double.toString(s.getErrors()) };
 		String[] attend = { "% attending",
 				Double.toString(s.getPercentAttending()) };
 		writer.writeNext(name);
@@ -119,8 +118,10 @@ public class SessionData {
 		String[] name = { "name", r.item.getImgFile().getAbsolutePath() };
 		String[] attend = { "attend", Boolean.toString(r.attending) };
 		String[] response = { "response", r.type.toString() };
+		String[] errors = { "error count", Integer.toString(r.errors) };
 		writer.writeNext(name);
 		writer.writeNext(attend);
+		writer.writeNext(errors);
 		writer.writeNext(response);
 	}
 

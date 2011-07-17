@@ -20,6 +20,8 @@ public class Stats {
 
 	protected double percentAttending;
 
+	protected int errors;
+
 	/**
 	 * 
 	 */
@@ -78,6 +80,21 @@ public class Stats {
 	 */
 	public void setPercentAttending(double percentAttending) {
 		this.percentAttending = percentAttending;
+	}
+
+	/**
+	 * @return the errors
+	 */
+	public int getErrors() {
+		return errors;
+	}
+
+	/**
+	 * @param errors
+	 *            the errors to set
+	 */
+	public void setErrors(int errors) {
+		this.errors = errors;
 	}
 
 }
