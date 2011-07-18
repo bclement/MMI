@@ -5,47 +5,54 @@
 	<artifactId>mmi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-	
+
 	<properties>
 	</properties>
-	
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.2.1</version>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<inherited>true</inherited>
 				<configuration>
-					<descriptorRefs>
-						<descriptorRef>jar-with-dependencies</descriptorRef>
-					</descriptorRefs>
-					<archive>
-						<manifest>
-							<mainClass>com.clementscode.mmi.MainGui</mainClass>
-						</manifest>
-					</archive>
+					<source>1.6</source>
+					<target>1.6</target>
 				</configuration>
 			</plugin>
 			<plugin>
-  	  	  	<groupId>org.apache.maven.plugins</groupId>
-  	  	  	<artifactId>maven-compiler-plugin</artifactId>
-  	  	  	<inherited>true</inherited>
-  	  	  	<configuration>
-  	  	  	  	<source>1.6</source>
-  	  	  	  	<target>1.6</target>
-  	  	  	</configuration>
-  	  	</plugin>
-			<!--
-				<plugin> <groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jarsigner-plugin</artifactId>
-				<version>1.2</version> <executions> <execution> <id>sign</id>
-				<goals> <goal>sign</goal> </goals> </execution> <execution>
-				<id>verify</id> <goals> <goal>verify</goal> </goals> </execution>
-				</executions> <configuration> <alias>Matt</alias>
-				<storepass>123456</storepass> <keypass>123456</keypass>
-				</configuration> </plugin>
-			-->
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>webstart-maven-plugin</artifactId>
+				<version>1.0-alpha-1</version>
+			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>webstart-maven-plugin</artifactId>
+					<!--
+						do not bind to install phase <executions> <execution> <goals>
+						<goal>report</goal> </goals> </execution> </executions>
+					-->
+					<configuration>
+						<jnlp>
+							<outputFile>avdt.jnlp</outputFile>
+							<mainClass>com.clementscode.mmi.MainGui</mainClass>
+						</jnlp>
+						<sign>
+							<keystore>${env.HOME}/.keys/avdt.jks</keystore>
+							<keypass>thecakeisalie</keypass>
+							<storepass>thecakeisalie</storepass>
+							<storetype>jks</storetype>
+							<alias>avdt</alias>
+							<verify>true</verify>
+						</sign>
+						<verbose>true</verbose>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<repositories>
@@ -62,11 +69,13 @@
 			<artifactId>jnlp-api</artifactId>
 			<version>1.5.0</version>
 		</dependency>
+		<!--  
 		<dependency>
 			<groupId>net.sf.squirrel-sql.thirdparty-non-maven</groupId>
 			<artifactId>napkinlaf</artifactId>
 			<version>1.2</version>
 		</dependency>
+		-->
 		<dependency>
 			<groupId>commons-logging</groupId>
 			<artifactId>commons-logging</artifactId>
