@@ -471,7 +471,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 			hotKeysProperties = readPropertiesFromClassPath(fileName);
 		} catch (Exception e) {
 			hotKeysProperties = new Properties();
-			hotKeysProperties.put("Hotkey.Gui.BaselineMode","B");
+			hotKeysProperties.put("Hotkey.Gui.BaselineMode", "B");
 			hotKeysProperties.put("Hotkey.Gui.Attending", "A");
 			hotKeysProperties.put("Hotkey.Gui.Independent", "1");
 			hotKeysProperties.put("Hotkey.Gui.Verbal", "2");
@@ -483,16 +483,13 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 					fileName, hotKeysProperties), e);
 		}
 
-
 		String hk = (String) hotKeysProperties.get("Hotkey.Gui.BaselineMode");
-		
-		baselineModeAction= new ActionRecorder(Messages
+
+		baselineModeAction = new ActionRecorder(Messages
 				.getString("Gui.BaselineMode"), null, //$NON-NLS-1$
 				Messages.getString("Gui.BaselineModeDescription"), new Integer( //$NON-NLS-1$
 						KeyEvent.VK_F1), KeyStroke.getKeyStroke(hk),
 				Action.BASELINE_MODE, mediator);
-
-		
 
 		hk = (String) hotKeysProperties.get("Hotkey.Gui.Attending");
 
@@ -596,11 +593,11 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	}
 
 	/*
-	 * Brian says "They use bmp images which don't display with the program right now. I
-	 * looked at the code and noticed that you don't use the 'img' field of the
-	 * CategoryItem. You use the image file to get a path to the image and read
-	 * it in again using an icon. I suspect that it will work better if you use
-	 * the image that ImageIO already read into memory."
+	 * Brian says "They use bmp images which don't display with the program
+	 * right now. I looked at the code and noticed that you don't use the 'img'
+	 * field of the CategoryItem. You use the image file to get a path to the
+	 * image and read it in again using an icon. I suspect that it will work
+	 * better if you use the image that ImageIO already read into memory."
 	 */
 	public void switchItem(CategoryItem item) {
 		currentItem = item;
@@ -628,6 +625,12 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	/**
 	 * Resizes an image using a Graphics2D object backed by a BufferedImage.
 	 * 
+	 * THIS ONLY WORKS FOR REDUCING SIZE. WILL EXPLODE AND CATCH FIRE IF
+	 * 
+	 * <pre>
+	 * h &lt; srcImg.getHeight() &amp;&amp; w &lt; srcImg.getWidth()
+	 * </pre>
+	 * 
 	 * @param srcImg
 	 *            - source image to scale
 	 * @param w
@@ -637,40 +640,16 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	 * @return - the new resized image
 	 */
 	private Image getScaledImage(BufferedImage srcImg, int w, int h) {
-		// from:
-		// http://download.oracle.com/javase/tutorial/uiswing/examples/components/IconDemoProject/src/components/IconDemoApp.java
-		// then tweaked it a bit...
-		
-		/******* HELP!!!  The logic below is not working.
-		 
-		 
-16:06:43 [EventQueue-0]  INFO      com.clementscode.mmi.swing.Mediator: About to switch image to /Users/mgpayne/resources/animals/shark/Shark1.jpg (#1)
-16:06:43 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Resizing! since (550,548) > (456,305)
-16:06:57 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Now bi size is (456,306)
-
-16:07:15 [EventQueue-0]  INFO      com.clementscode.mmi.swing.Mediator: About to switch image to /Users/mgpayne/resources/household/vacuum/vacuum-cleaner.jpg (#2)
-16:07:15 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Resizing! since (400,400) > (456,305)
-16:07:23 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Now bi size is (456,305)
-
-16:07:41 [EventQueue-0]  INFO      com.clementscode.mmi.swing.Mediator: About to switch image to /Users/mgpayne/resources/household/vacuum/vacuum-cleaner.jpg (#2)
-16:07:41 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Resizing! since (400,400) > (456,305)
-16:07:41 [EventQueue-0]  INFO           com.clementscode.mmi.swing.Gui: Now bi size is (456,305)
-		  
-		  
-		 */
-		
 		int srcWidth = srcImg.getWidth();
 		int srcHeight = srcImg.getHeight();
-		int diffWidth = maxWidth-srcWidth;
-		int diffHeight = maxHeight-srcHeight;
-		if (diffWidth>diffHeight) {
-			w=maxWidth;
-			double hf = ((1.0*maxHeight)*((1.0*srcWidth)/(1.0*srcHeight)));
-			h=(int) Math.round(hf);
-		} else { 
-			double wf = ((1.0*maxWidth)*((1.0*srcHeight)/(1.0*srcWidth)));
-			w=(int) Math.round(wf);
-			h=maxHeight;
+		int diffWidth = w - srcWidth;
+		int diffHeight = h - srcHeight;
+		if (diffWidth < diffHeight) {
+			double ratio = (double) w / (double) srcWidth;
+			h = (int) Math.round(srcHeight * ratio);
+		} else {
+			double ratio = (double) h / (double) srcHeight;
+			w = (int) Math.round(srcWidth * ratio);
 		}
 		BufferedImage resizedImg = new BufferedImage(w, h,
 				BufferedImage.TYPE_INT_RGB);
@@ -883,14 +862,14 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 				Shuffler.shuffle(copy);
 			}
 			itemQueue = new ConcurrentLinkedQueue<CategoryItem>();
-			totalItemCount=0;
+			totalItemCount = 0;
 			for (CategoryItem item : copy) {
 				// TODO: Is there a collections add all I could use here?
 				itemQueue.add(item);
 				totalItemCount++;
 			}
-//			itemQueue.add(copy[copy.length - 1]); // DISGUSTING!
-//			totalItemCount = itemQueue.size() - 1; // DISGUSTING!
+			// itemQueue.add(copy[copy.length - 1]); // DISGUSTING!
+			// totalItemCount = itemQueue.size() - 1; // DISGUSTING!
 			mediator.setSession(session);
 			setupCenterButton();
 			setFrameTitle();
@@ -911,8 +890,11 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	private void readSessionFile(File file, String newItemBase)
 			throws Exception {
 		if (this.parser == null) {
-			// SHOULDN'T ALL OF THIS BE HAPPENING DURING STARTUP? No, the open
-			// menu allows reading new sessions.
+			// BC: SHOULDN'T ALL OF THIS BE HAPPENING DURING STARTUP?
+			// MP: No, the open menu allows reading new sessions.
+			// BC: but this never happens again after the first session is
+			// loaded because of the if statement. Having it here leaves the
+			// parser as null until the last minute
 			Properties props = readPropertiesFromClassPath(MainGui.propFile);
 			String[] sndExts = props.getProperty(MainGui.sndKey).split(",");
 			LegacyConfigParser legacy = new LegacyConfigParser(sndExts);
