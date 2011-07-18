@@ -96,8 +96,8 @@ public class Mediator implements MediatorListener {
 			 * 'nextOnError' boolean in Moderator.java equal to true. This
 			 * should be a toggle so you can switch back to normal mode.
 			 */
-			nextOnError=true;
-			log.info("Per https://github.com/payne/MMI/issues/38 nextOnError is now true.");
+			nextOnError=!nextOnError;
+			log.info("Per https://github.com/payne/MMI/issues/38 nextOnError is now "+nextOnError);
 			break;
 		case ATTENDING:
 			bAttending = !bAttending;
