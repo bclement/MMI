@@ -37,6 +37,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -227,7 +228,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		JMenu buttonMenu = new JMenu(Messages.getString("Gui.Buttons")); //$NON-NLS-1$
 		menuItem = new JMenuItem(attendingAction);
 		buttonMenu.add(menuItem);
-		menuItem = new JMenuItem(baselineModeAction);
+		menuItem = new JCheckBoxMenuItem(baselineModeAction);
 		buttonMenu.add(menuItem);
 		menuItem = new JMenuItem(independentAction);
 		buttonMenu.add(menuItem);
@@ -261,7 +262,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 
 		addButton(southPanel, wrongAnswerAction);
 		addButton(southPanel, attendingAction);
-		addButton(southPanel, baselineModeAction);
+		//per issue #39 addButton(southPanel, baselineModeAction);
 		addButton(southPanel, independentAction);
 		addButton(southPanel, verbalAction);
 		addButton(southPanel, modelingAction);
