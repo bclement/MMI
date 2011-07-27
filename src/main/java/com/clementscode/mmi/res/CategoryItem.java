@@ -30,7 +30,7 @@ public class CategoryItem {
 
 	private static int itemSerialNumber = 0;
 
-	protected CategoryItem() {
+	public CategoryItem() {
 		// for unit tests
 
 		idObject();

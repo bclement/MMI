@@ -39,8 +39,14 @@ public class SessionDataCollectorTest {
 	public SessionDataCollectorTest() throws IOException {
 		tmp = File.createTempFile("foo", "bar");
 		tmp1 = File.createTempFile("foo", "bar");
-		item1 = new CategoryItem(tmp, null, tmp);
-		item2 = new CategoryItem(tmp1, null, tmp1);
+		// item1 = new CategoryItem(tmp, null, tmp);
+		// item2 = new CategoryItem(tmp1, null, tmp1);
+		item1 = new CategoryItem();
+		item2 = new CategoryItem();
+		item1.setImgFile(tmp);
+		item2.setImgFile(tmp1);
+		item1.setAudioPrompt(tmp);
+		item2.setAudioPrompt(tmp1);
 	}
 
 	@Test
