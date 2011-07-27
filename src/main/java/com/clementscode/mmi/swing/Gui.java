@@ -262,7 +262,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 
 		addButton(southPanel, wrongAnswerAction);
 		addButton(southPanel, attendingAction);
-		//per issue #39 addButton(southPanel, baselineModeAction);
+		// per issue #39 addButton(southPanel, baselineModeAction);
 		addButton(southPanel, independentAction);
 		addButton(southPanel, verbalAction);
 		addButton(southPanel, modelingAction);
@@ -758,7 +758,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 				readSessionFile(file);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(frame, String.format(
-						"Problem reading %s exception was %s", file, e));
+						"Problem reading %s\n%s", file, e.getMessage()));
 				e.printStackTrace();
 			}
 			preferences.put(SESSION_DIRECTORY, getDirectory(file));
