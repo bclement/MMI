@@ -77,6 +77,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	private Queue<CategoryItem> itemQueue = null;
 	private Session session = null;
 	private Timer timer;
+	private Timer preBetweenTimer;
 	private Timer betweenTimer;
 	protected static Log log = LogFactory.getLog(Gui.class);
 
@@ -391,11 +392,16 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		SessionConfig config = session.getConfig();
 		// DON'T LET THE NAME CHANGES FOOL YOU!
 		int answerDelay = config.getTimeDelayAudioPrompt()
-				+ getPromptLen(currentItem.getAudioPrompt());
+				+ getSoundLen(currentItem.getAudioSD());
 		timer = new Timer(answerDelay * 1000, timerAction);
 		timer.setInitialDelay(config.getTimeDelayAudioSD() * 1000);
 		timer.setRepeats(true);
 		timer.start();
+		log
+				.info(String
+						.format(
+								"new timer for %d seconds before SD and %d seconds before prompt",
+								config.getTimeDelayAudioSD(), answerDelay));
 	}
 
 	/**
@@ -419,16 +425,16 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	}
 
 	public void startTimerTimeDelayAutoAdvance(int timeDelayAutoAdvance) {
-		Timer xxx = new Timer(timeDelayAutoAdvance * 1000,
+		preBetweenTimer = new Timer(timeDelayAutoAdvance * 1000,
 				timerTimeDelayAutoAdvance);
-		xxx.setRepeats(false);
-		xxx.start();
+		preBetweenTimer.setRepeats(false);
+		preBetweenTimer.start();
 		log.info(String.format(
 				"Started timerTimeDelayAutoAdvance timer for %d seconds.",
 				timeDelayAutoAdvance));
 	}
 
-	int getPromptLen(File sndFile) {
+	int getSoundLen(File sndFile) {
 		// FIXME I'm a horrible hack
 		if (sndFile == null) {
 			return 0;
@@ -735,6 +741,9 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	public void stopTimer() {
 		if (timer != null) {
 			timer.stop();
+		}
+		if (preBetweenTimer != null) {
+			preBetweenTimer.stop();
 		}
 	}
 
