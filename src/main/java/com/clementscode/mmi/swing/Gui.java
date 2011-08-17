@@ -935,7 +935,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	void refreshGui() {
 
 		mainPanel.revalidate();
-		frame.pack();
+		//disabled per Brian's 8/16/11 email //frame.pack();
 	}
 
 	private void displayClickToBegin() {
