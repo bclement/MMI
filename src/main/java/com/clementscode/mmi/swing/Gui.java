@@ -277,6 +277,8 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		} else {
 			tfSessionName.setText("Session 1");
 		}
+		belowSouthPanel.add(southPanel);
+
 		belowSouthPanel.add(new LabelAndField("Session Name: ", tfSessionName));
 		tfSessionDataFile = new JTextField(30);
 		try {
@@ -313,12 +315,15 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		// prompt but before the answer), modeling (child answered anytime after
 		// the answer audio) or the child did not answer.
 
-		JPanel southContainerPanel = new JPanel();
-		southContainerPanel.setLayout(new GridLayout(0, 1));
-		southContainerPanel.add(southPanel);
-		southContainerPanel.add(belowSouthPanel);
+		// JPanel southContainerPanel = new JPanel();
+		// southContainerPanel.setLayout(new GridLayout(0, 1));
+		//
+		// southContainerPanel.add(southPanel);
+		// southContainerPanel.add(midBelowSouthPanel);
+		// southContainerPanel.add(belowSouthPanel);
 
-		panel.add(southContainerPanel, BorderLayout.SOUTH);
+		panel.add(belowSouthPanel, BorderLayout.PAGE_END);
+		// panel.add(southContainerPanel, BorderLayout.SOUTH);
 		BufferedImage imageData = null;
 		BufferedImage imageDataClickToBegin = null;
 		try {
@@ -935,7 +940,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	void refreshGui() {
 
 		mainPanel.revalidate();
-		//disabled per Brian's 8/16/11 email //frame.pack();
+		// disabled per Brian's 8/16/11 email //frame.pack();
 	}
 
 	private void displayClickToBegin() {
