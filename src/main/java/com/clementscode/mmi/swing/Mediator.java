@@ -77,9 +77,11 @@ public class Mediator implements MediatorListener {
 		// FIXME session.getSessionName is null here
 		collector = new SessionDataCollector(session.getConfigName(), session
 				.getSessionName());
-		// Commenting out this bug is the fix to https://github.com/payne/MMI/issues/35
-		// Since in hit & justWaited near line 236 there's a item = gui.getItemQueue().remove();
-		//	item = gui.getItemQueue().remove();
+		// Commenting out this bug is the fix to
+		// https://github.com/payne/MMI/issues/35
+		// Since in hit & justWaited near line 236 there's a item =
+		// gui.getItemQueue().remove();
+		// item = gui.getItemQueue().remove();
 	}
 
 	/*
@@ -96,8 +98,10 @@ public class Mediator implements MediatorListener {
 			 * 'nextOnError' boolean in Moderator.java equal to true. This
 			 * should be a toggle so you can switch back to normal mode.
 			 */
-			nextOnError=!nextOnError;
-			log.info("Per https://github.com/payne/MMI/issues/38 nextOnError is now "+nextOnError);
+			nextOnError = !nextOnError;
+			log
+					.info("Per https://github.com/payne/MMI/issues/38 nextOnError is now "
+							+ nextOnError);
 			break;
 		case ATTENDING:
 			bAttending = !bAttending;
@@ -270,7 +274,7 @@ public class Mediator implements MediatorListener {
 			int timeDelayAutoAdvance = gui.getSession().getConfig()
 					.getTimeDelayAutoAdvance();
 			if (timeDelayAutoAdvance > 0) {
-				int audioPromptLen = gui.getPromptLen(item.getAudioPrompt());
+				int audioPromptLen = gui.getSoundLen(item.getAudioPrompt());
 				timeDelayAutoAdvance += audioPromptLen;
 				if (timeDelayAutoAdvance > 0) {
 					gui.startTimerTimeDelayAutoAdvance(timeDelayAutoAdvance);

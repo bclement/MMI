@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<jnlp spec="0.2 1.0"
+      codebase="http://clementscode.com/avdt"
+      href="$outputFile"> 
+   <information>
+      <title>AVDT (Audio Visual Discrete Trials)</title>
+      <vendor>clementscode.com/avdt</vendor>
+      <description>The Audio Visual Discrete Trials program is designed to aid
+          in autism spectrum disorders research. This program will be used to
+          evaluate the efficacy of computer-aided instruction to teach
+          expressive identification of a variety of stimuli.
+      </description>
+      <offline-allowed/>
+   </information>
+   <resources>
+      <j2se version="1.3+ 1.2+"/>
+      $dependencies
+   </resources>
+   <application-desc main-class="$mainClass"/>
+   <security> <all-permissions/> </security>
+</jnlp>

@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.logging.Log;
@@ -29,7 +30,7 @@ public class CategoryItem {
 
 	private static int itemSerialNumber = 0;
 
-	protected CategoryItem() {
+	public CategoryItem() {
 		// for unit tests
 
 		idObject();
@@ -49,7 +50,25 @@ public class CategoryItem {
 		this.audioSD = audioSD;
 		this.audioPrompt = audioPrompt;
 		this.imgFile = imgFile;
-		this.img = readImage(imgFile);
+		try {
+			this.img = readImage(imgFile);
+			if (this.img == null) {
+				throw new IOException("Unable to read Image file");
+			}
+		} catch (IOException e) {
+			String msg;
+			if (imgFile != null) {
+				String path = imgFile.getAbsolutePath();
+				if (!imgFile.exists()) {
+					msg = path + " does not exist";
+				} else {
+					msg = "problem reading " + path + ". Bad image file type?";
+				}
+			} else {
+				msg = "Item found in config without an image.";
+			}
+			throw new IIOException(msg, e);
+		}
 	}
 
 	private void idObject() {

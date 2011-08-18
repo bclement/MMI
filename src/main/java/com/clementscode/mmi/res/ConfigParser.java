@@ -12,8 +12,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.AnnotationIntrospector;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -61,7 +64,13 @@ public class ConfigParser {
 	}
 
 	public SessionConfig parse(InputStream in) throws Exception {
-		Map<?, ?> value = mapper.readValue(in, Map.class);
+		Map<?, ?> value;
+		try {
+			value = mapper.readValue(in, Map.class);
+		} catch (JsonParseException e) {
+			String msg = getFriendlyError(e);
+			throw new Exception(msg, e);
+		}
 		Object version = value.get("version");
 		if (version != null && version instanceof String) {
 			VersionConfigParser parser = versionParsers.get((String) version);
@@ -71,8 +80,25 @@ public class ConfigParser {
 		}
 	}
 
+	protected String getFriendlyError(JsonParseException e) {
+		String message = e.getMessage();
+		Pattern extraComma = Pattern.compile(
+				"^Unexpected character \\('\\}'.*(line:[^\\]]*).*$",
+				Pattern.DOTALL);
+		Matcher m = extraComma.matcher(message);
+		String rval;
+		if (m.matches()) {
+			rval = "Unexpected end of key-value map at " + m.group(1);
+			rval += "\nDo you have an extra comma after the last entry?";
+		} else {
+			rval = e.getMessage();
+		}
+		return rval;
+	}
+
 	public static void main(String[] args) throws JsonGenerationException,
 			JsonMappingException, FileNotFoundException, IOException {
+
 		SessionConfig config = new SessionConfig();
 		config.setItemBase("src/test/resources/bc");
 		ItemConfig[] items = new ItemConfig[7];

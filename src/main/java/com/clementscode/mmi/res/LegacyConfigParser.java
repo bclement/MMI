@@ -66,7 +66,7 @@ public class LegacyConfigParser implements VersionConfigParser {
 			return;
 		}
 		ItemConfig[] rval = new ItemConfig[items.length];
-		if (base != null && !base.isEmpty()) {
+		if (prompt != null && base != null && !base.isEmpty()) {
 			if (prompt.startsWith(base)) {
 				// prompt is in base subtree - sweet!
 				prompt = prompt.substring(base.length());

@@ -77,6 +77,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	private Queue<CategoryItem> itemQueue = null;
 	private Session session = null;
 	private Timer timer;
+	private Timer preBetweenTimer;
 	private Timer betweenTimer;
 	protected static Log log = LogFactory.getLog(Gui.class);
 
@@ -262,7 +263,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 
 		addButton(southPanel, wrongAnswerAction);
 		addButton(southPanel, attendingAction);
-		//per issue #39 addButton(southPanel, baselineModeAction);
+		// per issue #39 addButton(southPanel, baselineModeAction);
 		addButton(southPanel, independentAction);
 		addButton(southPanel, verbalAction);
 		addButton(southPanel, modelingAction);
@@ -276,6 +277,8 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		} else {
 			tfSessionName.setText("Session 1");
 		}
+		belowSouthPanel.add(southPanel);
+
 		belowSouthPanel.add(new LabelAndField("Session Name: ", tfSessionName));
 		tfSessionDataFile = new JTextField(30);
 		try {
@@ -312,12 +315,15 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		// prompt but before the answer), modeling (child answered anytime after
 		// the answer audio) or the child did not answer.
 
-		JPanel southContainerPanel = new JPanel();
-		southContainerPanel.setLayout(new GridLayout(0, 1));
-		southContainerPanel.add(southPanel);
-		southContainerPanel.add(belowSouthPanel);
+		// JPanel southContainerPanel = new JPanel();
+		// southContainerPanel.setLayout(new GridLayout(0, 1));
+		//
+		// southContainerPanel.add(southPanel);
+		// southContainerPanel.add(midBelowSouthPanel);
+		// southContainerPanel.add(belowSouthPanel);
 
-		panel.add(southContainerPanel, BorderLayout.SOUTH);
+		panel.add(belowSouthPanel, BorderLayout.PAGE_END);
+		// panel.add(southContainerPanel, BorderLayout.SOUTH);
 		BufferedImage imageData = null;
 		BufferedImage imageDataClickToBegin = null;
 		try {
@@ -391,11 +397,16 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		SessionConfig config = session.getConfig();
 		// DON'T LET THE NAME CHANGES FOOL YOU!
 		int answerDelay = config.getTimeDelayAudioPrompt()
-				+ getPromptLen(currentItem.getAudioPrompt());
+				+ getSoundLen(currentItem.getAudioSD());
 		timer = new Timer(answerDelay * 1000, timerAction);
 		timer.setInitialDelay(config.getTimeDelayAudioSD() * 1000);
 		timer.setRepeats(true);
 		timer.start();
+		log
+				.info(String
+						.format(
+								"new timer for %d seconds before SD and %d seconds before prompt",
+								config.getTimeDelayAudioSD(), answerDelay));
 	}
 
 	/**
@@ -419,16 +430,16 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	}
 
 	public void startTimerTimeDelayAutoAdvance(int timeDelayAutoAdvance) {
-		Timer xxx = new Timer(timeDelayAutoAdvance * 1000,
+		preBetweenTimer = new Timer(timeDelayAutoAdvance * 1000,
 				timerTimeDelayAutoAdvance);
-		xxx.setRepeats(false);
-		xxx.start();
+		preBetweenTimer.setRepeats(false);
+		preBetweenTimer.start();
 		log.info(String.format(
 				"Started timerTimeDelayAutoAdvance timer for %d seconds.",
 				timeDelayAutoAdvance));
 	}
 
-	int getPromptLen(File sndFile) {
+	int getSoundLen(File sndFile) {
 		// FIXME I'm a horrible hack
 		if (sndFile == null) {
 			return 0;
@@ -736,6 +747,9 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		if (timer != null) {
 			timer.stop();
 		}
+		if (preBetweenTimer != null) {
+			preBetweenTimer.stop();
+		}
 	}
 
 	public void setVisble(boolean b) {
@@ -758,7 +772,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 				readSessionFile(file);
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(frame, String.format(
-						"Problem reading %s exception was %s", file, e));
+						"Problem reading %s\n%s", file, e.getMessage()));
 				e.printStackTrace();
 			}
 			preferences.put(SESSION_DIRECTORY, getDirectory(file));
@@ -926,7 +940,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	void refreshGui() {
 
 		mainPanel.revalidate();
-		//disabled per Brian's 8/16/11 email //frame.pack();
+		// disabled per Brian's 8/16/11 email //frame.pack();
 	}
 
 	private void displayClickToBegin() {

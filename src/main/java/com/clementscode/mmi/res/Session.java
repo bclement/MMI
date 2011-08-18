@@ -49,6 +49,10 @@ public class Session {
 		CategoryItem[] rval = new CategoryItem[confItems.length];
 		String base = config.getItemBase();
 		for (int i = 0; i < rval.length; ++i) {
+			if (confItems[i].visualSD == null) {
+				throw new IOException("Missing visual SD on item number "
+						+ (i + 1) + " in config");
+			}
 			File imgFile = new File(base, confItems[i].visualSD);
 			File audioSD = null;
 			if (confItems[i].audioSD != null) {
