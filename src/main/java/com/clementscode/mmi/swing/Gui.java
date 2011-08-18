@@ -227,7 +227,7 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		menuBar.add(menu);
 
 		JMenu buttonMenu = new JMenu(Messages.getString("Gui.Buttons")); //$NON-NLS-1$
-		menuItem = new JMenuItem(attendingAction);
+		menuItem = new JCheckBoxMenuItem(attendingAction);
 		buttonMenu.add(menuItem);
 		menuItem = new JCheckBoxMenuItem(baselineModeAction);
 		buttonMenu.add(menuItem);
