@@ -301,4 +301,12 @@ public class Mediator implements MediatorListener {
 		}
 	}
 
+	public boolean isbAttending() {
+		return bAttending;
+	}
+
+	public void setbAttending(boolean bAttending) {
+		this.bAttending = bAttending;
+	}
+
 }
