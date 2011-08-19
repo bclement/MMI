@@ -104,14 +104,13 @@ public class Mediator implements MediatorListener {
 							+ nextOnError);
 			break;
 		case ATTENDING:
-			bAttending = !bAttending;
+			bAttending = true;
 			break;
 		case INDEPENDENT:
 			if (!waiting) {
 				collector.addResponse(item, bAttending, RespType.INDEPENDENT,
 						errorCount);
 				hit = true;
-				bAttending = false;
 			}
 			break;
 		case VERBAL:
@@ -119,7 +118,6 @@ public class Mediator implements MediatorListener {
 				collector.addResponse(item, bAttending, RespType.VERBAL,
 						errorCount);
 				hit = true;
-				bAttending = false;
 			}
 			break;
 		case MODELING:
@@ -127,7 +125,6 @@ public class Mediator implements MediatorListener {
 				collector.addResponse(item, bAttending, RespType.MODEL,
 						errorCount);
 				hit = true;
-				bAttending = false;
 			}
 			break;
 		case NO_ANSWER:
@@ -135,7 +132,6 @@ public class Mediator implements MediatorListener {
 				collector.addResponse(item, bAttending, RespType.NONE,
 						errorCount);
 				hit = true;
-				bAttending = false;
 			}
 			break;
 		case WRONG_ANSWER:
@@ -145,7 +141,6 @@ public class Mediator implements MediatorListener {
 					collector.addResponse(item, bAttending,
 							RespType.NO_RESPONSE, errorCount);
 					hit = true;
-					bAttending = false;
 				}
 			}
 			break;
@@ -192,6 +187,7 @@ public class Mediator implements MediatorListener {
 		}
 		if (hit) {
 			errorCount = 0;
+			bAttending = false;
 			gui.stopTimer(); // hope this is a fix to issue #4
 			stopSound();
 			playPrompt = true;
@@ -299,14 +295,6 @@ public class Mediator implements MediatorListener {
 			soundRunner.stop();
 			soundRunner = null;
 		}
-	}
-
-	public boolean isbAttending() {
-		return bAttending;
-	}
-
-	public void setbAttending(boolean bAttending) {
-		this.bAttending = bAttending;
 	}
 
 }

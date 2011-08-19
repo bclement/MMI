@@ -130,7 +130,6 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	private int maxHeight;
 	private int maxWidth;
 	private ActionRecorder baselineModeAction;
-	private JCheckBoxMenuItem attendingMenuItem;
 
 	public Gui() {
 		loggingFrame = new LoggingFrame();
@@ -227,11 +226,19 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 
 		menuBar.add(menu);
 
-		JMenu buttonMenu = new JMenu(Messages.getString("Gui.Buttons")); //$NON-NLS-1$
-		attendingMenuItem = new JCheckBoxMenuItem(attendingAction);
-		buttonMenu.add(attendingMenuItem);
+		JMenu optionMenu = new JMenu(Messages.getString("Gui.Options")); //$NON-NLS-1$
 		menuItem = new JCheckBoxMenuItem(baselineModeAction);
+		optionMenu.add(menuItem);
+		menuItem = new JMenuItem(toggleButtonsAction);
+		optionMenu.add(menuItem);
+
+		menuBar.add(optionMenu);
+		JMenu buttonMenu = new JMenu(Messages.getString("Gui.Buttons")); //$NON-NLS-1$
+		menuItem = new JMenuItem(wrongAnswerAction);
 		buttonMenu.add(menuItem);
+		menuItem = new JMenuItem(attendingAction);
+		buttonMenu.add(menuItem);
+
 		menuItem = new JMenuItem(independentAction);
 		buttonMenu.add(menuItem);
 		menuItem = new JMenuItem(verbalAction);
@@ -239,11 +246,6 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 		menuItem = new JMenuItem(modelingAction);
 		buttonMenu.add(menuItem);
 		menuItem = new JMenuItem(noAnswerAction);
-		buttonMenu.add(menuItem);
-		menuItem = new JMenuItem(wrongAnswerAction);
-		buttonMenu.add(menuItem);
-
-		menuItem = new JMenuItem(toggleButtonsAction);
 		buttonMenu.add(menuItem);
 
 		menuBar.add(buttonMenu);
@@ -614,8 +616,6 @@ public class Gui implements ActionListener, MediatorListenerCustomer {
 	 */
 	public void switchItem(CategoryItem item) {
 		currentItem = item;
-		mediator.setbAttending(false); // Per chat with Brian on 8/18/11 at 5:55pm
-		attendingMenuItem.setSelected(false);
 		ImageIcon ii = new ImageIcon(imageOfMaxSize(item.getImg()));
 		switchImage(ii);
 		setupTimer();
